@@ -1,0 +1,37 @@
+h1 {
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    font-weight: 200;
+}
+
+.course h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+}
+
+hr {
+    margin:0.5em 0;
+}
+
+author {
+    font-style: italic;
+    color: #888;
+}
+.rating {
+    color: orange;
+    white-space: nowrap;
+}
+.price s {
+    color :#aaa;
+    font-size: 0.8em;
+}
+
+footer {
+    margin-top: 3em;
+    padding-top: 1em;
+    border-top: 1px solid #ccc;
+    padding-bottom: 2em;
+    text-align: center;
+    color: gray;
+}
