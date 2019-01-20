@@ -1,6 +1,50 @@
 {
-    "version": "1.0",
-    "defaultProvider": "unpkg",
-    "libraries": [
-    ]
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "bootstrap@4.2.1",
+      "destination": "wwwroot\\lib\\bootstrap",
+      "files": [
+        "dist/js/bootstrap.min.js",
+        "dist/css/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "@fortawesome/fontawesome-free@5.6.3",
+      "destination": "wwwroot\\lib\\font-awesome",
+      "files": [
+        "css/all.min.css",
+        "webfonts/fa-brands-400.eot",
+        "webfonts/fa-brands-400.svg",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.eot",
+        "webfonts/fa-regular-400.svg",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.eot",
+        "webfonts/fa-solid-900.svg",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff",
+        "webfonts/fa-solid-900.woff2"
+      ]
+    },
+    {
+      "library": "jquery@3.3.1",
+      "destination": "wwwroot\\lib\\jquery",
+      "files": [
+        "dist/jquery.slim.min.js"
+      ]
+    },
+    {
+      "library": "popper.js@1.14.6",
+      "destination": "wwwroot\\lib\\popper",
+      "files": [
+        "dist/umd/popper.min.js"
+      ]
+    }
+  ]
 }
