@@ -18,7 +18,7 @@ namespace MyCourse.Controllers
         {
             var courseService = new CourseService();
             CourseDetailViewModel viewModel = courseService.GetCourse(id);
-            return View();
+            return View(viewModel);
         }
     }
 }
