@@ -10,12 +10,14 @@ namespace MyCourse.Controllers
         public IActionResult Index()
         {
             var courseService = new CourseService();
-            List<CourseViewModel> courses = courseService.GetServices();
+            List<CourseViewModel> courses = courseService.GetCourses();
             return View(courses);
         }
 
-        public IActionResult Detail(string id)
+        public IActionResult Detail(int id)
         {
+            var courseService = new CourseService();
+            CourseDetailViewModel viewModel = courseService.GetCourse(id);
             return View();
         }
     }
