@@ -1,0 +1,7 @@
+CREATE TABLE Lessons (
+    Id          INTEGER NOT NULL CONSTRAINT PK_Lessons PRIMARY KEY AUTOINCREMENT,
+    CourseId    INTEGER NOT NULL REFERENCES Courses (Id) ON DELETE CASCADE ON UPDATE CASCADE,
+    Title       TEXT (100)   NOT NULL,
+    Description TEXT (10000),
+    Duration    TEXT (8)   NOT NULL DEFAULT ('00:00:00') 
+);
