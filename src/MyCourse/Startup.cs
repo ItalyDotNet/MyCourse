@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using MyCourse.Models.Services.Application;
+using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse
 {
@@ -19,7 +20,8 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddTransient<ICourseService, CourseService>();
+            services.AddTransient<ICourseService, AdoNetCourseService>();
+            services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

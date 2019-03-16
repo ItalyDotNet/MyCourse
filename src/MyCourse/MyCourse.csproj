@@ -5,6 +5,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Compile Remove="Models/Services/Application/CourseService.cs" />
   </ItemGroup>
 
   <ItemGroup>
