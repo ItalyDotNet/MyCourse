@@ -20,7 +20,7 @@ namespace MyCourse.Models.Services.Application
         public List<CourseViewModel> GetCourses()
         {
             string query = "SELECT * FROM Courses";
-            DataSet dataset = db.Query(query);
+            DataSet dataSet = db.Query(query);
             throw new System.NotImplementedException();
         }
     }
