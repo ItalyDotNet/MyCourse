@@ -20,9 +20,13 @@ namespace MyCourse.Models.Services.Infrastructure
                         //https://github.com/aspnet/EntityFrameworkCore/issues/14963
                         dataSet.EnforceConstraints = false;
 
-                        var dataTable = new DataTable();
-                        dataSet.Tables.Add(dataTable);
-                        dataTable.Load(reader);
+                        do 
+                        {
+                            var dataTable = new DataTable();
+                            dataSet.Tables.Add(dataTable);
+                            dataTable.Load(reader);
+                        } while (!reader.IsClosed);
+
                         return dataSet;
                     }
                 }
