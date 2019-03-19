@@ -27,7 +27,11 @@ namespace MyCourse.Models.Services.Infrastructure
                 await conn.OpenAsync();
                 using (var cmd = new SqliteCommand(query, conn))
                 {
+                    //Aggiungiamo i SqliteParameters al SqliteCommand
                     cmd.Parameters.AddRange(sqliteParameters);
+
+                    //Inviamo la query al database e otteniamo un SqliteDataReader
+                    //per leggere i risultati
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         var dataSet = new DataSet();
@@ -36,6 +40,8 @@ namespace MyCourse.Models.Services.Infrastructure
                         //https://github.com/aspnet/EntityFrameworkCore/issues/14963
                         dataSet.EnforceConstraints = false;
 
+                        //Creiamo tanti DataTable per quante sono le tabelle
+                        //di risultati trovate dal SqliteDataReader
                         do 
                         {
                             var dataTable = new DataTable();
