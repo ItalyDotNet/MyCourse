@@ -29,12 +29,12 @@ namespace MyCourse.Models.Services.Application
             if (courseTable.Rows.Count != 1) {
                 throw new InvalidOperationException($"Did not return exactly 1 row for Course {id}");
             }
-            var courseDetailViewModel = mapper.Map<CourseDetailViewModel>(courseTable.Rows[0]);
+            var courseRow = courseTable.Rows[0];
+            var courseDetailViewModel = mapper.Map<CourseDetailViewModel>(courseRow);
 
             //Course lessons
-            var lessonTable = dataSet.Tables[1];
-            courseDetailViewModel.Lessons = mapper.Map<List<LessonViewModel>>(lessonTable.Rows);
-            
+            var lessonDataTable = dataSet.Tables[1];
+            courseDetailViewModel.Lessons = mapper.Map<List<LessonViewModel>>(lessonDataTable.Rows);
             return courseDetailViewModel; 
         }
 
