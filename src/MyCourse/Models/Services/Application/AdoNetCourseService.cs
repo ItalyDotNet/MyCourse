@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using AutoMapper;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 
@@ -10,9 +11,11 @@ namespace MyCourse.Models.Services.Application
     public class AdoNetCourseService : ICourseService
     {
         private readonly IDatabaseAccessor db;
-        public AdoNetCourseService(IDatabaseAccessor db)
+        private readonly IMapper mapper;
+        public AdoNetCourseService(IDatabaseAccessor db, IMapper mapper)
         {
             this.db = db;
+            this.mapper = mapper;
         }
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
@@ -26,16 +29,12 @@ namespace MyCourse.Models.Services.Application
             if (courseTable.Rows.Count != 1) {
                 throw new InvalidOperationException($"Did not return exactly 1 row for Course {id}");
             }
-            var courseRow = courseTable.Rows[0];
-            var courseDetailViewModel = CourseDetailViewModel.FromDataRow(courseRow);
+            var courseDetailViewModel = mapper.Map<CourseDetailViewModel>(courseTable.Rows[0]);
 
             //Course lessons
-            var lessonDataTable = dataSet.Tables[1];
-
-            foreach(DataRow lessonRow in lessonDataTable.Rows) {
-                LessonViewModel lessonViewModel = LessonViewModel.FromDataRow(lessonRow);
-                courseDetailViewModel.Lessons.Add(lessonViewModel);
-            }
+            var lessonTable = dataSet.Tables[1];
+            courseDetailViewModel.Lessons = mapper.Map<List<LessonViewModel>>(lessonTable.Rows);
+            
             return courseDetailViewModel; 
         }
 
@@ -44,11 +43,7 @@ namespace MyCourse.Models.Services.Application
             FormattableString query = $"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
-            var courseList = new List<CourseViewModel>();
-            foreach(DataRow courseRow in dataTable.Rows) {
-                CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
-                courseList.Add(courseViewModel);
-            }
+            var courseList = mapper.Map<List<CourseViewModel>>(dataTable.Rows);
             return courseList;
         }
     }
