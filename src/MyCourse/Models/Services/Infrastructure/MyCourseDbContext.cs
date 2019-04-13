@@ -101,10 +101,8 @@ namespace MyCourse.Models.Entities
 
             modelBuilder.Entity<Lesson>(entity =>
             {
+                //Nessun mapping necessario qui, perché stiamo rispettando le convenzioni di nomi
 
-                entity.HasOne(lesson => lesson.Course)
-                .WithOne(course => course.Lesson)
-                .HasForeignKey<Lesson>(lesson => lesson.CourseId);
 
                 #region Mapping generato automaticamente dal tool di reverse engineering
                 /*
