@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using MyCourse.Models.Entities;
 
-namespace MyCourse.Models.Entities
+namespace MyCourse.Models.Services.Infrastructure
 {
     public partial class MyCourseDbContext : DbContext
     {

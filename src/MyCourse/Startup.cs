@@ -20,8 +20,12 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddTransient<ICourseService, AdoNetCourseService>();
+            // services.AddTransient<ICourseService, AdoNetCourseService>();
+            services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+
+            //services.AddScoped<MyCourseDbContext>();
+            services.AddDbContext<MyCourseDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
