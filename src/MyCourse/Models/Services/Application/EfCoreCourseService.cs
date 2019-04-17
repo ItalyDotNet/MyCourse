@@ -16,9 +16,27 @@ namespace MyCourse.Models.Services.Application
             this.dbContext = dbContext;
         }
 
-        public Task<CourseDetailViewModel> GetCourseAsync(int id)
+        public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
-            throw new System.NotImplementedException();
+            CourseDetailViewModel viewModel = await dbContext.Courses
+                .Where(course => course.Id == id)
+                .Select(course => new CourseDetailViewModel
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Description = course.Description,
+                    Author = course.Author,
+                    ImagePath = course.ImagePath,
+                    Rating = course.Rating,
+                    CurrentPrice = course.CurrentPrice,
+                    FullPrice = course.FullPrice
+                })
+                //.FirstOrDefaultAsync(); //Restituisce null se l'elenco è vuoto e non solleva mai un'eccezione
+                //.SingleOrDefaultAsync(); //Tollera il fatto che l'elenco sia vuoto e in quel caso restituisce null, oppure se l'elenco contiene più di 1 elemento, solleva un'eccezione
+                //.FirstAsync(); //Restituisce il primo elemento, ma se l'elenco è vuoto solleva un'eccezione
+                .SingleAsync(); //Restituisce il primo elemento dell'elenco, ma se l'elenco ne contiene 0 o più di 1, allora solleva un'eccezione
+
+            return viewModel;
         }
 
         public async Task<List<CourseViewModel>> GetCoursesAsync()
