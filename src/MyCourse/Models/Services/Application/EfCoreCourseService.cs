@@ -29,7 +29,14 @@ namespace MyCourse.Models.Services.Application
                     ImagePath = course.ImagePath,
                     Rating = course.Rating,
                     CurrentPrice = course.CurrentPrice,
-                    FullPrice = course.FullPrice
+                    FullPrice = course.FullPrice,
+                    Lessons = course.Lessons.Select(lesson => new LessonViewModel
+                    {
+                        Id = lesson.Id,
+                        Title = lesson.Title,
+                        Description = lesson.Description,
+                        Duration = lesson.Duration
+                    }).ToList()
                 })
                 //.FirstOrDefaultAsync(); //Restituisce null se l'elenco è vuoto e non solleva mai un'eccezione
                 //.SingleOrDefaultAsync(); //Tollera il fatto che l'elenco sia vuoto e in quel caso restituisce null, oppure se l'elenco contiene più di 1 elemento, solleva un'eccezione
@@ -41,7 +48,8 @@ namespace MyCourse.Models.Services.Application
 
         public async Task<List<CourseViewModel>> GetCoursesAsync()
         {
-            List<CourseViewModel> courses = await dbContext.Courses.Select(course => 
+            List<CourseViewModel> courses = await dbContext.Courses
+                .Select(course => 
             new CourseViewModel {
                 Id = course.Id,
                 Title = course.Title,
