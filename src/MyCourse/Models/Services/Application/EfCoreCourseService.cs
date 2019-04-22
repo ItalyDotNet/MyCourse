@@ -19,6 +19,7 @@ namespace MyCourse.Models.Services.Application
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             IQueryable<CourseDetailViewModel> queryLinq = dbContext.Courses
+                .AsNoTracking()
                 .Include(course => course.Lessons)
                 .Where(course => course.Id == id)
                 .Select(course => CourseDetailViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
@@ -34,6 +35,7 @@ namespace MyCourse.Models.Services.Application
         public async Task<List<CourseViewModel>> GetCoursesAsync()
         {
             IQueryable<CourseViewModel> queryLinq = dbContext.Courses
+                .AsNoTracking()
                 .Select(course => CourseViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
 
             List<CourseViewModel> courses = await queryLinq.ToListAsync(); //La query al database viene inviata qui, quando manifestiamo l'intenzione di voler leggere i risultati
