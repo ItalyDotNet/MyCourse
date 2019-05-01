@@ -4,12 +4,11 @@ In questo repository si trova il codice del progetto `MyCourse`, che viene prese
 [https://www.udemy.com/aspnetcore-per-tutti/](https://www.udemy.com/aspnetcore-per-tutti/)
 
 ## Panoramica
-Il progetto è un'applicazione ASP.NET Core 2 per la pubblicazione e fruizione di corsi on-line.
+Il progetto è un'applicazione ASP.NET Core 2 dimostrativa per la pubblicazione e fruizione di corsi on-line. L'applicazione è pubblicata all'indirizzo:
+[https://my-course.azurewebsites.net](https://my-course.azurewebsites.net)
+
 ![Screenshot dell'applicazione MyCourse](docs/images/my-course.png)
 
-L'applicazione dimostrativa è pubblicata a questo indirizzo:
-
-[https://my-course.azurewebsites.net](https://my-course.azurewebsites.net)
 
 ## Ottenere il codice del progetto
 Per chi non è abituato a usare GitHub, ecco spiegate le due opzioni per ottenere il codice di questo progetto:
