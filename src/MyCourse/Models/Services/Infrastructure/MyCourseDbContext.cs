@@ -42,77 +42,11 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
-
-                #region Mapping generato automaticamente dal tool di reverse engineering
-                /*
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Author)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.CurrentPriceAmount)
-                    .IsRequired()
-                    .HasColumnName("CurrentPrice_Amount")
-                    .HasColumnType("NUMERIC")
-                    .HasDefaultValueSql("0");
-
-                entity.Property(e => e.CurrentPriceCurrency)
-                    .IsRequired()
-                    .HasColumnName("CurrentPrice_Currency")
-                    .HasColumnType("TEXT (3)")
-                    .HasDefaultValueSql("'EUR'");
-
-                entity.Property(e => e.Description).HasColumnType("TEXT (10000)");
-
-                entity.Property(e => e.Email).HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.FullPriceAmount)
-                    .IsRequired()
-                    .HasColumnName("FullPrice_Amount")
-                    .HasColumnType("NUMERIC")
-                    .HasDefaultValueSql("0");
-
-                entity.Property(e => e.FullPriceCurrency)
-                    .IsRequired()
-                    .HasColumnName("FullPrice_Currency")
-                    .HasColumnType("TEXT (3)")
-                    .HasDefaultValueSql("'EUR'");
-
-                entity.Property(e => e.ImagePath).HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-                    */
-                #endregion
             });
 
             modelBuilder.Entity<Lesson>(entity =>
             {
                 //Nessun mapping necessario qui, perché stiamo rispettando le convenzioni di nomi
-
-
-                #region Mapping generato automaticamente dal tool di reverse engineering
-                /*
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description).HasColumnType("TEXT (10000)");
-
-                entity.Property(e => e.Duration)
-                    .IsRequired()
-                    .HasColumnType("TEXT (8)")
-                    .HasDefaultValueSql("'00:00:00'");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-
-                entity.HasOne(d => d.Course)
-                    .WithMany(p => p.Lessons)
-                    .HasForeignKey(d => d.CourseId);
-                */
-                #endregion
             });
         }
     }
