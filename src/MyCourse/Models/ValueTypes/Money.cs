@@ -1,8 +1,10 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.ValueTypes
 {
+    [Owned]
     public class Money
     {
         public Money() : this(Currency.EUR, 0.00m)

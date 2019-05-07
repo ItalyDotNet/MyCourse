@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MyCourse.Models.ValueTypes;
 
 namespace MyCourse.Models.Entities
 {
+    [Table("Courses")]
     public partial class Course
     {
         public Course(string title, string author)
@@ -22,6 +25,7 @@ namespace MyCourse.Models.Entities
             Lessons = new HashSet<Lesson>();
         }
 
+        [Key]
         public int Id { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
