@@ -48,10 +48,5 @@ namespace MyCourse
                 routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
-        private void UpdateReloadFileForBrowserSync(IHostingEnvironment env, IApplicationLifetime lifetime)
-        {
-            
-        }
     }
 }
