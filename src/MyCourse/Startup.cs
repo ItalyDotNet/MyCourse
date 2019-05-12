@@ -25,8 +25,6 @@ namespace MyCourse
             services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
-            //services.AddScoped<MyCourseDbContext>();
-            //services.AddDbContext<MyCourseDbContext>();
             services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlite("Data Source=Data/MyCourse.db");
