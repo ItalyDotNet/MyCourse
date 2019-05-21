@@ -19,6 +19,13 @@ namespace MyCourse
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                //Posso ridefinire l'elenco dei provider di default
+                /*.ConfigureLogging((context, builder) => {
+                    builder.ClearProviders();
+                    builder.AddConsole();
+                    builder.Add...;
+                })*/
+
                 //Posso ridefinire l'elenco delle fonti di configurazione con ConfigureAppConfiguration
                 /*.ConfigureAppConfiguration((context, builder) => {
                     builder.Sources.Clear();
@@ -26,6 +33,7 @@ namespace MyCourse
                     builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                     //Qui altre fonti...
                 })*/
+
                 .UseStartup<Startup>();
     }
 }
