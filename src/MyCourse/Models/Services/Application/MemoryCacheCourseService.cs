@@ -25,7 +25,7 @@ namespace MyCourse.Models.Services.Application
         {
             return memoryCache.GetOrCreateAsync($"Course{id}", cacheEntry => 
             {
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60)); //Come esercizio, provate a recuperare il valore 60 usando il servizio di configurazione
                 return courseService.GetCourseAsync(id);
             });
         }
