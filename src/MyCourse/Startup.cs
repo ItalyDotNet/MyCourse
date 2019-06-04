@@ -32,12 +32,20 @@ namespace MyCourse
             services.AddTransient<ICourseService, AdoNetCourseService>();
             //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
-            services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            //services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            services.AddTransient<ICachedCourseService, DistributedCacheCourseService>();
 
             services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                 string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
                 optionsBuilder.UseSqlite(connectionString);
             });
+
+            services.AddDistributedSqlServerCache(options =>
+    {
+        options.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDb;Integrated Security=True";
+        options.SchemaName = "dbo";
+        options.TableName = "SQLCache";
+    });
 
             //Options
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
