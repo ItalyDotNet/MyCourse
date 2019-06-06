@@ -41,11 +41,11 @@ namespace MyCourse
             });
 
             services.AddDistributedSqlServerCache(options =>
-    {
-        options.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDb;Integrated Security=True";
-        options.SchemaName = "dbo";
-        options.TableName = "SQLCache";
-    });
+            {
+                options.ConnectionString = Configuration.GetConnectionString("DistributedCache");
+                options.SchemaName = Configuration["DistributedCache:SchemaName"];
+                options.TableName = Configuration["DistributedCache:TableName"];
+            });
 
             //Options
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
