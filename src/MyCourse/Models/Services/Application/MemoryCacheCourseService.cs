@@ -21,11 +21,14 @@ namespace MyCourse.Models.Services.Application
             this.courseService = courseService;
             this.memoryCache = memoryCache;
         }
+
+        //TODO: ricordati di usare memoryCache.Remove($"Course{id}") quando aggiorni il corso
+
         public Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             return memoryCache.GetOrCreateAsync($"Course{id}", cacheEntry => 
             {
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60)); //Come esercizio, provate a recuperare il valore 60 usando il servizio di configurazione
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60)); //Esercizio: provate a recuperare il valore 60 usando il servizio di configurazione
                 return courseService.GetCourseAsync(id);
             });
         }
