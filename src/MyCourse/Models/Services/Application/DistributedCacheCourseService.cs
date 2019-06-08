@@ -21,10 +21,10 @@ namespace MyCourse.Models.Services.Application
     {
         private readonly ICourseService courseService;
         private readonly IDistributedCache distributedCache;
-        public DistributedCacheCourseService(ICourseService courseService, IDistributedCache memoryCache)
+        public DistributedCacheCourseService(ICourseService courseService, IDistributedCache distributedCache)
         {
             this.courseService = courseService;
-            this.distributedCache = memoryCache;
+            this.distributedCache = distributedCache;
         }
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
@@ -33,42 +33,43 @@ namespace MyCourse.Models.Services.Application
             //Proviamo a recuperare l'oggetto dalla cache
             string serializedObject = await distributedCache.GetStringAsync(key);
 
-            //Se otteniamo null, vuol dire che l'oggetto non era in cache
-            if (serializedObject == null) {
-
-                //Allora lo andiamo a recuperare dal database grazie all'ICourseService
-                CourseDetailViewModel course = await courseService.GetCourseAsync(id);
-
-                //Prima di restituire l'oggetto al chiamante, lo serializziamo.
-                //Cioè ne creiamo una rappresentazione stringa che poi
-                //potrà essere riconvertita nell'oggetto originale.
-                serializedObject = Serialize(course);
-
-                //Impostiamo la durata di permanenza in cache
-                var cacheOptions = new DistributedCacheEntryOptions();
-                cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
-
-                //Aggiungiamo in cache l'oggetto così serializzato 
-                await distributedCache.SetStringAsync(key, serializedObject, cacheOptions);
-                return course;
-            } else {
+            //Se l'oggetto esisteva in cache (cioè se è diverso da null)
+            if (serializedObject != null) {
+                //Allora lo deserializzo e lo restituisco
                 return Deserialize<CourseDetailViewModel>(serializedObject);
-                //return JsonConvert.DeserializeObject<CourseDetailViewModel>(cached);
             }
+
+            //Se invece non esisteva, lo andiamo a recuperare dal database
+            CourseDetailViewModel course = await courseService.GetCourseAsync(id);
+
+            //Prima di restituire l'oggetto al chiamante, lo serializziamo.
+            //Cioè ne creiamo una rappresentazione stringa o binaria
+            serializedObject = Serialize(course);
+
+            //Impostiamo la durata di permanenza in cache
+            var cacheOptions = new DistributedCacheEntryOptions();
+            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+
+            //Aggiungiamo in cache l'oggetto serializzato 
+            await distributedCache.SetStringAsync(key, serializedObject, cacheOptions);
+
+            //Lo restituisco
+            return course;
         }
 
         public async Task<List<CourseViewModel>> GetCoursesAsync()
         {
             string key = $"Courses";
             string serializedObject = await distributedCache.GetStringAsync(key);
-            if (serializedObject == null) {
-                List<CourseViewModel> courses = await courseService.GetCoursesAsync();
-                serializedObject = Serialize(courses);
-                await distributedCache.SetStringAsync(key, serializedObject);
-                return courses;
-            } else {
+
+            if (serializedObject != null) {
                 return Deserialize<List<CourseViewModel>>(serializedObject);
             }
+            
+            List<CourseViewModel> courses = await courseService.GetCoursesAsync();
+            serializedObject = Serialize(courses);
+            await distributedCache.SetStringAsync(key, serializedObject);
+            return courses;
         }
 
         private string Serialize(object obj) 

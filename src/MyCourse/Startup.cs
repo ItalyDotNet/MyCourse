@@ -40,12 +40,25 @@ namespace MyCourse
                 optionsBuilder.UseSqlite(connectionString);
             });
 
-            services.AddDistributedSqlServerCache(options =>
+            #region Configurazione del servizio di cache distribuita
+
+            //Se vogliamo usare Redis, ecco le istruzioni per installarlo: https://docs.microsoft.com/it-it/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-redis-cache
+            //Bisogna anche installare il pacchetto NuGet: Microsoft.Extensions.Caching.StackExchangeRedis
+            services.AddStackExchangeRedisCache(options =>
             {
-                options.ConnectionString = Configuration.GetConnectionString("DistributedCache");
-                options.SchemaName = Configuration["DistributedCache:SchemaName"];
-                options.TableName = Configuration["DistributedCache:TableName"];
+                Configuration.Bind("DistributedCache:Redis", options);
             });
+            
+            //Se vogliamo usare Sql Server, ecco le istruzioni per preparare la tabella usata per la cache: 
+            /*services.AddDistributedSqlServerCache(options => 
+            {
+                Configuration.Bind("DistributedCache:SqlServer", options);
+            });*/
+
+            //Se vogliamo usare la memoria, mentre siamo in sviluppo
+            //services.AddDistributedMemoryCache();
+            
+            #endregion
 
             //Options
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
