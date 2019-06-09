@@ -49,7 +49,7 @@ namespace MyCourse
                 Configuration.Bind("DistributedCache:Redis", options);
             });
             
-            //Se vogliamo usare Sql Server, ecco le istruzioni per preparare la tabella usata per la cache: 
+            //Se vogliamo usare Sql Server, ecco le istruzioni per preparare la tabella usata per la cache: https://docs.microsoft.com/it-it/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-sql-server-cache
             /*services.AddDistributedSqlServerCache(options => 
             {
                 Configuration.Bind("DistributedCache:SqlServer", options);

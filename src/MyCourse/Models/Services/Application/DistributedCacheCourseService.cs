@@ -68,7 +68,11 @@ namespace MyCourse.Models.Services.Application
             
             List<CourseViewModel> courses = await courseService.GetCoursesAsync();
             serializedObject = Serialize(courses);
-            await distributedCache.SetStringAsync(key, serializedObject);
+
+            var cacheOptions = new DistributedCacheEntryOptions();
+            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+
+            await distributedCache.SetStringAsync(key, serializedObject, cacheOptions);
             return courses;
         }
 
