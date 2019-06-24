@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
 
 namespace MyCourse
 {
@@ -28,6 +29,10 @@ namespace MyCourse
                     builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                     //Qui altre fonti...
                 })*/
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseSerilog((webHostBuilderContext, loggerConfiguration) => 
+                {
+                    loggerConfiguration.ReadFrom.Configuration(webHostBuilderContext.Configuration);
+                });
     }
 }
