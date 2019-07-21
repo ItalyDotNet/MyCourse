@@ -13,5 +13,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Data.SQLite" Version="2.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.4" />
+    <PackageReference Include="Polly" Version="7.1.0" />
   </ItemGroup>
 </Project>

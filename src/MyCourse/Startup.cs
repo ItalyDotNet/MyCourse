@@ -21,8 +21,8 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            // services.AddTransient<ICourseService, AdoNetCourseService>();
-            services.AddTransient<ICourseService, EfCoreCourseService>();
+            services.AddTransient<ICourseService, AdoNetCourseService>();
+            //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
             //services.AddScoped<MyCourseDbContext>();

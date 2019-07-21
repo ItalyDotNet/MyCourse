@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using Polly;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
@@ -22,9 +23,17 @@ namespace MyCourse.Models.Services.Infrastructure
             string query = formattableQuery.ToString();
 
             //Colleghiamoci al database Sqlite, inviamo la query e leggiamo i risultati
-            using(var conn = new SqliteConnection("Data Source=Data/MyCourse.db"))
+            using(var conn = new SqliteConnection("Data Source=Data/MyCourse.db; Mode=ReadWrite;"))
             {
-                await conn.OpenAsync();
+
+                var policy = Policy
+                    .Handle<Exception>()
+                    .WaitAndRetryAsync(2, retry =>
+                        TimeSpan.FromMilliseconds(1000));
+
+                await policy.ExecuteAsync(() => 
+                    conn.OpenAsync());
+
                 using (var cmd = new SqliteCommand(query, conn))
                 {
                     //Aggiungiamo i SqliteParameters al SqliteCommand
