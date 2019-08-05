@@ -13,7 +13,7 @@ namespace MyCourse.Controllers
         {
             this.courseService = courseService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, int page, string orderby, bool ascending)
         {
             ViewData["Title"] = "Catalogo dei corsi";
             List<CourseViewModel> courses = await courseService.GetCoursesAsync();
