@@ -1,5 +1,19 @@
 @model List<CourseViewModel>
-<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-8">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+    <div class="col-md-4 d-flex align-items-center">
+        <form asp-controller="Courses" asp-action="Index" method="get">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Cerca..." aria-label="Cerca..." aria-describedby="search-button">
+                <div class="input-group-append">
+                    <button class="input-group-text" id="search-button"><i class="fas fas fa-search"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 @foreach(CourseViewModel course in Model)
 {
