@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MyCourse.Models.Exceptions;
-using MyCourse.Models.Options;
-using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
@@ -28,19 +23,17 @@ namespace MyCourse.Models.Services.Application
         {
             return memoryCache.GetOrCreateAsync($"Course{id}", cacheEntry => 
             {
-                cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60)); //Esercizio: provate a recuperare il valore 60 usando il servizio di configurazione
                 return courseService.GetCourseAsync(id);
             });
         }
 
-        public Task<List<CourseViewModel>> GetCoursesAsync()
+        public Task<List<CourseViewModel>> GetCoursesAsync(string search)
         {
-            return memoryCache.GetOrCreateAsync($"Courses", cacheEntry => 
+            return memoryCache.GetOrCreateAsync($"Courses{search}", cacheEntry => 
             {
-                cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
-                return courseService.GetCoursesAsync();
+                return courseService.GetCoursesAsync(search);
             });
         }
     }

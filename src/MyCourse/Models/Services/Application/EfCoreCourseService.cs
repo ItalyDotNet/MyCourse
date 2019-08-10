@@ -46,9 +46,11 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync()
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search)
         {
+            search = search ?? "";
             IQueryable<CourseViewModel> queryLinq = dbContext.Courses
+                .Where(course => course.Title.Contains(search))
                 .AsNoTracking()
                 .Select(course => CourseViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
 
