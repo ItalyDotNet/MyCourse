@@ -10,7 +10,7 @@ namespace MyCourse.Models.Options
 
     public partial class CoursesOptions
     {
-        public long PerPage { get; set; }
+        public int PerPage { get; set; }
         public CoursesOrderOptions Order { get; set; }
     }
 
