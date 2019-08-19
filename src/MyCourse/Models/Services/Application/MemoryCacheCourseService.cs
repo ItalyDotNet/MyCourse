@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using MyCourse.Models.InputModels;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
@@ -28,13 +29,26 @@ namespace MyCourse.Models.Services.Application
             });
         }
 
-        public Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderby, bool ascending)
+        public Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-            return memoryCache.GetOrCreateAsync($"Courses{search}-{page}-{orderby}-{ascending}", cacheEntry => 
+            //Metto in cache i risultati solo per le prime 5 pagine del catalogo, che reputo essere
+            //le più visitate dagli utenti, e che perciò mi permettono di avere il maggior beneficio dalla cache.
+            //E inoltre, metto in cache i risultati solo se l'utente non ha cercato nulla.
+            //In questo modo riduco drasticamente il consumo di memoria RAM
+            bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
+            
+            //Se canCache è true, sfrutto il meccanismo di caching
+            if (canCache)
             {
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
-                return courseService.GetCoursesAsync(search, page, orderby, ascending);
-            });
+                return memoryCache.GetOrCreateAsync($"Courses{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry => 
+                {
+                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+                    return courseService.GetCoursesAsync(model);
+                });
+            }
+
+            //Altrimenti uso il servizio applicativo sottostante, che recupererà sempre i valori dal database
+            return courseService.GetCoursesAsync(model);
         }
     }
 }
