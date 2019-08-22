@@ -14,11 +14,18 @@ namespace MyCourse.Controllers
         {
             this.courseService = courseService;
         }
-        public async Task<IActionResult> Index(CourseListInputModel model)
+        public async Task<IActionResult> Index(CourseListInputModel input)
         {
             ViewData["Title"] = "Catalogo dei corsi";
-            List<CourseViewModel> courses = await courseService.GetCoursesAsync(model);
-            return View(courses);
+            List<CourseViewModel> courses = await courseService.GetCoursesAsync(input);
+            
+            CourseListViewModel viewModel = new CourseListViewModel
+            {
+                Courses = courses,
+                Input = input
+            };
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Detail(int id)
