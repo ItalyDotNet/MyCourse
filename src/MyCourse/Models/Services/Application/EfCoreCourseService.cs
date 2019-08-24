@@ -49,7 +49,7 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
+        public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             IQueryable<Course> baseQuery = dbContext.Courses;
 
@@ -89,14 +89,23 @@ namespace MyCourse.Models.Services.Application
 
             IQueryable<CourseViewModel> queryLinq = baseQuery
                 .Where(course => course.Title.Contains(model.Search))
-                .Skip(model.Offset)
-                .Take(model.Limit)
                 .AsNoTracking()
                 .Select(course => CourseViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
 
-            List<CourseViewModel> courses = await queryLinq.ToListAsync(); //La query al database viene inviata qui, quando manifestiamo l'intenzione di voler leggere i risultati
+            List<CourseViewModel> courses = await queryLinq                
+                .Skip(model.Offset)
+                .Take(model.Limit)
+                .ToListAsync(); //La query al database viene inviata qui, quando manifestiamo l'intenzione di voler leggere i risultati
 
-            return courses;
+            int totalCount = await queryLinq.CountAsync();
+
+            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            {
+                Results = courses,
+                TotalCount = totalCount
+            };
+
+            return result;
         }
     }
 }

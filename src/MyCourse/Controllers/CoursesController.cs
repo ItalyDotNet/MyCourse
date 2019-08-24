@@ -17,7 +17,7 @@ namespace MyCourse.Controllers
         public async Task<IActionResult> Index(CourseListInputModel input)
         {
             ViewData["Title"] = "Catalogo dei corsi";
-            List<CourseViewModel> courses = await courseService.GetCoursesAsync(input);
+            ListViewModel<CourseViewModel> courses = await courseService.GetCoursesAsync(input);
             
             CourseListViewModel viewModel = new CourseListViewModel
             {

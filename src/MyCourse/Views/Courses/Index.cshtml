@@ -8,7 +8,7 @@
             <div class="input-group">
                 <input type="text" name="search" class="form-control" placeholder="Cerca..." aria-label="Cerca..." aria-describedby="search-button" value="@Model.Input.Search">
                 <div class="input-group-append">
-                    <button class="input-group-text" id="search-button"><i class="fas fas fa-search"></i></button>
+                    <button class="input-group-text" id="search-button"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </form>
@@ -23,7 +23,7 @@
     <div class="col-md-2"></div>
 </div>
 
-@foreach(CourseViewModel course in Model.Courses)
+@foreach(CourseViewModel course in Model.Courses.Results)
 {
 <hr>
 <div class="row course">
@@ -63,16 +63,38 @@
 </div>
 }
 
+@{
+    int totalPages = (int) Math.Ceiling(Model.Courses.TotalCount / (decimal) Model.Input.Limit);
+    int currentPage = Model.Input.Page;
+}
 <nav aria-label="Paginazione">
     <ul class="pagination d-flex justify-content-center mt-3">
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" asp-route-page="1">1 <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" asp-route-page="2">2</a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" asp-route-page="3">3</a>
-        </li>
+        @if(currentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-route-page="@(currentPage-1)"><i class="fas fa-angle-left"></i></a>
+            </li>   
+        }
+        @for(int p = Math.Max(1, currentPage-4); p <= Math.Min(totalPages, currentPage+4); p++)
+        {
+            if (p == currentPage)
+            {
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" asp-route-page="@p">@p <span class="sr-only">(current)</span></a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="@p">@p</a>
+                </li>
+            }
+        }
+        @if(currentPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-route-page="@(currentPage+1)"><i class="fas fa-angle-right"></i></a>
+            </li>   
+        }
     </ul>
 </nav>
