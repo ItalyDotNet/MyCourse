@@ -72,7 +72,7 @@
         @if(currentPage > 1)
         {
             <li class="page-item">
-                <a class="page-link" asp-route-page="@(currentPage-1)"><i class="fas fa-angle-left"></i></a>
+                <a class="page-link" asp-route-page="@(currentPage-1)" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.OrderBy" asp-route-ascending="@Model.Input.Ascending"><i class="fas fa-angle-left"></i></a>
             </li>   
         }
         @for(int p = Math.Max(1, currentPage-4); p <= Math.Min(totalPages, currentPage+4); p++)
@@ -80,20 +80,20 @@
             if (p == currentPage)
             {
                 <li class="page-item active" aria-current="page">
-                    <a class="page-link" asp-route-page="@p">@p <span class="sr-only">(current)</span></a>
+                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.OrderBy" asp-route-ascending="@Model.Input.Ascending">@p <span class="sr-only">(current)</span></a>
                 </li>
             }
             else
             {
                 <li class="page-item">
-                    <a class="page-link" asp-route-page="@p">@p</a>
+                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.OrderBy" asp-route-ascending="@Model.Input.Ascending">@p</a>
                 </li>
             }
         }
         @if(currentPage < totalPages)
         {
             <li class="page-item">
-                <a class="page-link" asp-route-page="@(currentPage+1)"><i class="fas fa-angle-right"></i></a>
+                <a class="page-link" asp-route-page="@(currentPage+1)" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.OrderBy" asp-route-ascending="@Model.Input.Ascending"><i class="fas fa-angle-right"></i></a>
             </li>   
         }
     </ul>
