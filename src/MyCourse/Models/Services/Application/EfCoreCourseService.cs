@@ -49,6 +49,34 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
+        public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Rating",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+
+                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+                return result.Results;
+        }
+        
+        public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Id",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+
+                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+                return result.Results;
+        }
+
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             IQueryable<Course> baseQuery = dbContext.Courses;
@@ -83,6 +111,16 @@ namespace MyCourse.Models.Services.Application
                     else
                     {
                         baseQuery = baseQuery.OrderByDescending(course => course.CurrentPrice.Amount);
+                    }
+                    break;
+                case "Id":
+                    if (model.Ascending)
+                    {
+                        baseQuery = baseQuery.OrderBy(course => course.Id);
+                    }
+                    else
+                    {
+                        baseQuery = baseQuery.OrderByDescending(course => course.Id);
                     }
                     break;
             }

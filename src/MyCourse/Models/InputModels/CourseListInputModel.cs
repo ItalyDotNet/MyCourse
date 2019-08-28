@@ -9,9 +9,8 @@ namespace MyCourse.Models.InputModels
     [ModelBinder(BinderType = typeof(CourseListInputModelBinder))]
     public class CourseListInputModel
     {
-        public CourseListInputModel(string search, int page, string orderby, bool ascending, CoursesOptions coursesOptions)
+        public CourseListInputModel(string search, int page, string orderby, bool ascending, int limit, CoursesOrderOptions orderOptions)
         {
-            var orderOptions = coursesOptions.Order;
             if (!orderOptions.Allow.Contains(orderby))
             {
                 orderby = orderOptions.By;
@@ -20,10 +19,10 @@ namespace MyCourse.Models.InputModels
 
             Search = search ?? "";
             Page = Math.Max(1, page);
+            Limit = Math.Max(1, limit);
             OrderBy = orderby;
             Ascending = ascending;
 
-            Limit = coursesOptions.PerPage;
             Offset = (Page - 1) * Limit;
         }
         public string Search { get; }
