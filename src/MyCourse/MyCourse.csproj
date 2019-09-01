@@ -14,5 +14,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Data.SQLite" Version="2.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.4" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.19" />
   </ItemGroup>
 </Project>
