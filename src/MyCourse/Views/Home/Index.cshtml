@@ -8,7 +8,7 @@ Scegli da un vasto catalogo sempre a tua disposizione.</p>
 
 <section>
     <h2>Aggiunti di recente</h2>
-    @foreach (var course in Model.MostRecentCourses)
+    @foreach (CourseViewModel course in Model.MostRecentCourses)
     {
         <hr>
 <div class="row course">
@@ -35,7 +35,7 @@ Scegli da un vasto catalogo sempre a tua disposizione.</p>
 
 <section>
     <h2>I migliori di sempre</h2>
-    @foreach (var course in Model.BestRatingCourses)
+    @foreach (CourseViewModel course in Model.BestRatingCourses)
     {
         <hr>
 <div class="row course">
