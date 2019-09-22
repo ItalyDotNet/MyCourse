@@ -1,0 +1,36 @@
+@model IPaginationInfo
+@{
+    int totalPages = (int) Math.Ceiling(Model.TotalResults / (decimal) Model.ResultsPerPage);
+    int currentPage = Model.CurrentPage;
+}
+<nav aria-label="Paginazione">
+    <ul class="pagination d-flex justify-content-center mt-3">
+        @if(currentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-route-page="@(currentPage-1)" asp-route-search="@Model.Search" asp-route-orderby="@Model.OrderBy" asp-route-ascending="@Model.Ascending"><i class="fas fa-angle-left"></i></a>
+            </li>   
+        }
+        @for(int p = Math.Max(1, currentPage-4); p <= Math.Min(totalPages, currentPage+4); p++)
+        {
+            if (p == currentPage)
+            {
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Search" asp-route-orderby="@Model.OrderBy" asp-route-ascending="@Model.Ascending">@p <span class="sr-only">(current)</span></a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Search" asp-route-orderby="@Model.OrderBy" asp-route-ascending="@Model.Ascending">@p</a>
+                </li>
+            }
+        }
+        @if(currentPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-route-page="@(currentPage+1)" asp-route-search="@Model.Search" asp-route-orderby="@Model.OrderBy" asp-route-ascending="@Model.Ascending"><i class="fas fa-angle-right"></i></a>
+            </li>   
+        }
+    </ul>
+</nav>

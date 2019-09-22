@@ -5,10 +5,8 @@
             "name": ".NET Script Debug",
             "type": "coreclr",
             "request": "launch",
-            "program": "dotnet",
+            "program": "dotnet-script",
             "args": [
-                "exec",
-                "C:/Users/brigh/.dotnet/tools/.store/dotnet-script/0.28.0/dotnet-script/0.28.0/tools/netcoreapp2.1/any/dotnet-script.dll",
                 "${file}"
             ],
             "cwd": "${workspaceRoot}",

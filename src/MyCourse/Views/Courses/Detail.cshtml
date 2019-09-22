@@ -16,27 +16,10 @@
             <aside>
                 <author>di @Model.Author</author>
                 <div class="rating" title="@Model.Rating">
-                    @for(int i = 1; i <= 5; i++)
-                    {
-                        if (Model.Rating >= i)
-                        {
-                            <i class="fas fa-star"></i>
-                        }
-                        else if (Model.Rating > i - 1)
-                        {
-                            <i class="fas fa-star-half-alt"></i>
-                        }
-                        else
-                        {
-                            <i class="far fa-star"></i>
-                        }
-                    }
+                    <rating value="@Model.Rating"></rating>
                 </div>
                 <div class="price">
-                    @Model.CurrentPrice
-                    @if(!Model.CurrentPrice.Equals(Model.FullPrice)) {
-                        <br><s>@Model.FullPrice</s>
-                    }
+                    <price current-price="@Model.CurrentPrice" full-price="@Model.FullPrice"></price>
                 </div>
                 <img src="@Model.ImagePath" class="img-fluid course-image" alt="@Model.Title">
             </aside>
