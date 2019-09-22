@@ -25,25 +25,7 @@
 
 @foreach(CourseViewModel course in Model.Courses.Results)
 {
-<hr>
-<div class="row course">
-    <div class="col-md-1">
-        <img src="@course.ImagePath" width="52" height="52" alt="@course.Title">
-    </div>
-    <div class="col-md-5">
-        <h2>@course.Title</h2>
-        <author>di @course.Author</author>
-    </div>
-    <div class="col-md-2 rating" title="@course.Rating">
-        <rating value="@course.Rating"></rating>
-    </div>
-    <div class="col-md-2 price">
-        <price current-price="@course.CurrentPrice" full-price="@course.FullPrice"></price>
-    </div>
-    <div class="col-md-2 d-flex align-items-center">
-      <a class="btn btn-outline-primary" asp-controller="Courses" asp-action="Detail" asp-route-id="@course.Id">Dettaglio</a>
-    </div>
-</div>
+    <partial name="Courses/_CourseLine" model="@course"></partial>
 }
 
 <vc:pagination-bar model="@Model"></vc:pagination-bar>
