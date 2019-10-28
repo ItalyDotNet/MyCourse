@@ -76,13 +76,21 @@ namespace MyCourse
             
             app.UseStaticFiles();
 
+            //EndpointRoutingMiddleware
+            app.UseRouting();
+
             app.UseResponseCaching();
+
+            //EndpointMiddleware
+            app.UseEndpoints(routeBuilder => {
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
             //app.UseMvcWithDefaultRoute();
-            app.UseMvc(routeBuilder => 
+            /*app.UseMvc(routeBuilder => 
             {
                 // Esempio di percorso conforme al template route: /courses/detail/5
                 routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
+            });*/
         }
     }
 }
