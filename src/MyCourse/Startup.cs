@@ -37,7 +37,12 @@ namespace MyCourse
                 Configuration.Bind("ResponseCache:Home", homeProfile);
                 options.CacheProfiles.Add("Home", homeProfile);
                 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            #if DEBUG
+            .AddRazorRuntimeCompilation()
+            #endif
+            ;
+
             services.AddTransient<ICourseService, AdoNetCourseService>();
             //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
@@ -85,12 +90,6 @@ namespace MyCourse
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-            //app.UseMvcWithDefaultRoute();
-            /*app.UseMvc(routeBuilder => 
-            {
-                // Esempio di percorso conforme al template route: /courses/detail/5
-                routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });*/
         }
     }
 }
