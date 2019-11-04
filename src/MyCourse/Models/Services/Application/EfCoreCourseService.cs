@@ -50,7 +50,7 @@ namespace MyCourse.Models.Services.Application
                             Duration = lesson.Duration,
                             Description = lesson.Description
                         }).ToList()
-                }); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
+                });
 
             CourseDetailViewModel viewModel = await queryLinq.FirstOrDefaultAsync();
             if (viewModel == null) 
