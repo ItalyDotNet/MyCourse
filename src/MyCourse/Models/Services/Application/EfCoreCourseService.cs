@@ -33,7 +33,24 @@ namespace MyCourse.Models.Services.Application
                 .AsNoTracking()
                 .Include(course => course.Lessons)
                 .Where(course => course.Id == id)
-                .Select(course => CourseDetailViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
+                .Select(course => new CourseDetailViewModel
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Description = course.Description,
+                    Author = course.Author,
+                    ImagePath = course.ImagePath,
+                    Rating = course.Rating,
+                    CurrentPrice = course.CurrentPrice,
+                    FullPrice = course.FullPrice,
+                    Lessons = course.Lessons.Select(lesson => new LessonViewModel
+                        {
+                            Id = lesson.Id,
+                            Title = lesson.Title,
+                            Duration = lesson.Duration,
+                            Description = lesson.Description
+                        }).ToList()
+                }); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
 
             CourseDetailViewModel viewModel = await queryLinq.FirstOrDefaultAsync();
             if (viewModel == null) 
@@ -97,7 +114,16 @@ namespace MyCourse.Models.Services.Application
             IQueryable<CourseViewModel> queryLinq = baseQuery
                 .Where(course => course.Title.Contains(model.Search))
                 .AsNoTracking()
-                .Select(course => CourseViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
+                .Select(course => new CourseViewModel
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    ImagePath = course.ImagePath,
+                    Author = course.Author,
+                    Rating = course.Rating,
+                    CurrentPrice = course.CurrentPrice,
+                    FullPrice = course.FullPrice
+                });
 
             List<CourseViewModel> courses = await queryLinq                
                 .Skip(model.Offset)
