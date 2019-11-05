@@ -33,35 +33,19 @@ namespace MyCourse.Models.Services.Application
                 .AsNoTracking()
                 .Include(course => course.Lessons)
                 .Where(course => course.Id == id)
-                .Select(course => new CourseDetailViewModel
-                {
-                    Id = course.Id,
-                    Title = course.Title,
-                    Description = course.Description,
-                    Author = course.Author,
-                    ImagePath = course.ImagePath,
-                    Rating = course.Rating,
-                    CurrentPrice = course.CurrentPrice,
-                    FullPrice = course.FullPrice,
-                    Lessons = course.Lessons.Select(lesson => new LessonViewModel
-                        {
-                            Id = lesson.Id,
-                            Title = lesson.Title,
-                            Duration = lesson.Duration,
-                            Description = lesson.Description
-                        }).ToList()
-                });
+                .Select(course => CourseDetailViewModel.FromEntity(course)); //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
 
             CourseDetailViewModel viewModel = await queryLinq.FirstOrDefaultAsync();
-            if (viewModel == null) 
-            {
-                logger.LogWarning("Course {id} not found", id);
-                throw new CourseNotFoundException(id);
-            }
             //.FirstOrDefaultAsync(); //Restituisce null se l'elenco è vuoto e non solleva mai un'eccezione
             //.SingleOrDefaultAsync(); //Tollera il fatto che l'elenco sia vuoto e in quel caso restituisce null, oppure se l'elenco contiene più di 1 elemento, solleva un'eccezione
             //.FirstAsync(); //Restituisce il primo elemento, ma se l'elenco è vuoto solleva un'eccezione
             //.SingleAsync(); //Restituisce il primo elemento, ma se l'elenco è vuoto o contiene più di un elemento, solleva un'eccezione
+
+            if (viewModel == null)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
 
             return viewModel;
         }
@@ -111,23 +95,14 @@ namespace MyCourse.Models.Services.Application
                 _ => baseQuery
             };
 
-            IQueryable<CourseViewModel> queryLinq = baseQuery
+            IQueryable<Course> queryLinq = baseQuery
                 .Where(course => course.Title.Contains(model.Search))
-                .AsNoTracking()
-                .Select(course => new CourseViewModel
-                {
-                    Id = course.Id,
-                    Title = course.Title,
-                    ImagePath = course.ImagePath,
-                    Author = course.Author,
-                    Rating = course.Rating,
-                    CurrentPrice = course.CurrentPrice,
-                    FullPrice = course.FullPrice
-                });
+                .AsNoTracking();
 
             List<CourseViewModel> courses = await queryLinq                
                 .Skip(model.Offset)
                 .Take(model.Limit)
+                .Select(course => CourseViewModel.FromEntity(course)) //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
                 .ToListAsync(); //La query al database viene inviata qui, quando manifestiamo l'intenzione di voler leggere i risultati
 
             int totalCount = await queryLinq.CountAsync();
