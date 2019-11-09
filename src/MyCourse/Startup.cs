@@ -44,7 +44,7 @@ namespace MyCourse
             ;
 
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            const bool useAdoNet = true;
+            bool useAdoNet = true;
             if (useAdoNet)
             {
                 services.AddTransient<ICourseService, AdoNetCourseService>();
