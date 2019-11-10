@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.InputModels;
@@ -27,12 +26,25 @@ namespace MyCourse.Controllers
 
             return View(viewModel);
         }
-
         public async Task<IActionResult> Detail(int id)
         {
             CourseDetailViewModel viewModel = await courseService.GetCourseAsync(id);
             ViewData["Title"] = viewModel.Title;
             return View(viewModel);
+        }
+
+        public IActionResult Create()
+        {
+            ViewData["Title"] = "Nuovo corso";
+            var inputModel = new CourseCreateInputModel();
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        public IActionResult Create(CourseCreateInputModel inputModel)
+        {
+            //Coinvolgere un servizio applicativo in modo che il corso venga creato
+            return RedirectToAction(nameof(Index));
         }
     }
 }

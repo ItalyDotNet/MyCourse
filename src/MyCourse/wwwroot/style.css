@@ -1,3 +1,17 @@
+html, body {
+    min-height: 100vh;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+body>.container {
+    flex: 1;
+}
+body>footer {
+    background-color: #f5f5f5;
+}
+
 h1 {
     margin-top: 0.7em;
     margin-bottom: 0.7em;
