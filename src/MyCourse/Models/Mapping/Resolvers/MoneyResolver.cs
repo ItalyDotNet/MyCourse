@@ -6,22 +6,19 @@ using MyCourse.Models.ValueTypes;
 
 namespace MyCourse.Models.Mapping.Resolvers
 {
-    public class MoneyResolver : IValueResolver<DataRow, object, Money>
+    public class MoneyResolver : IMemberValueResolver<DataRow, object, string, Money>
     {
-        private readonly string prefix;
-        public MoneyResolver(string prefix)
+        public Money Resolve(DataRow source, object destination, string sourceMember, Money destMember, ResolutionContext context)
         {
-            this.prefix = prefix;
-        }
-        public Money Resolve(DataRow source, object destination, Money destMember, ResolutionContext context)
-        {
-            string currencyColumnName = $"{prefix}_Currency";
-            string amountColumnName = $"{prefix}_Amount";
-
+            string currencyColumnName = $"{sourceMember}_Currency";
+            string amountColumnName = $"{sourceMember}_Amount";
             Currency currency = Enum.Parse<Currency>(System.Convert.ToString(source[currencyColumnName]));
             decimal amount = System.Convert.ToDecimal(source[amountColumnName]);
 
             return new Money(currency, amount);
         }
+
+        private static Lazy<MoneyResolver> instance = new Lazy<MoneyResolver>(() => new MoneyResolver());
+        public static MoneyResolver Instance => instance.Value;
     }
 }

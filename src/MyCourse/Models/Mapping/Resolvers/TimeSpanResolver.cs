@@ -1,21 +1,17 @@
 using System;
 using System.Data;
 using AutoMapper;
-using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
 
 namespace MyCourse.Models.Mapping.Resolvers
 {
-    public class TimeSpanResolver : IValueResolver<DataRow, object, TimeSpan>
+    public class TimeSpanResolver : IMemberValueResolver<DataRow, object, string, TimeSpan>
     {
-        private readonly string memberName;
-        public TimeSpanResolver(string memberName)
+        public TimeSpan Resolve(DataRow source, object destination, string sourceMember, TimeSpan destMember, ResolutionContext context)
         {
-            this.memberName = memberName;
+            return TimeSpan.Parse((string)source[sourceMember]);
         }
-        public TimeSpan Resolve(DataRow source, object destination, TimeSpan destMember, ResolutionContext context)
-        {
-            return TimeSpan.Parse((string)source[memberName]);
-        }
+
+        private static Lazy<TimeSpanResolver> instance = new Lazy<TimeSpanResolver>(() => new TimeSpanResolver());
+        public static TimeSpanResolver Instance => instance.Value;
     }
 }

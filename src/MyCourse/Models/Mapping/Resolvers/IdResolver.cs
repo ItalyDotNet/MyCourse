@@ -12,5 +12,8 @@ namespace MyCourse.Models.Mapping.Resolvers
         {
             return Convert.ToInt32(source["Id"]);
         }
+
+        private static Lazy<IdResolver> instance = new Lazy<IdResolver>(() => new IdResolver());
+        public static IdResolver Instance => instance.Value;
     }
 }

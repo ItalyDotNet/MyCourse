@@ -1,21 +1,17 @@
 using System;
 using System.Data;
 using AutoMapper;
-using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
 
 namespace MyCourse.Models.Mapping.Resolvers
 {
-    public class DefaultResolver : IValueResolver<DataRow, object, object>
+    public class DefaultResolver : IMemberValueResolver<DataRow, object, string, object>
     {
-        private readonly string memberName;
-        public DefaultResolver(string memberName)
+        public object Resolve(DataRow source, object destination, string sourceMember, object destMember, ResolutionContext context)
         {
-            this.memberName = memberName;
+            return source[sourceMember];
         }
-        public object Resolve(DataRow source, object destination, object destMember, ResolutionContext context)
-        {
-            return source[memberName];
-        }
+
+        private static Lazy<DefaultResolver> instance = new Lazy<DefaultResolver>(() => new DefaultResolver());
+        public static DefaultResolver Instance => instance.Value;
     }
 }
