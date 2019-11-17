@@ -21,7 +21,7 @@ namespace MyCourse.Models.Services.Infrastructure
             this.logger = logger;
             this.connectionStringOptions = connectionStringOptions;
         }
-        public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
+        public async IAsyncEnumerable<IDataRecord> QueryAsync(FormattableString formattableQuery)
         {
             logger.LogInformation(formattableQuery.Format, formattableQuery.GetArguments());
 
@@ -54,22 +54,10 @@ namespace MyCourse.Models.Services.Infrastructure
                     //per leggere i risultati
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        var dataSet = new DataSet();
-
-                        //TODO: La riga qui sotto va rimossa quando la issue sarà risolta
-                        //https://github.com/aspnet/EntityFrameworkCore/issues/14963
-                        dataSet.EnforceConstraints = false;
-
-                        //Creiamo tanti DataTable per quante sono le tabelle
-                        //di risultati trovate dal SqliteDataReader
-                        do
+                        while (await reader.ReadAsync())
                         {
-                            var dataTable = new DataTable();
-                            dataSet.Tables.Add(dataTable);
-                            dataTable.Load(reader);
-                        } while (!reader.IsClosed);
-
-                        return dataSet;
+                            yield return reader;
+                        }
                     }
                 }
             }

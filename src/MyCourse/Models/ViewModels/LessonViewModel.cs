@@ -11,13 +11,14 @@ namespace MyCourse.Models.ViewModels
         public string Description { get; set; }
         public TimeSpan Duration { get; set; }
 
-        public static LessonViewModel FromDataRow(DataRow dataRow)
+        public static LessonViewModel FromDataRecord(IDataRecord dataRecord)
         {
-            var lessonViewModel = new LessonViewModel {
-                Id = Convert.ToInt32(dataRow["Id"]),
-                Title = Convert.ToString(dataRow["Title"]),
-                Description = Convert.ToString(dataRow["Description"]),
-                Duration = TimeSpan.Parse(Convert.ToString(dataRow["Duration"])),
+            var lessonViewModel = new LessonViewModel
+            {
+                Id = Convert.ToInt32(dataRecord["Id"]),
+                Title = Convert.ToString(dataRecord["Title"]),
+                Description = Convert.ToString(dataRecord["Description"]),
+                Duration = TimeSpan.Parse(Convert.ToString(dataRecord["Duration"])),
             };
             return lessonViewModel;
         }

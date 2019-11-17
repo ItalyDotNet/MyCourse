@@ -29,27 +29,27 @@ namespace MyCourse.Models.Services.Application
         {
             logger.LogInformation("Course {id} requested", id);
 
-            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id}
-            ; SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id}";
-
-            DataSet dataSet = await db.QueryAsync(query);
-
             //Course
-            var courseTable = dataSet.Tables[0];
-            if (courseTable.Rows.Count != 1)
+            FormattableString courseQuery = $"SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id}";
+            IAsyncEnumerable<IDataRecord> courseResults = db.QueryAsync(courseQuery);
+            CourseDetailViewModel courseDetailViewModel = null;
+            await foreach(IDataRecord dataRecord in courseResults)
+            {
+                courseDetailViewModel = CourseDetailViewModel.FromDataRecord(dataRecord);
+                break;
+            }
+            if (courseDetailViewModel == null)
             {
                 logger.LogWarning("Course {id} not found", id);
                 throw new CourseNotFoundException(id);
             }
-            var courseRow = courseTable.Rows[0];
-            var courseDetailViewModel = CourseDetailViewModel.FromDataRow(courseRow);
 
             //Course lessons
-            var lessonDataTable = dataSet.Tables[1];
-
-            foreach (DataRow lessonRow in lessonDataTable.Rows)
+            FormattableString lessonsQuery = $"SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id}";
+            IAsyncEnumerable<IDataRecord> lessonsResults = db.QueryAsync(lessonsQuery);
+            await foreach (IDataRecord dataRecord in lessonsResults)
             {
-                LessonViewModel lessonViewModel = LessonViewModel.FromDataRow(lessonRow);
+                LessonViewModel lessonViewModel = LessonViewModel.FromDataRecord(dataRecord);
                 courseDetailViewModel.Lessons.Add(lessonViewModel);
             }
             return courseDetailViewModel;
@@ -87,21 +87,30 @@ namespace MyCourse.Models.Services.Application
             string orderby = model.OrderBy == "CurrentPrice" ? "CurrentPrice_Amount" : model.OrderBy;
             string direction = model.Ascending ? "ASC" : "DESC";
                                     
-            FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
-            SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"}";
-            DataSet dataSet = await db.QueryAsync(query);
-            var dataTable = dataSet.Tables[0];
+            //Pagina di corsi
             var courseList = new List<CourseViewModel>();
-            foreach (DataRow courseRow in dataTable.Rows)
+            FormattableString coursesQuery = $"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}";
+            IAsyncEnumerable<IDataRecord> coursesResults = db.QueryAsync(coursesQuery);
+            await foreach (IDataRecord dataRecord in coursesResults)
             {
-                CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
+                CourseViewModel courseViewModel = CourseViewModel.FromDataRecord(dataRecord);
                 courseList.Add(courseViewModel);
+            }
+
+            //Conteggio totale dei corsi
+            int count = 0;
+            FormattableString countQuery = $"SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"}";
+            IAsyncEnumerable<IDataRecord> countResults = db.QueryAsync(countQuery);
+            await foreach (IDataRecord dataRecord in countResults)
+            {
+                count = dataRecord.GetInt32(0);
+                break;
             }
 
             ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
             {
                 Results = courseList,
-                TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
+                TotalCount = count
             };
 
             return result;

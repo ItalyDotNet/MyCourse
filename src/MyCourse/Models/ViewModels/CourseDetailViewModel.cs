@@ -22,24 +22,24 @@ namespace MyCourse.Models.ViewModels
             get => TimeSpan.FromSeconds(Lessons?.Sum(l => l.Duration.TotalSeconds) ?? 0);
         }
 
-        public static new CourseDetailViewModel FromDataRow(DataRow courseRow)
+        public static new CourseDetailViewModel FromDataRecord(IDataRecord dataRecord)
         {
             var courseDetailViewModel = new CourseDetailViewModel
             {
-                Title = Convert.ToString(courseRow["Title"]),
-                Description = Convert.ToString(courseRow["Description"]),
-                ImagePath = Convert.ToString(courseRow["ImagePath"]),
-                Author = Convert.ToString(courseRow["Author"]),
-                Rating = Convert.ToDouble(courseRow["Rating"]),
+                Title = Convert.ToString(dataRecord["Title"]),
+                Description = Convert.ToString(dataRecord["Description"]),
+                ImagePath = Convert.ToString(dataRecord["ImagePath"]),
+                Author = Convert.ToString(dataRecord["Author"]),
+                Rating = Convert.ToDouble(dataRecord["Rating"]),
                 FullPrice = new Money(
-                    Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
-                    Convert.ToDecimal(courseRow["FullPrice_Amount"])
+                    Enum.Parse<Currency>(Convert.ToString(dataRecord["FullPrice_Currency"])),
+                    Convert.ToDecimal(dataRecord["FullPrice_Amount"])
                 ),
                 CurrentPrice = new Money(
-                    Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
-                    Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
+                    Enum.Parse<Currency>(Convert.ToString(dataRecord["CurrentPrice_Currency"])),
+                    Convert.ToDecimal(dataRecord["CurrentPrice_Amount"])
                 ),
-                Id = Convert.ToInt32(courseRow["Id"]),
+                Id = Convert.ToInt32(dataRecord["Id"]),
                 Lessons = new List<LessonViewModel>()
             };
             return courseDetailViewModel;
