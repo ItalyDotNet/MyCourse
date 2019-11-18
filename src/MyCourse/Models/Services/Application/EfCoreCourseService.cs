@@ -115,5 +115,10 @@ namespace MyCourse.Models.Services.Application
 
             return result;
         }
+
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
