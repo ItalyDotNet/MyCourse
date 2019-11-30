@@ -6,6 +6,9 @@ namespace MyCourse.Models.Exceptions
     {
         public CourseNotFoundException(int courseId) : base($"Course {courseId} not found")
         {
+            CourseId = courseId;
         }
+
+        public int CourseId { get; }
     }
 }

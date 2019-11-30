@@ -63,6 +63,12 @@ namespace MyCourse
             }
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            
+            //L'ErrorViewSelectorServiceQuesto può essere un singleton perché i messaggi di errore li determina
+            //unicamente grazie all'HttpContext che gli viene passato come argomento del metodo GetErrorViewData.
+            //Se invece avesse bisogno di accedere al database, cioè se avesse una dipendenza da un servizio infrastrutturale
+            //allora è preferibile che sia transient in modo che il servizio gli possa essere passato nel costruttore
+            services.AddSingleton<IErrorViewSelectorService, ErrorViewSelectorService>();
 
             //Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
