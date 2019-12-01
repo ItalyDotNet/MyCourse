@@ -96,6 +96,8 @@ namespace MyCourse
                 app.UseExceptionHandler("/Error");
             }
             
+            app.UseStatusCodePagesWithReExecute("/Error");
+
             app.UseStaticFiles();
 
             //EndpointRoutingMiddleware

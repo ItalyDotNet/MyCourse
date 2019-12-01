@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +15,14 @@ namespace MyCourse.Models.Services.Application
     {
         public ErrorViewData GetErrorViewData(HttpContext context)
         {
-            var exception = context.Features.Get<IExceptionHandlerPathFeature>().Error;
+            var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
             return exception switch
             {
+                null => new ErrorViewData(
+                    title: "Pagina non trovata",
+                    statusCode: HttpStatusCode.NotFound,
+                    viewName: "NotFound"),
+
                 CourseNotFoundException exc => new ErrorViewData( //Valorizzo tutti e 3 i parametri
                     title: $"Corso {exc.CourseId} non trovato",
                     statusCode: HttpStatusCode.NotFound,
