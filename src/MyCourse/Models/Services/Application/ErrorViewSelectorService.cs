@@ -19,7 +19,7 @@ namespace MyCourse.Models.Services.Application
             return exception switch
             {
                 null => new ErrorViewData(
-                    title: "Pagina non trovata",
+                    title: $"Pagina '{context.Request.Path}' non trovata",
                     statusCode: HttpStatusCode.NotFound,
                     viewName: "NotFound"),
 

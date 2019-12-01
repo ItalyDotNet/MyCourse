@@ -95,8 +95,6 @@ namespace MyCourse
             {
                 app.UseExceptionHandler("/Error");
             }
-            
-            app.UseStatusCodePagesWithReExecute("/Error");
 
             app.UseStaticFiles();
 
@@ -108,6 +106,9 @@ namespace MyCourse
             //EndpointMiddleware
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                //Questa qui sotto è una route catch-all. Viene usata se l'url della richiesta corrente
+                //non ha trovato corrispondenza con la route 'default' (o con ogni altra eventuale route definita qui sopra).
+                routeBuilder.MapFallbackToController("{*path}", "Index", "Error");
             });
         }
     }
