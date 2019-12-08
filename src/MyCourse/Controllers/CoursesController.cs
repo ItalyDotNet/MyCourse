@@ -43,6 +43,10 @@ namespace MyCourse.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CourseCreateInputModel inputModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
             CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
             return RedirectToAction(nameof(Index));
         }
