@@ -112,7 +112,7 @@ namespace MyCourse.Models.Services.Application
             string title = inputModel.Title;
             string author = "Mario Rossi";
 
-            var dataSet = await db.QueryAsync($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
+            DataSet dataSet = await db.QueryAsync($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
                                                  SELECT last_insert_rowid();");
 
             int courseId = Convert.ToInt32(dataSet.Tables[0].Rows[0][0]);
