@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
@@ -53,7 +53,7 @@ namespace MyCourse.Models.Services.Application
                 courseDetailViewModel.Lessons.Add(lessonViewModel);
             }
             return courseDetailViewModel;
-        }        
+        }
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -64,10 +64,10 @@ namespace MyCourse.Models.Services.Application
                 limit: coursesOptions.CurrentValue.InHome,
                 orderOptions: coursesOptions.CurrentValue.Order);
 
-                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
-                return result.Results;
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
-        
+
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -78,16 +78,16 @@ namespace MyCourse.Models.Services.Application
                 limit: coursesOptions.CurrentValue.InHome,
                 orderOptions: coursesOptions.CurrentValue.Order);
 
-                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
-                return result.Results;
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
 
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             string orderby = model.OrderBy == "CurrentPrice" ? "CurrentPrice_Amount" : model.OrderBy;
             string direction = model.Ascending ? "ASC" : "DESC";
-                                    
-            FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
+
+            FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} ORDER BY {(Sql)orderby} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
             SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"}";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
@@ -112,12 +112,19 @@ namespace MyCourse.Models.Services.Application
             string title = inputModel.Title;
             string author = "Mario Rossi";
 
-            DataSet dataSet = await db.QueryAsync($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
+            try
+            {
+                DataSet dataSet = await db.QueryAsync($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
                                                  SELECT last_insert_rowid();");
 
-            int courseId = Convert.ToInt32(dataSet.Tables[0].Rows[0][0]);
-            CourseDetailViewModel course = await GetCourseAsync(courseId);
-            return course;
+                int courseId = Convert.ToInt32(dataSet.Tables[0].Rows[0][0]);
+                CourseDetailViewModel course = await GetCourseAsync(courseId);
+                return course;
+            }
+            catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+            {
+                throw new CourseTitleUnavailableException(title, exc);
+            }
         }
     }
 }
