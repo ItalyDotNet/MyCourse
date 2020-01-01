@@ -60,5 +60,11 @@ namespace MyCourse.Controllers
             ViewData["Title"] = "Nuovo corso";
             return View(inputModel);
         }
+
+        public async Task<IActionResult> IsTitleAvailable(string title)
+        {
+            bool result = await courseService.IsTitleAvailableAsync(title);
+            return Json(result);
+        }
     }
 }

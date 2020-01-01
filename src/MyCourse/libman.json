@@ -33,13 +33,6 @@
       ]
     },
     {
-      "library": "jquery@3.3.1",
-      "destination": "wwwroot\\lib\\jquery",
-      "files": [
-        "dist/jquery.slim.min.js"
-      ]
-    },
-    {
       "library": "popper.js@1.14.6",
       "destination": "wwwroot\\lib\\popper",
       "files": [
@@ -60,6 +53,14 @@
       "destination": "wwwroot/lib/jquery-validation-unobtrusive",
       "files": [
         "dist/jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "jquery@3.3.1",
+      "destination": "wwwroot/lib/jquery",
+      "files": [
+        "dist/jquery.min.js",
+        "dist/jquery.slim.min.js"
       ]
     }
   ]
