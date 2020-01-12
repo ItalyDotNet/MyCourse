@@ -12,6 +12,7 @@ namespace MyCourse.Models.InputModels
 {
     public class CourseEditInputModel : IValidatableObject
     {
+        [Required]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Il titolo è obbligatorio"),

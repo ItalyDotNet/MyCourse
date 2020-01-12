@@ -138,12 +138,14 @@ namespace MyCourse.Models.Services.Application
         
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
-            var course = await dbContext.Courses.FindAsync(inputModel.Id);
+            Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+
             course.ChangeTitle(inputModel.Title);
             course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
             course.ChangeDescription(inputModel.Description);
             course.ChangeEmail(inputModel.Email);
-            dbContext.Update(course);
+
+            //dbContext.Update(course);
 
             try
             {

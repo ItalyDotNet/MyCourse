@@ -1,7 +1,6 @@
 @model CourseEditInputModel
 <section class="course-info">
     <form method="post">
-        <input type="hidden" asp-for="Id">
         <div class="row">
             <div class="col-md-9">
                 <h1>@ViewData["Title"]</h1>
@@ -14,6 +13,7 @@
         <div class="row">
             <div class="col-12" asp-validation-summary="All"></div>
         </div>
+        <input type="hidden" asp-for="Id">
         <div class="row">
             <div class="col-md-9">
                 <div class="form-group">
@@ -54,7 +54,6 @@
                     <div class="form-group">
                         <label asp-for="ImagePath"></label>
                         <img src="@Model.ImagePath" class="img-fluid">
-                        <input type="hidden" asp-for="ImagePath">
                     </div>
                 </aside>
             </div>
