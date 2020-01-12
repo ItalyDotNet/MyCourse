@@ -1,0 +1,67 @@
+@model CourseEditInputModel
+<section class="course-info">
+    <form method="post">
+        <input type="hidden" asp-for="Id">
+        <div class="row">
+            <div class="col-md-9">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Salva</button>
+                <button type="button" class="btn btn-danger btn-lg ml-3"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" asp-validation-summary="All"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label asp-for="Title"></label>
+                    <input type="text" class="form-control form-control-lg" asp-for="Title">
+                    <span asp-validation-for="Title"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control" rows="18"></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <aside>
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input type="text" asp-for="Email" class="form-control">
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FullPrice"></label>
+                        <div class="input-group">
+                            <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="FullPrice.Currency" class="form-control"></select>
+                            <input type="text" asp-for="FullPrice.Amount" class="form-control form-control-block">
+                            <span asp-validation-for="FullPrice"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CurrentPrice"></label>
+                        <div class="input-group">
+                            <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="CurrentPrice.Currency" class="form-control"></select>
+                            <input type="text" asp-for="CurrentPrice.Amount" class="form-control form-control-block">
+                            <span asp-validation-for="CurrentPrice"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ImagePath"></label>
+                        <img src="@Model.ImagePath" class="img-fluid">
+                        <input type="hidden" asp-for="ImagePath">
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </form>
+</section>
+@section Scripts
+{
+    <partial name="_Validation"></partial>
+}
