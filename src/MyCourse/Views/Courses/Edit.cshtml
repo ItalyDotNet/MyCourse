@@ -32,14 +32,14 @@
                 <aside>
                     <div class="form-group">
                         <label asp-for="Email"></label>
-                        <input type="text" asp-for="Email" class="form-control">
+                        <input type="email" asp-for="Email" class="form-control">
                         <span asp-validation-for="Email"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="FullPrice"></label>
                         <div class="input-group">
                             <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="FullPrice.Currency" class="form-control"></select>
-                            <input type="text" asp-for="FullPrice.Amount" class="form-control form-control-block">
+                            <input type="number" step="any" asp-for="FullPrice.Amount" class="form-control form-control-block">
                             <span asp-validation-for="FullPrice"></span>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                         <label asp-for="CurrentPrice"></label>
                         <div class="input-group">
                             <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="CurrentPrice.Currency" class="form-control"></select>
-                            <input type="text" asp-for="CurrentPrice.Amount" class="form-control form-control-block">
+                            <input type="number" step="any" asp-for="CurrentPrice.Amount" class="form-control form-control-block">
                             <span asp-validation-for="CurrentPrice"></span>
                         </div>
                     </div>
