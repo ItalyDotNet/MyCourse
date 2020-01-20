@@ -35,6 +35,12 @@
         </nav>
     </header>
     <div class="container">
+        @if (TempData["ConfirmationMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissable mt-3" role="alert">
+                @TempData["ConfirmationMessage"]
+            </div>
+        }
         @RenderBody()
     </div>
 
