@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -89,6 +91,13 @@ namespace MyCourse
             {
                 app.UseExceptionHandler("/Error");
             }
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(CultureInfo.InvariantCulture),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = new[] { CultureInfo.InvariantCulture }
+            });
             
             app.UseStaticFiles();
 
