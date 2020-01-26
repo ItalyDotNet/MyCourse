@@ -92,14 +92,15 @@ namespace MyCourse
                 app.UseExceptionHandler("/Error");
             }
 
+            app.UseStaticFiles();
+
+            //Nel caso volessi impostare una Culture specifica...
+            /*var appCulture = CultureInfo.InvariantCulture;
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(CultureInfo.InvariantCulture),
-                // Formatting numbers, dates, etc.
-                SupportedCultures = new[] { CultureInfo.InvariantCulture }
-            });
-            
-            app.UseStaticFiles();
+                DefaultRequestCulture = new RequestCulture(appCulture),
+                SupportedCultures = new[] { appCulture }
+            });*/
 
             //EndpointRoutingMiddleware
             app.UseRouting();
