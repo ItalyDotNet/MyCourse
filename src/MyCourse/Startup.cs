@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
@@ -39,6 +40,8 @@ namespace MyCourse
                 //homeProfile.VaryByQueryKeys = new string[] { "page" };
                 Configuration.Bind("ResponseCache:Home", homeProfile);
                 options.CacheProfiles.Add("Home", homeProfile);
+
+                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
                 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             #if DEBUG
