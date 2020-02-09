@@ -62,6 +62,19 @@
         "dist/jquery.min.js",
         "dist/jquery.slim.min.js"
       ]
+    },
+    {
+      "library": "summernote@0.8.15",
+      "destination": "wwwroot/lib/summernote",
+      "files": [
+        "dist/font/summernote.eot",
+        "dist/font/summernote.ttf",
+        "dist/font/summernote.woff",
+        "dist/font/summernote.woff2",
+        "dist/summernote-bs4.min.css",
+        "dist/summernote-bs4.min.js",
+        "dist/lang/summernote-it-IT.js"
+      ]
     }
   ]
 }
