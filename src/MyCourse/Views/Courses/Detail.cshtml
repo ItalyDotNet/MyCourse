@@ -10,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-md-9">
-            <p>@Html.Raw(Model.Description)</p>
+            <p html-sanitize>@Model.Description</p>
         </div>
         <div class="col-md-3">
             <aside>
