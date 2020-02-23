@@ -3,7 +3,7 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "bootstrap@4.2.1",
+      "library": "bootstrap@4.4.1",
       "destination": "wwwroot\\lib\\bootstrap",
       "files": [
         "dist/js/bootstrap.min.js",
@@ -11,7 +11,7 @@
       ]
     },
     {
-      "library": "@fortawesome/fontawesome-free@5.6.3",
+      "library": "@fortawesome/fontawesome-free@5.12.1",
       "destination": "wwwroot\\lib\\font-awesome",
       "files": [
         "css/all.min.css",
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "library": "popper.js@1.14.6",
+      "library": "popper.js@1.16.0",
       "destination": "wwwroot\\lib\\popper",
       "files": [
         "dist/umd/popper.min.js"
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "library": "jquery@3.3.1",
+      "library": "jquery@3.4.1",
       "destination": "wwwroot/lib/jquery",
       "files": [
         "dist/jquery.min.js",
