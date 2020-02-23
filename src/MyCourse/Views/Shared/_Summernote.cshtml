@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-bs4.min.css">
 </environment>
 <script>
+    //Risolto un problema di integrazione di jQuery validation
+    //con gli editor WYSIWYG quando ci si sposta su un'altra casella
+    //https://github.com/jquery-validation/jquery-validation/issues/1875
+    jQuery.validator.setDefaults({
+        ignore: ":hidden, [contenteditable='true']:not([name])"
+    });
 	$('[data-summernote]').summernote({
         //https://summernote.org/deep-dive/
         minHeight: 300,
