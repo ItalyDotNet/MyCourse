@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Controllers;
 using MyCourse.Models.Entities;
@@ -43,6 +44,9 @@ namespace MyCourse.Models.InputModels
         [Required(ErrorMessage = "Il prezzo corrente è obbligatorio"),
          Display(Name = "Prezzo corrente")]
         public Money CurrentPrice { get; set; }
+
+        [Display(Name = "Nuova immagine...")]
+        public IFormFile Image { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

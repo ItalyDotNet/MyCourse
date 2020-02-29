@@ -128,3 +128,8 @@ section+section {
     height: 100%;
     border: 0;
 }
+/* Icona per l'input type="file" */
+.custom-file-label::after {
+    content: '\f07c' !important;
+    font-family: 'Font Awesome 5 Free';
+}
