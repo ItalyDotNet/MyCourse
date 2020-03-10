@@ -20,9 +20,11 @@ namespace MyCourse.Models.Services.Application
         private readonly ILogger<EfCoreCourseService> logger;
         private readonly MyCourseDbContext dbContext;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
+        private readonly IImagePersister imagePersister;
 
-        public EfCoreCourseService(ILogger<EfCoreCourseService> logger, MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions)
+        public EfCoreCourseService(ILogger<EfCoreCourseService> logger, IImagePersister imagePersister, MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
+            this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
             this.logger = logger;
             this.dbContext = dbContext;
@@ -61,10 +63,10 @@ namespace MyCourse.Models.Services.Application
                 limit: coursesOptions.CurrentValue.InHome,
                 orderOptions: coursesOptions.CurrentValue.Order);
 
-                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
-                return result.Results;
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
-        
+
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -75,8 +77,8 @@ namespace MyCourse.Models.Services.Application
                 limit: coursesOptions.CurrentValue.InHome,
                 orderOptions: coursesOptions.CurrentValue.Order);
 
-                ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
-                return result.Results;
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
 
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
@@ -86,7 +88,7 @@ namespace MyCourse.Models.Services.Application
             baseQuery = (model.OrderBy, model.Ascending) switch
             {
                 ("Title", true) => baseQuery.OrderBy(course => course.Title),
-                ("Title", false) => baseQuery.OrderByDescending(course => course.Title),               
+                ("Title", false) => baseQuery.OrderByDescending(course => course.Title),
                 ("Rating", true) => baseQuery.OrderBy(course => course.Rating),
                 ("Rating", false) => baseQuery.OrderByDescending(course => course.Rating),
                 ("CurrentPrice", true) => baseQuery.OrderBy(course => course.CurrentPrice.Amount),
@@ -100,7 +102,7 @@ namespace MyCourse.Models.Services.Application
                 .Where(course => course.Title.Contains(model.Search))
                 .AsNoTracking();
 
-            List<CourseViewModel> courses = await queryLinq                
+            List<CourseViewModel> courses = await queryLinq
                 .Skip(model.Offset)
                 .Take(model.Limit)
                 .Select(course => CourseViewModel.FromEntity(course)) //Usando metodi statici come FromEntity, la query potrebbe essere inefficiente. Mantenere il mapping nella lambda oppure usare un extension method personalizzato
@@ -135,15 +137,23 @@ namespace MyCourse.Models.Services.Application
 
             return CourseDetailViewModel.FromEntity(course);
         }
-        
+
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+            
+            if (course == null)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
 
             course.ChangeTitle(inputModel.Title);
             course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
             course.ChangeDescription(inputModel.Description);
             course.ChangeEmail(inputModel.Email);
+            
+            string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+            course.ChangeImagePath(imagePath);
 
             //dbContext.Update(course);
 

@@ -88,6 +88,11 @@ namespace MyCourse.Models.Entities
             Description = newDescription;
         }
 
+        public void ChangeImagePath(string imagePath)
+        {
+            ImagePath = imagePath;
+        }
+
         public virtual ICollection<Lesson> Lessons { get; private set; }
     }
 }
