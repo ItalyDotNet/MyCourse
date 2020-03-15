@@ -14,5 +14,6 @@
     <PackageReference Include="Microsoft.Data.SQLite" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.0.0" />
     <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="7.15.4" />
   </ItemGroup>
 </Project>
