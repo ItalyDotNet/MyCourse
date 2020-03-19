@@ -15,7 +15,7 @@ namespace MyCourse.Models.Services.Infrastructure
             this.env = env;
         }
 
-        public async Task<string> SaveCourseImageAsync(int courseId, IFormFile formFile)
+        public Task<string> SaveCourseImageAsync(int courseId, IFormFile formFile)
         {
             //Salvare il file
             string path = $"/Courses/{courseId}.jpg";
@@ -38,7 +38,7 @@ namespace MyCourse.Models.Services.Infrastructure
             image.Write(physicalPath, MagickFormat.Jpg);
 
             //Restituire il percorso al file
-            return path;
+            return Task.FromResult(path);
         }
     }
 }

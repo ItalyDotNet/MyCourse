@@ -68,7 +68,7 @@ namespace MyCourse
             }
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
-            services.AddTransient<IImagePersister, MagickNetImagePersister>();
+            services.AddSingleton<IImagePersister, MagickNetImagePersister>();
 
             //Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));

@@ -38,7 +38,7 @@
                     <div class="form-group">
                         <label asp-for="FullPrice"></label>
                         <div class="input-group">
-                            <select asp-items="@(Html.GetEnumSelectList<Currency>())" asp-for="FullPrice.Currency" class="form-control"></select>
+                            <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="FullPrice.Currency" class="form-control"></select>
                             <input type="number" step="any" asp-for="FullPrice.Amount" class="form-control form-control-block">
                             <span asp-validation-for="FullPrice"></span>
                         </div>
@@ -46,17 +46,20 @@
                     <div class="form-group">
                         <label asp-for="CurrentPrice"></label>
                         <div class="input-group">
-                            <select asp-items="@(Html.GetEnumSelectList<Currency>())" asp-for="CurrentPrice.Currency" class="form-control"></select>
+                            <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="CurrentPrice.Currency" class="form-control"></select>
                             <input type="number" step="any" asp-for="CurrentPrice.Amount" class="form-control form-control-block">
                             <span asp-validation-for="CurrentPrice"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label asp-for="ImagePath"></label>
-                        <img id="preview" src="@Model.ImagePath" class="img-fluid">
+                        <div class="preview-container">
+                            <img id="preview" src="@Model.ImagePath" asp-append-version="true">
+                        </div>
                         <div class="custom-file mt-3">
                             <input type="file" class="custom-file-input" asp-for="Image" onchange="updatePreview(this)">
                             <label class="custom-file-label" asp-for="Image"></label>
+                            <p><small>L'immagine verrà ritagliata quadrata.</small></p>
                         </div>
                     </div>
                 </aside>
