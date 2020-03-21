@@ -166,8 +166,14 @@ namespace MyCourse.Models.Services.Application
 
             if (inputModel.Image != null)
             {
-                string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
-                dataSet = await db.QueryAsync($"UPDATE Courses SET ImagePath={imagePath} WHERE Id={inputModel.Id}");
+                try {
+                    string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+                    dataSet = await db.QueryAsync($"UPDATE Courses SET ImagePath={imagePath} WHERE Id={inputModel.Id}");
+                }
+                catch(Exception exc)
+                {
+                    throw new CourseImageInvalidException(inputModel.Id, exc);
+                }
             }
 
             CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);

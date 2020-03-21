@@ -80,9 +80,13 @@ namespace MyCourse.Controllers
                     TempData["ConfirmationMessage"] = "I dati sono stati salvati con successo";
                     return RedirectToAction(nameof(Detail), new { id = inputModel.Id });
                 }
+                catch (CourseImageInvalidException)
+                {
+                    ModelState.AddModelError(nameof(CourseEditInputModel.Image), "L'immagine selezionata non è valida");
+                }
                 catch (CourseTitleUnavailableException)
                 {
-                    ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Questo titolo già esiste");
+                    ModelState.AddModelError(nameof(CourseEditInputModel.Title), "Questo titolo già esiste");
                 }
             }
 
