@@ -23,6 +23,10 @@ namespace MyCourse.Models.Services.Infrastructure
 
         public async Task<string> SaveCourseImageAsync(int courseId, IFormFile formFile)
         {
+            //Il metodo WaitAsync ha anche un overload che permette di passare un timeout
+            //Ad esempio, se vogliamo aspettare al massimo 1 secondo:
+            //await semaphore.AwaitAsync(TimeSpan.FromSeconds(1));
+            //Se il timeout scade, il SemaphoreSlim solleverà un'eccezione (così almeno non resta in attesa all'infinito)
             await semaphore.WaitAsync();
             try
             {
