@@ -16,7 +16,8 @@ namespace MyCourse.Models.Validators
                 .MinimumLength(10).WithMessage("Il titolo dev'essere di almeno {MinLength} caratteri")
                 .MaximumLength(100).WithMessage("Il titolo dev'essere al massimo di {MaxLength} caratteri")
                 .Matches(@"^[\w\s\.']+$").WithMessage("Titolo non valido")
-                .Must(title => !title.Contains("MyCourse")).WithMessage("Il titolo non può contenere la parola 'MyCourse'");
+                .Must(title => !title.Contains("MyCourse")).WithMessage("Il titolo non può contenere la parola 'MyCourse'")
+                .Remote(url: "/Courses/IsTitleAvailable", additionalFields: "Id", errorText: "Il titolo già esiste");
 
             RuleFor(model => model.Description)
                 .MinimumLength(10).WithMessage("La descrizione dev'essere di almeno {MinLength} caratteri")
