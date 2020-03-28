@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +15,7 @@ using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.Validators;
 
 namespace MyCourse
 {
@@ -44,6 +45,10 @@ namespace MyCourse
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
                 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            //.AddFluentValidation()
+            .AddFluentValidation(options => {
+                options.RegisterValidatorsFromAssemblyContaining<CourseCreateValidator>();
+            })
             #if DEBUG
             .AddRazorRuntimeCompilation()
             #endif
@@ -69,6 +74,11 @@ namespace MyCourse
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
+
+            //Validators di FluentValidation
+            //Si possono registrare così nel caso ci sia bisogno di selezionare un ciclo di vita diverso da Transient
+            //services.AddScoped<IValidator<CourseCreateInputModel>, CourseCreateValidator>();
+            //services.AddSingleton<IValidator<CourseEditInputModel>, CourseEditValidator>();
 
             //Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
