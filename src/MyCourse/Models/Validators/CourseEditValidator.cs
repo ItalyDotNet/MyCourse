@@ -1,12 +1,12 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using MyCourse.Models.InputModels;
+using MyCourse.Models.ValueTypes;
 
 namespace MyCourse.Models.Validators
 {
     public class CourseEditValidator : AbstractValidator<CourseEditInputModel>
     {
-        public CourseEditValidator(IHttpContextAccessor context)
+        public CourseEditValidator()
         {
             RuleFor(model => model.Id)
                 .NotEmpty();
@@ -16,7 +16,7 @@ namespace MyCourse.Models.Validators
                 .MinimumLength(10).WithMessage("Il titolo dev'essere di almeno {MinLength} caratteri")
                 .MaximumLength(100).WithMessage("Il titolo dev'essere al massimo di {MaxLength} caratteri")
                 .Matches(@"^[\w\s\.']+$").WithMessage("Titolo non valido")
-                .Must(title => !title.Contains("MyCourse")).WithMessage("Il titolo non può contenere la parola 'MyCourse'")
+                .Must(NotContainMyCourse).WithMessage("Il titolo non può contenere la parola 'MyCourse'")
                 .Remote(url: "/Courses/IsTitleAvailable", additionalFields: "Id", errorText: "Il titolo già esiste");
 
             RuleFor(model => model.Description)
@@ -31,9 +31,23 @@ namespace MyCourse.Models.Validators
 
             RuleFor(model => model.CurrentPrice)
                 .NotEmpty().WithMessage("Il prezzo intero è obbligatorio")
-                .Must((model, currentPrice) => currentPrice.Currency == model.FullPrice.Currency).WithMessage("Il prezzo corrente deve avere la stessa valuta del prezzo intero")
-                .Must((model, currentPrice) => currentPrice.Amount <= model.FullPrice.Amount).WithMessage("Il prezzo corrente deve essere inferiore al prezzo intero");
-                
+                .Must(HaveTheSameCurrencyAsFullPrice).WithMessage("Il prezzo corrente deve avere la stessa valuta del prezzo intero")
+                .Must(HaveAmountLessThanOrEqualToFullPrice).WithMessage("Il prezzo corrente deve essere inferiore al prezzo intero");
+        }
+
+        private bool HaveTheSameCurrencyAsFullPrice(CourseEditInputModel model, Money currentPrice)
+        {
+            return currentPrice.Currency == model.FullPrice.Currency;
+        }
+
+        private bool HaveAmountLessThanOrEqualToFullPrice(CourseEditInputModel model, Money currentPrice)
+        {
+            return currentPrice.Amount <= model.FullPrice.Amount;
+        }
+
+        private bool NotContainMyCourse(string title)
+        {
+            return !title.Contains("MyCourse");
         }
     }
 }
