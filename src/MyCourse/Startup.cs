@@ -77,6 +77,7 @@ namespace MyCourse
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
+            services.AddTransient<IImageValidator, MicrosoftAzureImageValidator>();
 
             //Validators di FluentValidation
             //Si possono registrare così nel caso ci sia bisogno di selezionare un ciclo di vita diverso da Transient
@@ -88,6 +89,7 @@ namespace MyCourse
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
+            services.Configure<ImageValidationOptions>(Configuration.GetSection("ImageValidation"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
