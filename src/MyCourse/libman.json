@@ -3,7 +3,7 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "bootstrap@4.2.1",
+      "library": "bootstrap@4.4.1",
       "destination": "wwwroot\\lib\\bootstrap",
       "files": [
         "dist/js/bootstrap.min.js",
@@ -11,7 +11,7 @@
       ]
     },
     {
-      "library": "@fortawesome/fontawesome-free@5.6.3",
+      "library": "@fortawesome/fontawesome-free@5.12.1",
       "destination": "wwwroot\\lib\\font-awesome",
       "files": [
         "css/all.min.css",
@@ -33,17 +33,47 @@
       ]
     },
     {
-      "library": "jquery@3.3.1",
-      "destination": "wwwroot\\lib\\jquery",
+      "library": "popper.js@1.16.0",
+      "destination": "wwwroot\\lib\\popper",
       "files": [
+        "dist/umd/popper.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation@1.19.1",
+      "destination": "wwwroot/lib/jquery-validation",
+      "files": [
+        "dist/jquery.validate.min.js",
+        "dist/localization/messages_it.min.js",
+        "dist/additional-methods.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive",
+      "files": [
+        "dist/jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery",
+      "files": [
+        "dist/jquery.min.js",
         "dist/jquery.slim.min.js"
       ]
     },
     {
-      "library": "popper.js@1.14.6",
-      "destination": "wwwroot\\lib\\popper",
+      "library": "summernote@0.8.15",
+      "destination": "wwwroot/lib/summernote",
       "files": [
-        "dist/umd/popper.min.js"
+        "dist/font/summernote.eot",
+        "dist/font/summernote.ttf",
+        "dist/font/summernote.woff",
+        "dist/font/summernote.woff2",
+        "dist/summernote-bs4.min.css",
+        "dist/summernote-bs4.min.js",
+        "dist/lang/summernote-it-IT.js"
       ]
     }
   ]

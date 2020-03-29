@@ -2,15 +2,15 @@
 <section class="course-info">
     <div class="row">
         <div class="col-md-9">
-            <h1>@Model.Title</h1>
+            <h1>@Model.Title <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id"><i class="fas fa-pencil-alt"></i> Modifica</a></h1>
         </div>
         <div class="col-md-3 d-flex align-items-end">
             <a href="#" class="btn btn-warning btn-lg btn-block subscribe-course">Iscriviti</a>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-9">
-            <p>@Model.Description</p>
+        <div class="col-md-9" html-sanitize>
+            @Model.Description
         </div>
         <div class="col-md-3">
             <aside>
@@ -21,7 +21,7 @@
                 <div class="price">
                     <price current-price="@Model.CurrentPrice" full-price="@Model.FullPrice"></price>
                 </div>
-                <img src="@Model.ImagePath" class="img-fluid course-image" alt="@Model.Title">
+                <img src="@Model.ImagePath" class="img-fluid course-image" alt="@Model.Title" asp-append-version="true">
             </aside>
         </div>
     </div>

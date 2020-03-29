@@ -11,5 +11,9 @@ namespace MyCourse.Models.Services.Application
         Task<CourseDetailViewModel> GetCourseAsync(int id);
         Task<List<CourseViewModel>> GetMostRecentCoursesAsync();
         Task<List<CourseViewModel>> GetBestRatingCoursesAsync();
+        Task<CourseEditInputModel> GetCourseForEditingAsync(int id);
+        Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel);
+        Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel);
+        Task<bool> IsTitleAvailableAsync(string title, int excludeId);
     }
 }
