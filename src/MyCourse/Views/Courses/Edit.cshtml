@@ -54,6 +54,7 @@
                     <div class="form-group">
                         <label asp-for="ImagePath"></label>
                         <div class="preview-container">
+                            <input type="hidden" asp-for="ImagePath">
                             <img id="preview" src="@Model.ImagePath" asp-append-version="true">
                         </div>
                         <div class="custom-file mt-3">
