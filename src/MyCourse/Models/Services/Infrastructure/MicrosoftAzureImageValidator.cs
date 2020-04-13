@@ -18,11 +18,11 @@ namespace MyCourse.Models.Services.Infrastructure
             this.imageValidationOptions = imageValidationOptions;
         }
 
-        public async Task<bool> IsAppropriateAsync(IFormFile formFile)
+        public async Task<bool> IsValidAsync(IFormFile formFile)
         {
             var options = imageValidationOptions.CurrentValue;
-            var credentials = new ApiKeyServiceClientCredentials(options.ApiKey);
-            using var client = new ComputerVisionClient(credentials) 
+            var credentials = new ApiKeyServiceClientCredentials(options.Key);
+            using var client = new ComputerVisionClient(credentials)
             {
                 Endpoint = options.Endpoint
             };
@@ -32,7 +32,8 @@ namespace MyCourse.Models.Services.Infrastructure
             };
             using Stream stream = formFile.OpenReadStream();
             ImageAnalysis result = await client.AnalyzeImageInStreamAsync(stream, features);
-            return result.Adult.AdultScore <= options.MaximumAdultScore;
+            bool isValid = result.Adult.AdultScore <= options.MaximumAdultScore;
+            return isValid;
         }
     }
 }

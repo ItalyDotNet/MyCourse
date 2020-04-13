@@ -43,16 +43,16 @@ namespace MyCourse.Models.Validators
                 .Must(HaveAmountLessThanOrEqualToFullPrice).WithMessage("Il prezzo corrente deve essere inferiore al prezzo intero");
             
             RuleFor(model => model.Image)
-                .MustAsync(BeAppropriate).WithMessage("L'immagine ha del contenuto inappropriato");
+                .MustAsync(HaveValidContent).WithMessage("L'immagine ha del contenuto inappropriato");
         }
 
-        private async Task<bool> BeAppropriate(IFormFile formFile, CancellationToken cancellationToken)
+        private async Task<bool> HaveValidContent(IFormFile formFile, CancellationToken cancellationToken)
         {
             if (formFile == null)
             {
                 return true;
             }
-            return await imageValidator.IsAppropriateAsync(formFile);
+            return await imageValidator.IsValidAsync(formFile);
         }
 
         private bool HaveTheSameCurrencyAsFullPrice(CourseEditInputModel model, Money currentPrice)
