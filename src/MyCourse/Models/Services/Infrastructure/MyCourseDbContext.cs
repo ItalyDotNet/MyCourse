@@ -23,7 +23,7 @@ namespace MyCourse.Models.Services.Infrastructure
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses"); //Superfluo se la tabella si chiama come la proprietà che espone il DbSet
-                entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CoursesId
+                entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CourseId
                 //entity.HasKey(course => new { course.Id, course.Author }); //Per chiavi primarie composite (è importante rispettare l'ordine dei campi)
 
                 //Mapping per gli owned types
