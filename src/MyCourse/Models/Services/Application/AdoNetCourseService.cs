@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
@@ -146,6 +146,13 @@ namespace MyCourse.Models.Services.Application
                 throw new CourseTitleUnavailableException(title, exc);
             }
         }
+        
+        public async Task<bool> IsTitleAvailableAsync(string title, int id)
+        {
+            DataSet result = await db.QueryAsync($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND id<>{id}");
+            bool titleAvailable = Convert.ToInt32(result.Tables[0].Rows[0][0]) == 0;
+            return titleAvailable;
+        }
 
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
@@ -178,13 +185,6 @@ namespace MyCourse.Models.Services.Application
 
             CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);
             return course;
-        }
-
-        public async Task<bool> IsTitleAvailableAsync(string title, int id)
-        {
-            DataSet result = await db.QueryAsync($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND id<>{id}");
-            bool titleAvailable = Convert.ToInt32(result.Tables[0].Rows[0][0]) == 0;
-            return titleAvailable;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace MyCourse.Models.Exceptions
+namespace MyCourse.Models.Exceptions.Application
 {
     public class CourseTitleUnavailableException : Exception
     {
