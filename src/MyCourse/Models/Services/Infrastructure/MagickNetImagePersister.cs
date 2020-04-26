@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using MyCourse.Models.Exceptions.Infrastructure;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
@@ -52,7 +54,13 @@ namespace MyCourse.Models.Services.Infrastructure
 
                 //Restituire il percorso al file
                 return path;
-            } finally {
+            }
+            catch (Exception exc)
+            {
+                throw new ImagePersistenceException(exc);
+            }
+            finally
+            {
                 semaphore.Release();
             }
         }

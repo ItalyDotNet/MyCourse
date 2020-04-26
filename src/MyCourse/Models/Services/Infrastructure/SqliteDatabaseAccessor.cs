@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.Options;
 using MyCourse.Models.ValueTypes;
 
@@ -21,6 +21,7 @@ namespace MyCourse.Models.Services.Infrastructure
             this.logger = logger;
             this.connectionStringOptions = connectionStringOptions;
         }
+
         public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
         {
             logger.LogInformation(formattableQuery.Format, formattableQuery.GetArguments());
@@ -52,24 +53,30 @@ namespace MyCourse.Models.Services.Infrastructure
 
                     //Inviamo la query al database e otteniamo un SqliteDataReader
                     //per leggere i risultati
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        var dataSet = new DataSet();
-
-                        //TODO: La riga qui sotto va rimossa quando la issue sarà risolta
-                        //https://github.com/aspnet/EntityFrameworkCore/issues/14963
-                        dataSet.EnforceConstraints = false;
-
-                        //Creiamo tanti DataTable per quante sono le tabelle
-                        //di risultati trovate dal SqliteDataReader
-                        do
+                    try {
+                        using (var reader = await cmd.ExecuteReaderAsync())
                         {
-                            var dataTable = new DataTable();
-                            dataSet.Tables.Add(dataTable);
-                            dataTable.Load(reader);
-                        } while (!reader.IsClosed);
+                            var dataSet = new DataSet();
 
-                        return dataSet;
+                            //TODO: La riga qui sotto va rimossa quando la issue sarà risolta
+                            //https://github.com/aspnet/EntityFrameworkCore/issues/14963
+                            dataSet.EnforceConstraints = false;
+
+                            //Creiamo tanti DataTable per quante sono le tabelle
+                            //di risultati trovate dal SqliteDataReader
+                            do
+                            {
+                                var dataTable = new DataTable();
+                                dataSet.Tables.Add(dataTable);
+                                dataTable.Load(reader);
+                            } while (!reader.IsClosed);
+
+                            return dataSet;
+                        }
+                    }
+                    catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+                    {
+                        throw new ConstraintViolationException(exc);
                     }
                 }
             }
