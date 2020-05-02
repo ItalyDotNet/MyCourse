@@ -1,0 +1,15 @@
+ALTER TABLE Courses ADD LastModified DATETIME DEFAULT NULL;
+
+CREATE TRIGGER CoursesSetLastModifiedOnInsert
+AFTER INSERT ON Courses
+BEGIN
+    UPDATE Courses SET LastModified = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
+END;
+
+CREATE TRIGGER CoursesSetLastModifiedOnUpdate
+AFTER UPDATE ON Courses
+BEGIN
+    UPDATE Courses SET LastModified = CURRENT_TIMESTAMP WHERE Id=NEW.Id AND LastModified <> CURRENT_TIMESTAMP;
+END;
+
+UPDATE Courses SET LastModified = CURRENT_TIMESTAMP;
