@@ -1,15 +1,15 @@
-ALTER TABLE Courses ADD LastModified DATETIME DEFAULT NULL;
+ALTER TABLE Courses ADD RowVersion DATETIME;
 
-CREATE TRIGGER CoursesSetLastModifiedOnInsert
+CREATE TRIGGER CoursesSetRowVersionOnInsert
 AFTER INSERT ON Courses
 BEGIN
-    UPDATE Courses SET LastModified = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
+    UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
 END;
 
-CREATE TRIGGER CoursesSetLastModifiedOnUpdate
-AFTER UPDATE ON Courses
+CREATE TRIGGER CoursesSetRowVersionOnUpdate
+AFTER UPDATE ON Courses WHEN NEW.RowVersion <= OLD.RowVersion
 BEGIN
-    UPDATE Courses SET LastModified = CURRENT_TIMESTAMP WHERE Id=NEW.Id AND LastModified <> CURRENT_TIMESTAMP;
+    UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
 END;
 
-UPDATE Courses SET LastModified = CURRENT_TIMESTAMP;
+UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP;
