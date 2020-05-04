@@ -88,6 +88,10 @@ namespace MyCourse.Controllers
                 {
                     ModelState.AddModelError(nameof(CourseEditInputModel.Title), "Questo titolo già esiste");
                 }
+                catch (OptimisticConcurrencyException)
+                {
+                    ModelState.AddModelError("", "Spiacenti, il salvataggio non è andato a buon fine perché nel frattempo un altro utente ha aggiornato il corso. Ti preghiamo di aggiornare la pagina e ripetere le modifiche.");
+                }
             }
 
             ViewData["Title"] = "Modifica corso";

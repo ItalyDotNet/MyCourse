@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using ImageMagick;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,7 +28,6 @@ namespace MyCourse.Models.Services.Application
             this.logger = logger;
             this.db = db;
         }
-
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             logger.LogInformation("Course {id} requested", id);
@@ -85,7 +83,7 @@ namespace MyCourse.Models.Services.Application
         }
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
-            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id}";
+            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id={id}";
 
             DataSet dataSet = await db.QueryAsync(query);
 
@@ -99,7 +97,6 @@ namespace MyCourse.Models.Services.Application
             var courseEditInputModel = CourseEditInputModel.FromDataRow(courseRow);
             return courseEditInputModel;
         }
-
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -113,7 +110,6 @@ namespace MyCourse.Models.Services.Application
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
-
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -127,7 +123,6 @@ namespace MyCourse.Models.Services.Application
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
-
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
             string title = inputModel.Title;
@@ -146,13 +141,11 @@ namespace MyCourse.Models.Services.Application
                 throw new CourseTitleUnavailableException(title, exc);
             }
         }
-        
         public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
             bool titleExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND id<>{id}");
             return !titleExists;
         }
-
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             try
@@ -162,10 +155,18 @@ namespace MyCourse.Models.Services.Application
                 {
                     imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                 }
-                int affectedRows = await db.CommandAsync($"UPDATE Courses SET ImagePath=COALESCE({imagePath}, ImagePath), Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency.ToString()}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency.ToString()}, FullPrice_Amount={inputModel.FullPrice.Amount} WHERE Id={inputModel.Id}");
+                int affectedRows = await db.CommandAsync($"UPDATE Courses SET ImagePath=COALESCE({imagePath}, ImagePath), Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency.ToString()}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency.ToString()}, FullPrice_Amount={inputModel.FullPrice.Amount} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion}");
                 if (affectedRows == 0)
                 {
-                    throw new CourseNotFoundException(inputModel.Id);
+                    bool courseExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
+                    if (courseExists)
+                    {
+                        throw new OptimisticConcurrencyException();
+                    }
+                    else
+                    {
+                        throw new CourseNotFoundException(inputModel.Id);
+                    }
                 }
             }
             catch (ConstraintViolationException exc)
