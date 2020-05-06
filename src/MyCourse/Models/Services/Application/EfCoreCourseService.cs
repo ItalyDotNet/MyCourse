@@ -29,7 +29,6 @@ namespace MyCourse.Models.Services.Application
             this.logger = logger;
             this.dbContext = dbContext;
         }
-
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             IQueryable<CourseDetailViewModel> queryLinq = dbContext.Courses
@@ -52,7 +51,6 @@ namespace MyCourse.Models.Services.Application
 
             return viewModel;
         }
-
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -66,7 +64,6 @@ namespace MyCourse.Models.Services.Application
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
-
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -80,7 +77,6 @@ namespace MyCourse.Models.Services.Application
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
-
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             IQueryable<Course> baseQuery = dbContext.Courses;
@@ -118,7 +114,6 @@ namespace MyCourse.Models.Services.Application
 
             return result;
         }
-
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
             string title = inputModel.Title;
@@ -137,7 +132,6 @@ namespace MyCourse.Models.Services.Application
 
             return CourseDetailViewModel.FromEntity(course);
         }
-
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             Course course = await dbContext.Courses.FindAsync(inputModel.Id);
@@ -151,6 +145,8 @@ namespace MyCourse.Models.Services.Application
             course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
             course.ChangeDescription(inputModel.Description);
             course.ChangeEmail(inputModel.Email);
+
+            dbContext.Entry(course).Property(course => course.RowVersion).OriginalValue = inputModel.RowVersion;
             
             if (inputModel.Image != null)
             {
@@ -170,6 +166,10 @@ namespace MyCourse.Models.Services.Application
             {
                 await dbContext.SaveChangesAsync();
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new OptimisticConcurrencyException();
+            }
             catch (DbUpdateException exc) when ((exc.InnerException as SqliteException)?.SqliteErrorCode == 19)
             {
                 throw new CourseTitleUnavailableException(inputModel.Title, exc);
@@ -177,14 +177,12 @@ namespace MyCourse.Models.Services.Application
 
             return CourseDetailViewModel.FromEntity(course);
         }
-
         public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
             //await dbContext.Courses.AnyAsync(course => course.Title == title);
             bool titleExists = await dbContext.Courses.AnyAsync(course => EF.Functions.Like(course.Title, title) && course.Id != id);
             return !titleExists;
         }
-
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
             IQueryable<CourseEditInputModel> queryLinq = dbContext.Courses

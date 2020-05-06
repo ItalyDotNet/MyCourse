@@ -92,7 +92,8 @@ namespace MyCourse.Models.InputModels
                 Email = course.Email,
                 ImagePath = course.ImagePath,
                 CurrentPrice = course.CurrentPrice,
-                FullPrice = course.FullPrice
+                FullPrice = course.FullPrice,
+                RowVersion = course.RowVersion
             };
         }
     }

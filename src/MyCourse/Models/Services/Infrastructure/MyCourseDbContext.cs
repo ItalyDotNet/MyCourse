@@ -26,6 +26,8 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CourseId
                 //entity.HasKey(course => new { course.Id, course.Author }); //Per chiavi primarie composite (è importante rispettare l'ordine dei campi)
 
+                entity.Property(course => course.RowVersion).IsRowVersion();
+
                 //Mapping per gli owned types
                 entity.OwnsOne(course => course.CurrentPrice, builder => {
                     builder.Property(money => money.Currency)
