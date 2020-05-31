@@ -19,7 +19,7 @@ namespace MyCourse.Migrations
                     Author = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Rating = table.Column<double>(nullable: false),
-                    FullPrice_Amount = table.Column<decimal>(nullable: true),
+                    FullPrice_Amount = table.Column<float>(nullable: true),
                     FullPrice_Currency = table.Column<string>(nullable: true),
                     CurrentPrice_Amount = table.Column<float>(nullable: true),
                     CurrentPrice_Currency = table.Column<string>(nullable: true),

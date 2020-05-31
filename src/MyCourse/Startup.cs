@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +12,8 @@ using Microsoft.Extensions.Hosting;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
-using MyCourse.Models.Services.Application;
+using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse
@@ -50,16 +50,18 @@ namespace MyCourse
             ;
 
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.EfCore;
+            var persistence = Persistence.AdoNet;
             switch (persistence)
             {
                 case Persistence.AdoNet:
                     services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
                 break;
 
                 case Persistence.EfCore:
                     services.AddTransient<ICourseService, EfCoreCourseService>();
+                    services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                         string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
                         optionsBuilder.UseSqlite(connectionString);
@@ -68,6 +70,7 @@ namespace MyCourse
             }
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            services.AddTransient<ICachedLessonService, MemoryCacheLessonService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
 
             //Options

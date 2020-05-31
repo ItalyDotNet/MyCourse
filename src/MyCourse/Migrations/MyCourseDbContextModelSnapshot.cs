@@ -68,6 +68,15 @@ namespace MyCourse.Migrations
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1000);
+
+                    b.Property<string>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
@@ -107,8 +116,8 @@ namespace MyCourse.Migrations
                             b1.Property<int>("CourseId")
                                 .HasColumnType("INTEGER");
 
-                            b1.Property<decimal>("Amount")
-                                .HasColumnType("TEXT");
+                            b1.Property<float>("Amount")
+                                .HasColumnType("REAL");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()

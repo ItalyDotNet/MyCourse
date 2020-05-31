@@ -32,13 +32,18 @@ namespace MyCourse.Models.Services.Infrastructure
                 //Mapping per gli owned types
                 entity.OwnsOne(course => course.CurrentPrice, builder => {
                     builder.Property(money => money.Currency)
-                    .HasConversion<string>()
-                    .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
-                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount").HasConversion<float>(); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                           .HasConversion<string>()
+                           .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                    builder.Property(money => money.Amount)
+                           .HasColumnName("CurrentPrice_Amount")//Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                           .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
                 entity.OwnsOne(course => course.FullPrice, builder => {
-                    builder.Property(money => money.Currency).HasConversion<string>();
+                    builder.Property(money => money.Currency)
+                           .HasConversion<string>();
+                    builder.Property(money => money.Amount)
+                           .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
                 //Mapping per le relazioni
@@ -93,8 +98,8 @@ namespace MyCourse.Models.Services.Infrastructure
 
             modelBuilder.Entity<Lesson>(entity =>
             {
-                //Nessun mapping necessario qui, perché stiamo rispettando le convenzioni di nomi
-
+                entity.Property(lesson => lesson.RowVersion).IsRowVersion();
+                entity.Property(lesson => lesson.Order).HasDefaultValue(1000).ValueGeneratedNever();
 
                 #region Mapping generato automaticamente dal tool di reverse engineering
                 /*

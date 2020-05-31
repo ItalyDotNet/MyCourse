@@ -28,20 +28,18 @@
 </section>
 
 <section class="course-lessons">
-	<h2>Lezioni (@Model.Lessons.Count)</h2>
+	<h2>Lezioni (@Model.Lessons.Count) <a class="btn btn-outline-primary btn-sm" asp-controller="Lessons" asp-action="Create" asp-route-id="@Model.Id"><i class="fas fa-plus"></i> Crea nuova</a></h2>
 	@foreach (var lesson in Model.Lessons)
 	{
 	<hr>
 	<div class="row">
 		<div class="col-md-9 d-flex align-items-center">
-		    <a href="#">@lesson.Title</a>
+		    <a asp-controller="Lessons" asp-action="Detail" asp-route-id="@lesson.Id">@lesson.Title</a>
 		</div>
-		<div class="col-md-3 d-flex align-items-center lesson-duration">
+		<div class="col-md-3 d-flex align-items-center justify-content-end lesson-duration">
 			<i class="far fa-clock"></i><time>@lesson.Duration.ToString("m'm 's's'")</time>
+            <a class="btn btn-outline-primary btn-sm ml-3" asp-controller="Lessons" asp-action="Edit" asp-route-id="@lesson.Id"><i class="fas fa-pencil-alt"></i></a>
 		</div>
-        <div class="col-md-12">
-            <p>@lesson.Description</p>
-        </div>
 	</div>
 	}
     <hr>
@@ -49,7 +47,7 @@
 		<div class="col-md-9 d-flex align-items-center">
             Totale
         </div>
-        <div class="col-md-3 d-flex align-items-center">
+        <div class="col-md-3 d-flex align-items-center justify-content-end">
             <i class="far fa-clock"></i><time>@Model.TotalCourseDuration.ToString("h'h 'm'm 's's'")</time>
         </div>
     </div>

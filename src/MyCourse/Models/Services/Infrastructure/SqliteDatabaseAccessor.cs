@@ -39,10 +39,17 @@ namespace MyCourse.Models.Services.Infrastructure
 
         public async Task<T> QueryScalarAsync<T>(FormattableString formattableQuery)
         {
-            using SqliteConnection conn = await GetOpenedConnection();
-            using SqliteCommand cmd = GetCommand(formattableQuery, conn);
-            object result = await cmd.ExecuteScalarAsync();
-            return (T)Convert.ChangeType(result, typeof(T));
+            try
+            {
+                using SqliteConnection conn = await GetOpenedConnection();
+                using SqliteCommand cmd = GetCommand(formattableQuery, conn);
+                object result = await cmd.ExecuteScalarAsync();
+                return (T)Convert.ChangeType(result, typeof(T));
+            }
+            catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+            {
+                throw new ConstraintViolationException(exc);
+            }
         }
 
         public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
@@ -55,19 +62,26 @@ namespace MyCourse.Models.Services.Infrastructure
             //Inviamo la query al database e otteniamo un SqliteDataReader
             //per leggere i risultati
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            var dataSet = new DataSet();
-
-            //Creiamo tanti DataTable per quante sono le tabelle
-            //di risultati trovate dal SqliteDataReader
-            do
+            try
             {
-                var dataTable = new DataTable();
-                dataSet.Tables.Add(dataTable);
-                dataTable.Load(reader);
-            } while (!reader.IsClosed);
+                using var reader = await cmd.ExecuteReaderAsync();
+                var dataSet = new DataSet();
 
-            return dataSet;
+                //Creiamo tanti DataTable per quante sono le tabelle
+                //di risultati trovate dal SqliteDataReader
+                do
+                {
+                    var dataTable = new DataTable();
+                    dataSet.Tables.Add(dataTable);
+                    dataTable.Load(reader);
+                } while (!reader.IsClosed);
+
+                return dataSet;
+            }
+            catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+            {
+                throw new ConstraintViolationException(exc);
+            }
 
         }
 

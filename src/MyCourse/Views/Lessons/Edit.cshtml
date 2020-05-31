@@ -1,0 +1,52 @@
+@model LessonEditInputModel
+<section class="lesson-info">
+    <form method="post">
+        <input type="hidden" asp-for="RowVersion">
+        <div class="row">
+            <div class="col-md-9">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Salva</button>
+                <button type="button" class="btn btn-danger btn-lg ml-3"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" asp-validation-summary="All"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label asp-for="Title"></label>
+                    <input type="text" class="form-control form-control-lg" asp-for="Title">
+                    <span asp-validation-for="Title"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control" data-summernote rows="18"></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <aside>
+                    <div class="form-group">
+                        <label asp-for="Duration"></label>
+                        <input type="time" asp-for="Duration" class="form-control" step="1">
+                        <span asp-validation-for="Duration"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Order"></label>
+                        <input type="number" asp-for="Order" class="form-control">
+                        <span asp-validation-for="Order"></span>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts
+{
+    <partial name="_Validation"></partial>
+    <partial name="_Summernote"></partial>
+}

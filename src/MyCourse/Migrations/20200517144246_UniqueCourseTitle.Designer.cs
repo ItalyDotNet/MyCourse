@@ -109,8 +109,8 @@ namespace MyCourse.Migrations
                             b1.Property<int>("CourseId")
                                 .HasColumnType("INTEGER");
 
-                            b1.Property<decimal>("Amount")
-                                .HasColumnType("TEXT");
+                            b1.Property<float>("Amount")
+                                .HasColumnType("REAL");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()

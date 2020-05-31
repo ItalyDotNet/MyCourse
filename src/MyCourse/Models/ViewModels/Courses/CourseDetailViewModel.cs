@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ViewModels.Lessons;
 
-namespace MyCourse.Models.ViewModels
+namespace MyCourse.Models.ViewModels.Courses
 {
-    public class CourseViewModel
+    public class CourseDetailViewModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -15,11 +18,19 @@ namespace MyCourse.Models.ViewModels
         public double Rating { get; set; }
         public Money FullPrice { get; set; }
         public Money CurrentPrice { get; set; }
-
-        public static CourseViewModel FromDataRow(DataRow courseRow)
+        public string Description { get; set; }
+        public List<LessonViewModel> Lessons { get; set; } = new List<LessonViewModel>();
+        public TimeSpan TotalCourseDuration
         {
-            var courseViewModel = new CourseViewModel {
+            get => TimeSpan.FromSeconds(Lessons?.Sum(l => l.Duration.TotalSeconds) ?? 0);
+        }
+
+        public static CourseDetailViewModel FromDataRow(DataRow courseRow)
+        {
+            var courseDetailViewModel = new CourseDetailViewModel
+            {
                 Title = Convert.ToString(courseRow["Title"]),
+                Description = Convert.ToString(courseRow["Description"]),
                 ImagePath = Convert.ToString(courseRow["ImagePath"]),
                 Author = Convert.ToString(courseRow["Author"]),
                 Rating = Convert.ToDouble(courseRow["Rating"]),
@@ -31,21 +42,28 @@ namespace MyCourse.Models.ViewModels
                     Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 ),
-                Id = Convert.ToInt32(courseRow["Id"])
+                Id = Convert.ToInt32(courseRow["Id"]),
+                Lessons = new List<LessonViewModel>()
             };
-            return courseViewModel;
+            return courseDetailViewModel;
         }
 
-        public static CourseViewModel FromEntity(Course course)
+        public static CourseDetailViewModel FromEntity(Course course)
         {
-            return new CourseViewModel {
+            return new CourseDetailViewModel {
                 Id = course.Id,
                 Title = course.Title,
-                ImagePath = course.ImagePath,
+                Description = course.Description,
                 Author = course.Author,
+                ImagePath = course.ImagePath,
                 Rating = course.Rating,
                 CurrentPrice = course.CurrentPrice,
-                FullPrice = course.FullPrice
+                FullPrice = course.FullPrice,
+                Lessons = course.Lessons
+                                    .OrderBy(lesson => lesson.Order)
+                                    .ThenBy(lesson => lesson.Id)
+                                    .Select(lesson => LessonViewModel.FromEntity(lesson))
+                                    .ToList()
             };
         }
     }

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 
 namespace MyCourse.Customizations.ModelBinders

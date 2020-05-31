@@ -9,8 +9,8 @@ using MyCourse.Models.Services.Infrastructure;
 namespace MyCourse.Migrations
 {
     [DbContext(typeof(MyCourseDbContext))]
-    [Migration("20200517152859_TriggersCourseVersion")]
-    partial class TriggersCourseVersion
+    [Migration("20200531124830_LessonOrder")]
+    partial class LessonOrder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -69,6 +69,10 @@ namespace MyCourse.Migrations
 
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1000);
 
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
