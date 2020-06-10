@@ -10,5 +10,6 @@ namespace MyCourse.Models.Services.Application.Lessons
         Task<LessonEditInputModel> GetLessonForEditingAsync(int id);
         Task<LessonDetailViewModel> CreateLessonAsync(LessonCreateInputModel inputModel);
         Task<LessonDetailViewModel> EditLessonAsync(LessonEditInputModel inputModel);
+        Task DeleteLessonAsync(LessonDeleteInputModel id);
     }
 }

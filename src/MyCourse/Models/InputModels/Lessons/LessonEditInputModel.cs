@@ -12,6 +12,8 @@ namespace MyCourse.Models.InputModels.Lessons
         [Required]
         public int Id { get; set; }
 
+        public int CourseId { get; set; }
+
         [Required(ErrorMessage = "Il titolo è obbligatorio"),
          MinLength(5, ErrorMessage = "Il titolo dev'essere di almeno {1} caratteri"),
          MaxLength(100, ErrorMessage = "Il titolo dev'essere di al massimo {1} caratteri"),
@@ -39,6 +41,7 @@ namespace MyCourse.Models.InputModels.Lessons
             var lessonEditInputModel = new LessonEditInputModel
             {
                 Id = Convert.ToInt32(courseRow["Id"]),
+                CourseId = Convert.ToInt32(courseRow["CourseId"]),
                 Title = Convert.ToString(courseRow["Title"]),
                 Description = Convert.ToString(courseRow["Description"]),
                 Duration = TimeSpan.Parse(Convert.ToString(courseRow["Duration"])),
@@ -50,8 +53,10 @@ namespace MyCourse.Models.InputModels.Lessons
 
         public static LessonEditInputModel FromEntity(Lesson lesson)
         {
-            return new LessonEditInputModel {
+            return new LessonEditInputModel
+            {
                 Id = lesson.Id,
+                CourseId = lesson.CourseId,
                 Title = lesson.Title,
                 Description = lesson.Description,
                 Duration = lesson.Duration,

@@ -45,5 +45,12 @@ namespace MyCourse.Models.Services.Application.Lessons
         {
             return lessonService.GetLessonForEditingAsync(id);
         }
+
+        public async Task DeleteLessonAsync(LessonDeleteInputModel inputModel)
+        {
+            await lessonService.DeleteLessonAsync(inputModel);
+            memoryCache.Remove($"Course{inputModel.CourseId}");
+            memoryCache.Remove($"Lesson{inputModel.Id}");
+        }
     }
 }

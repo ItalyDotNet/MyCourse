@@ -58,7 +58,7 @@ namespace MyCourse.Models.Services.Application.Lessons
             if (lessonTable.Rows.Count != 1)
             {
                 logger.LogWarning("Lesson {id} not found", id);
-                throw new CourseNotFoundException(id);
+                throw new LessonNotFoundException(id);
             }
             var lessonRow = lessonTable.Rows[0];
             var lessonDetailViewModel = LessonDetailViewModel.FromDataRow(lessonRow);
@@ -67,7 +67,7 @@ namespace MyCourse.Models.Services.Application.Lessons
 
         public async Task<LessonEditInputModel> GetLessonForEditingAsync(int id)
         {
-            FormattableString query = $@"SELECT Id, Title, Description, Duration, RowVersion, [Order] FROM Lessons WHERE ID={id}";
+            FormattableString query = $@"SELECT Id, CourseId, Title, Description, Duration, RowVersion, [Order] FROM Lessons WHERE ID={id}";
 
             DataSet dataSet = await db.QueryAsync(query);
 
@@ -76,11 +76,20 @@ namespace MyCourse.Models.Services.Application.Lessons
             if (lessonTable.Rows.Count != 1)
             {
                 logger.LogWarning("Lesson {id} not found", id);
-                throw new CourseNotFoundException(id);
+                throw new LessonNotFoundException(id);
             }
             var lessonRow = lessonTable.Rows[0];
             var lessonEditInputModel = LessonEditInputModel.FromDataRow(lessonRow);
             return lessonEditInputModel;
+        }
+
+        public async Task DeleteLessonAsync(LessonDeleteInputModel inputModel)
+        {
+            int affectedRows = await db.CommandAsync($"DELETE FROM Lessons WHERE Id={inputModel.Id}");
+            if (affectedRows == 0)
+            {
+                throw new LessonNotFoundException(inputModel.Id);
+            }
         }
     }
 }
