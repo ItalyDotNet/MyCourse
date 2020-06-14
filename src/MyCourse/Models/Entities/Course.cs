@@ -27,6 +27,7 @@ namespace MyCourse.Models.Entities
         public Money FullPrice { get; private set; }
         public Money CurrentPrice { get; private set; }
         public string RowVersion { get; private set; }
+        public CourseStatus Status { get; private set; }
 
         public void ChangeAuthor(string newAuthor)
         {
@@ -94,6 +95,13 @@ namespace MyCourse.Models.Entities
             ImagePath = imagePath;
         }
 
+        
+        public void SetStatus(CourseStatus status)
+        {
+            Status = status;
+        }
+
         public virtual ICollection<Lesson> Lessons { get; private set; }
+
     }
 }
