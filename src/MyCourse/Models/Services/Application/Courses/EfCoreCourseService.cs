@@ -213,7 +213,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new CourseNotFoundException(inputModel.Id);
             }
 
-            course.SetStatus(CourseStatus.Deleted);
+            course.ChangeStatus(CourseStatus.Deleted);
             await dbContext.SaveChangesAsync();
         }
     }

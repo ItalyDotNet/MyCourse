@@ -53,7 +53,7 @@ namespace MyCourse.Models.Services.Infrastructure
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
 
-                //Query filter
+                //Global Query Filter
                 entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
 
                 #region Mapping generato automaticamente dal tool di reverse engineering

@@ -29,6 +29,12 @@ namespace MyCourse.Models.Entities
         public string RowVersion { get; private set; }
         public CourseStatus Status { get; private set; }
 
+        public void ChangeStatus(CourseStatus status)
+        {
+            //TODO: logica di validazione
+            Status = status;
+        }
+
         public void ChangeAuthor(string newAuthor)
         {
             if (string.IsNullOrWhiteSpace(newAuthor))
@@ -93,12 +99,6 @@ namespace MyCourse.Models.Entities
         public void ChangeImagePath(string imagePath)
         {
             ImagePath = imagePath;
-        }
-
-        
-        public void SetStatus(CourseStatus status)
-        {
-            Status = status;
         }
 
         public virtual ICollection<Lesson> Lessons { get; private set; }
