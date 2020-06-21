@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MyCourse.Models.Entities;
+using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
@@ -23,25 +24,37 @@ namespace MyCourse.Models.Services.Infrastructure
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses"); //Superfluo se la tabella si chiama come la proprietà che espone il DbSet
-                entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CoursesId
+                entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CourseId
                 //entity.HasKey(course => new { course.Id, course.Author }); //Per chiavi primarie composite (è importante rispettare l'ordine dei campi)
+
+                entity.HasIndex(course => course.Title).IsUnique();
+                entity.Property(course => course.RowVersion).IsRowVersion();
+                entity.Property(course => course.Status).HasConversion<string>();
 
                 //Mapping per gli owned types
                 entity.OwnsOne(course => course.CurrentPrice, builder => {
                     builder.Property(money => money.Currency)
-                    .HasConversion<string>()
-                    .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
-                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount").HasConversion<float>(); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                           .HasConversion<string>()
+                           .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                    builder.Property(money => money.Amount)
+                           .HasColumnName("CurrentPrice_Amount")//Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                           .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
                 entity.OwnsOne(course => course.FullPrice, builder => {
-                    builder.Property(money => money.Currency).HasConversion<string>();
+                    builder.Property(money => money.Currency)
+                           .HasConversion<string>();
+                    builder.Property(money => money.Amount)
+                           .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
                 //Mapping per le relazioni
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
+
+                //Global Query Filter
+                entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
 
                 #region Mapping generato automaticamente dal tool di reverse engineering
                 /*
@@ -90,8 +103,8 @@ namespace MyCourse.Models.Services.Infrastructure
 
             modelBuilder.Entity<Lesson>(entity =>
             {
-                //Nessun mapping necessario qui, perché stiamo rispettando le convenzioni di nomi
-
+                entity.Property(lesson => lesson.RowVersion).IsRowVersion();
+                entity.Property(lesson => lesson.Order).HasDefaultValue(1000).ValueGeneratedNever();
 
                 #region Mapping generato automaticamente dal tool di reverse engineering
                 /*

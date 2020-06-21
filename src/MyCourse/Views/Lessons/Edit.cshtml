@@ -1,0 +1,75 @@
+@model LessonEditInputModel
+<section class="lesson-info">
+    <form method="post">
+        <input type="hidden" asp-for="RowVersion">
+        <input type="hidden" asp-for="CourseId">
+        <div class="row">
+            <div class="col-md-9">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Salva</button>
+                <button class="btn btn-danger btn-lg ml-3" type="button" data-toggle="modal" data-target="#delete-modal"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" asp-validation-summary="All"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label asp-for="Title"></label>
+                    <input type="text" class="form-control form-control-lg" asp-for="Title">
+                    <span asp-validation-for="Title"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control" data-summernote rows="18"></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <aside>
+                    <div class="form-group">
+                        <label asp-for="Duration"></label>
+                        <input type="time" asp-for="Duration" class="form-control" step="1">
+                        <span asp-validation-for="Duration"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Order"></label>
+                        <input type="number" asp-for="Order" class="form-control">
+                        <span asp-validation-for="Order"></span>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
+        <input type="hidden" asp-for="CourseId">
+        <div id="delete-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delete-modal-title" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="delete-modal-title">Conferma eliminazione</h5>
+                        <button class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Stai per eliminare la lezione e tutti i suoi dati andranno persi. Confermi l'eliminazione?</p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button class="btn btn-light" type="button" data-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-danger">Conferma</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts
+{
+    <partial name="_Validation"></partial>
+    <partial name="_Summernote"></partial>
+}

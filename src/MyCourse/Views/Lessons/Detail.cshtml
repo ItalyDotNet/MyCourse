@@ -1,0 +1,15 @@
+@model LessonDetailViewModel
+<section class="lesson-info">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>@ViewData["Title"]</h1>
+            <p>Durata stimata: @Model.Duration</p>
+        </div>
+        <div class="col-md-12" html-sanitize>
+            @Model.Description
+        </div>
+        <div class="col-md-12 mt-3">
+            <a asp-controller="Courses" asp-action="Detail" asp-route-id="@Model.CourseId"><i class="fas fa-arrow-left"></i> Torna al corso</a>
+        </div>
+    </div>
+</section>

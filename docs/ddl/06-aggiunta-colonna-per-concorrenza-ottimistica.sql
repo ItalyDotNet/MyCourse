@@ -1,0 +1,15 @@
+ALTER TABLE Courses ADD RowVersion DATETIME;
+
+CREATE TRIGGER CoursesSetRowVersionOnInsert
+AFTER INSERT ON Courses
+BEGIN
+    UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
+END;
+
+CREATE TRIGGER CoursesSetRowVersionOnUpdate
+AFTER UPDATE ON Courses WHEN NEW.RowVersion <= OLD.RowVersion
+BEGIN
+    UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP WHERE Id=NEW.Id;
+END;
+
+UPDATE Courses SET RowVersion = CURRENT_TIMESTAMP;
