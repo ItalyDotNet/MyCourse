@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
+            services.AddRazorPages();
 
             services.AddMvc(options => 
             {
@@ -49,8 +51,10 @@ namespace MyCourse
             #endif
             ;
 
+            services.AddRazorPages();
+
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.AdoNet;
+            var persistence = Persistence.EfCore;
             switch (persistence)
             {
                 case Persistence.AdoNet:
@@ -60,6 +64,8 @@ namespace MyCourse
                 break;
 
                 case Persistence.EfCore:
+                    services.AddDefaultIdentity<IdentityUser>()
+                            .AddEntityFrameworkStores<MyCourseDbContext>();
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
@@ -113,12 +119,17 @@ namespace MyCourse
             //EndpointRoutingMiddleware
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseResponseCaching();
 
             //EndpointMiddleware
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routeBuilder.MapRazorPages();
             });
+
         }
     }
 }

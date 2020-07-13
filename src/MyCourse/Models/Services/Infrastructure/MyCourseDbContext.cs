@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MyCourse.Models.Entities;
@@ -6,7 +7,7 @@ using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
-    public partial class MyCourseDbContext : DbContext
+    public partial class MyCourseDbContext : IdentityDbContext
     {
 
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options)
@@ -19,7 +20,7 @@ namespace MyCourse.Models.Services.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Course>(entity =>
             {
