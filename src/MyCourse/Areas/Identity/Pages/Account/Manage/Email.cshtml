@@ -1,7 +1,7 @@
 @page
 @model EmailModel
 @{
-    ViewData["Title"] = "Manage Email";
+    ViewData["Title"] = "Indirizzo email";
     ViewData["ActivePage"] = ManageNavPages.Email;
 }
 
@@ -24,8 +24,10 @@
                 }
                  else
                 {
-                    <input asp-for="Email" class="form-control" disabled />
-                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
+                    <div class="form-group">
+                        <input asp-for="Email" class="form-control" disabled />
+                    </div>
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-primary">Invia email di verifica</button>
                 }
             </div>
             <div class="form-group">
@@ -33,7 +35,7 @@
                 <input asp-for="Input.NewEmail" class="form-control" />
                 <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
             </div>
-            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary">Change email</button>
+            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary">Modifica indirizzo email</button>
         </form>
     </div>
 </div>

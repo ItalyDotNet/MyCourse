@@ -37,7 +37,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound($"Unable to load user with email '{email}'.");
+                return NotFound($"Non è stato possibile trovare l'utente con l'email '{email}'.");
             }
 
             Email = email;

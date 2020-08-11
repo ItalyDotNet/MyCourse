@@ -36,7 +36,7 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Non è stato possibile caricare il profilo utente con ID '{user.Id}'.");
             }
 
             CurrentLogins = await _userManager.GetLoginsAsync(user);
@@ -52,18 +52,18 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Non è stato possibile caricare il profilo utente con ID '{user.Id}'.");
             }
 
             var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not removed.";
+                StatusMessage = "Il servizio di autenticazione esterno non è stato eliminato.";
                 return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "The external login was removed.";
+            StatusMessage = "Il servizio di autenticazione esterno è stato eliminato.";
             return RedirectToPage();
         }
 
@@ -83,26 +83,26 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Non è stato possibile caricare il profilo utente con ID '{user.Id}'.");
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
             if (info == null)
             {
-                throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+                throw new InvalidOperationException($"Si è verificato un errore inatteso caricando i servizi di autenticazione per il profilo utente con ID '{user.Id}'.");
             }
 
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not added. External logins can only be associated with one account.";
+                StatusMessage = "Il servizio di autenticazione esterno non è stato aggiunto. I servizi esterni possono essere associati solo con un profilo utente.";
                 return RedirectToPage();
             }
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            StatusMessage = "The external login was added.";
+            StatusMessage = "Il servizio di autenticazione esterno è stato aggiunto,";
             return RedirectToPage();
         }
     }

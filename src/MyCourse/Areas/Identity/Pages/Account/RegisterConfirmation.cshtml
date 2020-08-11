@@ -1,7 +1,7 @@
 @page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "Conferma registrazione";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -9,14 +9,14 @@
     if (@Model.DisplayConfirmAccountLink)
     {
 <p>
-    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-    Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
+    Quest'applicazione ASP.NET Core al momento non usa un verso servizio di invio email, leggi <a href="https://aka.ms/aspaccountconf">questo articolo</a> per sapere come configurare un vero servizio di invio email.
+    Questo sarebbe stato il contenuto dell'email: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Clicca qui per confermare la tua registrazione</a>
 </p>
     }
     else
     {
 <p>
-        Please check your email to confirm your account.
+        Per favore controlla la tua casella email per confermare la registrazione.
 </p>
     }
 }

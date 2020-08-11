@@ -42,15 +42,15 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "L'email è obbligatoria")]
+            [EmailAddress(ErrorMessage = "Deve essere un indirizzo email valido")]
             public string Email { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Ricordami")]
             public bool RememberMe { get; set; }
         }
 

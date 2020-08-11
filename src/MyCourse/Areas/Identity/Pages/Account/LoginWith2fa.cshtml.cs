@@ -32,13 +32,13 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Il codice dell'app authenticator è obbligatorio")]
+            [StringLength(7, ErrorMessage = "Il codice dell'app authenticator deve essere di almeno {2} e al massimo {1} caratteri.", MinimumLength = 6)]
             [DataType(DataType.Text)]
-            [Display(Name = "Authenticator code")]
+            [Display(Name = "Codice app authenticator")]
             public string TwoFactorCode { get; set; }
 
-            [Display(Name = "Remember this machine")]
+            [Display(Name = "Ricorda questo dispositivo")]
             public bool RememberMachine { get; set; }
         }
 
@@ -49,7 +49,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
             if (user == null)
             {
-                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+                throw new InvalidOperationException($"Non è stato possibile trovare l'utente per l'autenticazione due fattori.");
             }
 
             ReturnUrl = returnUrl;
@@ -70,7 +70,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
             {
-                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+                throw new InvalidOperationException($"Non è stato possibile trovare l'utente per l'autenticazione due fattori.");
             }
 
             var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
