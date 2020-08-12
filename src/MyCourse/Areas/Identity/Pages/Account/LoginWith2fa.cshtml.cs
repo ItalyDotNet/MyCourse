@@ -33,7 +33,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = "Il codice dell'app authenticator è obbligatorio")]
-            [StringLength(7, ErrorMessage = "Il codice dell'app authenticator deve essere di almeno {2} e al massimo {1} caratteri.", MinimumLength = 6)]
+            [StringLength(7, MinimumLength = 6, ErrorMessage = "Il codice dell'app authenticator deve essere di almeno {2} e di al massimo {1} caratteri.")]
             [DataType(DataType.Text)]
             [Display(Name = "Codice app authenticator")]
             public string TwoFactorCode { get; set; }

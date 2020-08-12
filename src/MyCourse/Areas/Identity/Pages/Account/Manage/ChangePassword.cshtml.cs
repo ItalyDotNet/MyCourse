@@ -39,7 +39,7 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             public string OldPassword { get; set; }
 
             [Required(ErrorMessage = "La nuova password è obbligatoria")]
-            [StringLength(100, ErrorMessage = "La password deve essere almeno {2} e al massimo {1} caratteri.", MinimumLength = 8)]
+            [StringLength(100, MinimumLength = 8, ErrorMessage = "La password deve essere di almeno {2} e di al massimo {1} caratteri.")]
             [DataType(DataType.Password)]
             [Display(Name = "Nuova password")]
             public string NewPassword { get; set; }

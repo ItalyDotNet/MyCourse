@@ -47,7 +47,7 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Required(ErrorMessage = "Il codice di verifica è obbligatorio")]
-            [StringLength(7, ErrorMessage = "Il codice di verifica deve essere almeno {2} e al massimo {1} caratteri.", MinimumLength = 6)]
+            [StringLength(7, MinimumLength = 6, ErrorMessage = "Il codice di verifica deve essere di almeno {2} e di al massimo {1} caratteri.")]
             [DataType(DataType.Text)]
             [Display(Name = "Codice di verifica")]
             public string Code { get; set; }
