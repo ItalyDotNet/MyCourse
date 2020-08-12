@@ -37,19 +37,19 @@
             <button type="submit" class="btn btn-primary">Dimentica questo browser</button>
         </form>
     }
-    <a asp-page="./Disable2fa" class="btn btn-primary">Disabilita autenticazione a due fattori</a>
-    <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary">Reimposta codici di recupero</a>
+    <a asp-page="./Disable2fa" class="btn btn-link">Disabilita autenticazione a due fattori</a><br>
+    <a asp-page="./GenerateRecoveryCodes" class="btn btn-link">Reimposta codici di recupero</a>
 }
 
-<h5>App authenticator</h5>
+<h5 class="mt-3">App authenticator</h5>
 @if (!Model.HasAuthenticator)
 {
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Aggiungi un'app authenticator</a>
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-link">Aggiungi un'app authenticator</a>
 }
 else
 {
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Configura app authenticator</a>
-    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-primary">Reimposta app authenticator</a>
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-link">Configura app authenticator</a><br>
+    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-link">Reimposta app authenticator</a>
 }
 
 @section Scripts {

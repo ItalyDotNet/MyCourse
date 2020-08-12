@@ -56,7 +56,7 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            StatusMessage = "L'autenticazione a due fattori è stata disabilitata. La potrai abilitare di nuovo impostando un'app authenticator.";
+            StatusMessage = "L'autenticazione a due fattori è stata disabilitata. La potrai abilitare di nuovo configurando un'app authenticator.";
             return RedirectToPage("./TwoFactorAuthentication");
         }
     }

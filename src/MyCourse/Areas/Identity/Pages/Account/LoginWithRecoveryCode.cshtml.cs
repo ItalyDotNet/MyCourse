@@ -33,7 +33,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
             [BindProperty]
             [Required(ErrorMessage = "Il codice di recupero è obbligatorio")]
             [DataType(DataType.Text)]
-            [Display(Name = "Recovery Code")]
+            [Display(Name = "Codice di recupero")]
             public string RecoveryCode { get; set; }
         }
 
