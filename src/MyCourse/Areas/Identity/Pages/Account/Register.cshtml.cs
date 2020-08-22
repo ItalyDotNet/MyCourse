@@ -45,6 +45,11 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Required(ErrorMessage = "Il nome completo è obbligatorio")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "Il nome completo deve essere di almeno {2} e di al massimo {1} caratteri.")]
+            [Display(Name = "Nome completo")]
+            public string FullName { get; set; }
+
             [Required(ErrorMessage = "L'email è obbligatoria")]
             [EmailAddress(ErrorMessage = "Deve essere un indirizzo email valido")]
             [Display(Name = "Email")]
