@@ -9,8 +9,8 @@ using MyCourse.Models.Services.Infrastructure;
 namespace MyCourse.Migrations
 {
     [DbContext(typeof(MyCourseDbContext))]
-    [Migration("20200822150346_ApplicationUser")]
-    partial class ApplicationUser
+    [Migration("20200822153858_IdentityApplicationUser")]
+    partial class IdentityApplicationUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

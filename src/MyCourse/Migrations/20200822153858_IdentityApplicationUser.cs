@@ -2,7 +2,7 @@
 
 namespace MyCourse.Migrations
 {
-    public partial class ApplicationUser : Migration
+    public partial class IdentityApplicationUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
