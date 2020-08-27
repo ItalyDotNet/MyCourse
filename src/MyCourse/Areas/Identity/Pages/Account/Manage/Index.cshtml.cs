@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +73,12 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
+            //TODO: PERSISTERE IL FULLNAME
+            //Passo1: Recuperare l'istanza di ApplicationUser (in realtà è stato fatto alla riga 65)
+            //Passo2: Modificare la sua proprietà FullName ottenendo il valore dall'input model
+            //Passo3: Persistere l'ApplicationUser invocando il metodo UpdateAsync dello user manager
+            //Passo4: Consultare la proprietà Success dell'IdentityResult perché se è false, visualizza un errore
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
