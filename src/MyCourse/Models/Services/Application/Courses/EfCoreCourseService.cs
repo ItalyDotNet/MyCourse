@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,9 +24,11 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly MyCourseDbContext dbContext;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public EfCoreCourseService(ILogger<EfCoreCourseService> logger, IImagePersister imagePersister, MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions)
+        public EfCoreCourseService(IHttpContextAccessor httpContextAccessor, ILogger<EfCoreCourseService> logger, IImagePersister imagePersister, MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
+            this.httpContextAccessor = httpContextAccessor;
             this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
             this.logger = logger;
@@ -119,7 +122,7 @@ namespace MyCourse.Models.Services.Application.Courses
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
             string title = inputModel.Title;
-            string author = "Mario Rossi";
+            string author = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
 
             var course = new Course(title, author);
             dbContext.Add(course);
@@ -137,7 +140,7 @@ namespace MyCourse.Models.Services.Application.Courses
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             Course course = await dbContext.Courses.FindAsync(inputModel.Id);
-            
+
             if (course == null)
             {
                 throw new CourseNotFoundException(inputModel.Id);
@@ -149,14 +152,15 @@ namespace MyCourse.Models.Services.Application.Courses
             course.ChangeEmail(inputModel.Email);
 
             dbContext.Entry(course).Property(course => course.RowVersion).OriginalValue = inputModel.RowVersion;
-            
+
             if (inputModel.Image != null)
             {
-                try {
+                try
+                {
                     string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                     course.ChangeImagePath(imagePath);
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     throw new CourseImageInvalidException(inputModel.Id, exc);
                 }
@@ -207,7 +211,7 @@ namespace MyCourse.Models.Services.Application.Courses
         public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
         {
             Course course = await dbContext.Courses.FindAsync(inputModel.Id);
-            
+
             if (course == null)
             {
                 throw new CourseNotFoundException(inputModel.Id);
