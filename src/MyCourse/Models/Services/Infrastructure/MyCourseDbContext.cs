@@ -50,6 +50,10 @@ namespace MyCourse.Models.Services.Infrastructure
                 });
 
                 //Mapping per le relazioni
+                entity.HasOne(course => course.AuthorUser)
+                      .WithMany(user => user.AuthoredCourses)
+                      .HasForeignKey(course => course.AuthorId);
+                      
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
