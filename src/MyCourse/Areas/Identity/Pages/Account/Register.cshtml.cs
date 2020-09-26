@@ -56,7 +56,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "La password è obbligatoria")]
             [StringLength(100, MinimumLength = 8, ErrorMessage = "La password deve essere di almeno {2} e di al massimo {1} caratteri.")]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]

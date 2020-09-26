@@ -40,7 +40,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Grazie per aver confermato l'email." : "Errore nella conferma dell'email.";
+            StatusMessage = result.Succeeded ? "Grazie per aver confermato l'email, ora puoi accedere." : "Errore nella conferma dell'email.";
             return Page();
         }
     }

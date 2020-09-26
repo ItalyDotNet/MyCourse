@@ -8,15 +8,15 @@
 @{
     if (@Model.DisplayConfirmAccountLink)
     {
-<p>
+    <p>
     Quest'applicazione ASP.NET Core al momento non usa un verso servizio di invio email, leggi <a href="https://aka.ms/aspaccountconf">questo articolo</a> per sapere come configurare un vero servizio di invio email.
     Questo sarebbe stato il contenuto dell'email: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Clicca qui per confermare la tua registrazione</a>
-</p>
+    </p>
     }
     else
     {
-<p>
-        Per favore controlla la tua casella email per confermare la registrazione.
-</p>
+    <p>
+    Per favore controlla la tua casella email per confermare la registrazione.
+    </p>
     }
 }

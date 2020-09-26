@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +74,7 @@ namespace MyCourse
                         options.Password.RequireLowercase = true;
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
+                        options.SignIn.RequireConfirmedAccount = true;
                     })
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
@@ -91,12 +92,14 @@ namespace MyCourse
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddTransient<ICachedLessonService, MemoryCacheLessonService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
+            services.AddSingleton<IEmailSender, MailKitEmailSender>();
 
             //Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
+            services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

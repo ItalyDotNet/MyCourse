@@ -97,7 +97,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativo di accesso fallito.");
                     return Page();
                 }
             }
