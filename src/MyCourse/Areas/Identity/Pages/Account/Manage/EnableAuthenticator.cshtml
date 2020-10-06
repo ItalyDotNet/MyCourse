@@ -22,7 +22,6 @@
         </li>
         <li>
             <p>Usa l'app per inquadrare il codice QR o digita questa chiave <kbd>@Model.SharedKey</kbd> nella tua app authenticator. Gli spazi non sono importanti. Non c'è differenza tra maiuscole e minuscole.</p>
-            <div class="alert alert-info">Leggi qui <a href="https://go.microsoft.com/fwlink/?Linkid=852423">come abilitare la generazione di codici QR</a>.</div>
             <div id="qrCode"></div>
             <div id="qrCodeData" data-url="@Html.Raw(@Model.AuthenticatorUri)"></div>
         </li>
@@ -50,4 +49,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript" src="~/lib/qrcodejs/qrcode.min.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"), {
+            text: "@Html.Raw(Model.AuthenticatorUri)",
+            width: 200,
+            height: 200
+        });
+    </script>
 }

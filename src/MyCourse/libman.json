@@ -75,6 +75,13 @@
         "dist/summernote-bs4.min.js",
         "dist/lang/summernote-it-IT.js"
       ]
+    },
+    {
+      "library": "qrcodejs@1.0.0",
+      "destination": "wwwroot\\lib\\qrcodejs",
+      "files": [
+        "qrcode.min.js"
+      ]
     }
   ]
 }
