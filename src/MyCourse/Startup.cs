@@ -68,13 +68,22 @@ namespace MyCourse
                 case Persistence.EfCore:
 
                     services.AddDefaultIdentity<ApplicationUser>(options => {
+                        // Criteri di validazione della password
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
                         options.Password.RequireUppercase = true;
                         options.Password.RequireLowercase = true;
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
+
+                        // Conferma dell'account
                         options.SignIn.RequireConfirmedAccount = true;
+
+                        // Blocco dell'account
+                        options.Lockout.AllowedForNewUsers = true;
+                        options.Lockout.MaxFailedAccessAttempts = 5;
+                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
                     })
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
