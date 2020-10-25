@@ -77,7 +77,7 @@ namespace MyCourse
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.EfCore;
+            var persistence = Persistence.AdoNet;
             switch (persistence)
             {
                 case Persistence.AdoNet:

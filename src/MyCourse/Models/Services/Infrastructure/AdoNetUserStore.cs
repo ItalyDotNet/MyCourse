@@ -23,8 +23,7 @@ namespace MyCourse.Models.Services.Infrastructure
         IUserAuthenticationTokenStore<ApplicationUser>,
         IUserLockoutStore<ApplicationUser>,
         IUserLoginStore<ApplicationUser>,
-        IUserConfirmation<ApplicationUser>,
-        IProtectedUserStore<ApplicationUser>
+        IUserConfirmation<ApplicationUser>
     {
         private readonly IDatabaseAccessor db;
         public AdoNetUserStore(IDatabaseAccessor db)
