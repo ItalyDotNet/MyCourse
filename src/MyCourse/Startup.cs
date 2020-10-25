@@ -55,19 +55,7 @@ namespace MyCourse
 
             services.AddRazorPages();
 
-            //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.EfCore;
-            switch (persistence)
-            {
-                case Persistence.AdoNet:
-                    services.AddTransient<ICourseService, AdoNetCourseService>();
-                    services.AddTransient<ILessonService, AdoNetLessonService>();
-                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
-                break;
-
-                case Persistence.EfCore:
-
-                    services.AddDefaultIdentity<ApplicationUser>(options => {
+            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
                         // Criteri di validazione della password
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
@@ -86,8 +74,26 @@ namespace MyCourse
 
                     })
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
-                    .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
-                    .AddEntityFrameworkStores<MyCourseDbContext>();
+                    .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
+
+            //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
+            var persistence = Persistence.EfCore;
+            switch (persistence)
+            {
+                case Persistence.AdoNet:
+                    services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
+                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+
+                    //Imposta l'AdoNetUserStore come servizio di persistenza per Identity
+                    identityBuilder.AddUserStore<AdoNetUserStore>();
+
+                break;
+
+                case Persistence.EfCore:
+
+                    //Imposta il MyCourseDbContext come servizio di persistenza per Identity
+                    identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
