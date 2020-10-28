@@ -1,0 +1,29 @@
+﻿@page
+@model LoginWithRecoveryCodeModel
+@{
+    ViewData["Title"] = "Verifica del codice di recupero";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<p>
+    Hai richiesto l'accesso con un codice di recupero. Questo accesso non verrà ricordato, almeno finché non fornirai
+    il codice ottenuto dall'app authenticator. In alternativa puoi disabilitare l'autenticazione a due fattori ed eseguire di nuovo l'accesso.
+</p>
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.RecoveryCode"></label>
+                <input asp-for="Input.RecoveryCode" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Input.RecoveryCode" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Accedi</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

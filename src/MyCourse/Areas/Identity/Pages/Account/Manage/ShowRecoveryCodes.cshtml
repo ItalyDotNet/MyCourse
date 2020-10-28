@@ -1,0 +1,27 @@
+﻿@page
+@model ShowRecoveryCodesModel
+@{
+    ViewData["Title"] = "Codici di recupero";
+    ViewData["ActivePage"] = "TwoFactorAuthentication";
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h4>@ViewData["Title"]</h4>
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Conserva questi codici in un luogo sicuro.</strong>
+    </p>
+    <p>
+        Se perdi l'app authenticator e perdi anche i tuoi codici di recupero, non potrai più accedere al tuo account.
+    </p>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul>
+        @for (var row = 0; row < Model.RecoveryCodes.Length; row++)
+        {
+            <li><code class="recovery-code">@Model.RecoveryCodes[row]</code></li>
+        }
+        </ul>
+    </div>
+</div>

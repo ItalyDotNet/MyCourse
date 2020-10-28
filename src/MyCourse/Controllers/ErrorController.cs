@@ -17,6 +17,11 @@ namespace MyCourse.Controllers
                     Response.StatusCode = 404;
                     return View("CourseNotFound");
 
+                case UserUnknownException exc:
+                    ViewData["Title"] = "Utente sconosciuto";
+                    Response.StatusCode = 400;
+                    return View();
+
                 default:
                     ViewData["Title"] = "Errore";
                     return View();
