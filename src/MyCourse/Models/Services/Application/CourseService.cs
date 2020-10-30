@@ -20,7 +20,7 @@ namespace MyCourse.Models.Services.Application
                     Id = i,
                     Title = $"Corso {i}",
                     CurrentPrice = new Money(Currency.EUR, price),
-                    FullPrice = new Money(Currency.EUR, rand.NextDouble() > 0.5 ? price : price - 1),
+                    FullPrice = new Money(Currency.EUR, rand.NextDouble() > 0.5 ? price : price + 1),
                     Author = "Nome cognome",
                     Rating = rand.Next(10, 50) / 10.0,
                     ImagePath = "/logo.svg"
@@ -39,7 +39,7 @@ namespace MyCourse.Models.Services.Application
                 Id = id,
                 Title = $"Corso {id}",
                 CurrentPrice = new Money(Currency.EUR, price),
-                FullPrice = new Money(Currency.EUR, rand.NextDouble() > 0.5 ? price : price - 1),
+                FullPrice = new Money(Currency.EUR, rand.NextDouble() > 0.5 ? price : price + 1),
                 Author = "Nome cognome",
                 Rating = rand.Next(10, 50) / 10.0,
                 ImagePath = "/logo.svg",
