@@ -53,8 +53,6 @@ namespace MyCourse
             #endif
             ;
 
-            services.AddRazorPages();
-
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
                         // Criteri di validazione della password
                         options.Password.RequireDigit = true;
