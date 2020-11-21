@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MyCourse.Models.Extensions;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 
@@ -27,13 +28,13 @@ namespace MyCourse.Models.Services.Application
                 throw new InvalidOperationException($"Did not return exactly 1 row for Course {id}");
             }
             var courseRow = courseTable.Rows[0];
-            var courseDetailViewModel = CourseDetailViewModel.FromDataRow(courseRow);
+            var courseDetailViewModel = courseRow.ToCourseDetailViewModel();
 
             //Course lessons
             var lessonDataTable = dataSet.Tables[1];
 
             foreach(DataRow lessonRow in lessonDataTable.Rows) {
-                LessonViewModel lessonViewModel = LessonViewModel.FromDataRow(lessonRow);
+                LessonViewModel lessonViewModel = lessonRow.ToLessonViewModel();
                 courseDetailViewModel.Lessons.Add(lessonViewModel);
             }
             return courseDetailViewModel; 
@@ -46,7 +47,7 @@ namespace MyCourse.Models.Services.Application
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
             foreach(DataRow courseRow in dataTable.Rows) {
-                CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
+                CourseViewModel courseViewModel = courseRow.ToCourseViewModel();
                 courseList.Add(courseViewModel);
             }
             return courseList;
