@@ -1,12 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +41,24 @@ namespace MyCourse
         {
             services.AddResponseCaching();
             services.AddRazorPages();
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+
+                facebookOptions.Scope.Add("email");
+                facebookOptions.Scope.Add("user_location");
+
+                facebookOptions.Events = new OAuthEvents
+                {
+                    OnCreatingTicket = async context =>
+                    {
+                        var location = await GetUserLocationFromFacebook(context.AccessToken);
+                        var identity = context.Principal.Identity as ClaimsIdentity;
+                        identity.AddClaim(new Claim(ClaimTypes.Locality, location));
+                    }
+                };
+            });
 
             services.AddMvc(options => 
             {
@@ -113,6 +137,25 @@ namespace MyCourse
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
+        }
+
+        private async Task<string> GetUserLocationFromFacebook(string accessToken)
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync($"https://graph.facebook.com/v9.0/me?access_token={accessToken}&fields=location");
+            var body = await response.Content.ReadAsStreamAsync();
+            var document = JsonDocument.Parse(body);
+            return document.RootElement.GetProperty("location").GetString("name");
+        }
+
+        private Task OnTicketReceived(TicketReceivedContext arg)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task OnCreatingTicket(OAuthCreatingTicketContext arg)
+        {
+            return Task.CompletedTask;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

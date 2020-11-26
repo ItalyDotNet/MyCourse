@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -12,6 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyCourse.Models.Entities;
 
@@ -24,13 +22,16 @@ namespace MyCourse.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly IConfiguration _configuration;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             ILogger<ExternalLoginModel> logger,
+            IConfiguration configuration,
             IEmailSender emailSender)
         {
+            _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
@@ -52,6 +53,9 @@ namespace MyCourse.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+            [Required]
+            public string FullName { get; set; }
         }
 
         public IActionResult OnGetAsync()
@@ -76,6 +80,15 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var fullName = info.Principal.FindFirstValue(ClaimTypes.Name);
+            
+            /*var user = new ApplicationUser { Email = email, UserName = email, FullName = fullName };
+            await _userManager.CreateAsync(user);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return Redirect("/");*/
+
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information.";
@@ -102,7 +115,8 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = email,
+                        FullName = fullName
                     };
                 }
                 return Page();
@@ -122,7 +136,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FullName = Input.FullName };
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
