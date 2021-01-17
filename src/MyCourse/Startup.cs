@@ -47,11 +47,7 @@ namespace MyCourse
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
                 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            #if DEBUG
-            .AddRazorRuntimeCompilation()
-            #endif
-            ;
+            });
 
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
                         // Criteri di validazione della password
