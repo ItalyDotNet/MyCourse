@@ -37,12 +37,12 @@ namespace MyCourse.Models.Services.Infrastructure
                 string physicalPath = Path.Combine(env.WebRootPath, "Courses", $"{courseId}.jpg");
 
                 using Stream inputStream = formFile.OpenReadStream();
-                using MagickImage image = new MagickImage(inputStream);
+                using MagickImage image = new(inputStream);
 
                 //Manipolare l'immagine
                 int width = 300;  //Esercizio: ottenere questi valori dalla configurazione
                 int height = 300;
-                MagickGeometry resizeGeometry = new MagickGeometry(width, height)
+                MagickGeometry resizeGeometry = new(width, height)
                 {
                     FillArea = true
                 };

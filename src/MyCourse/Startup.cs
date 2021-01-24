@@ -38,7 +38,7 @@ namespace MyCourse
 
             services.AddMvc(options => 
             {
-                var homeProfile = new CacheProfile();
+                CacheProfile homeProfile = new();
                 //homeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
                 //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCache:Home:Location");
                 //homeProfile.VaryByQueryKeys = new string[] { "page" };
@@ -47,11 +47,7 @@ namespace MyCourse
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
                 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            #if DEBUG
-            .AddRazorRuntimeCompilation()
-            #endif
-            ;
+            });
 
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
                         // Criteri di validazione della password

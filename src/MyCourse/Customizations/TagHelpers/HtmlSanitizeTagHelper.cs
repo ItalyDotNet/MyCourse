@@ -23,7 +23,7 @@ namespace MyCourse.Customizations.TagHelpers
 
         private static HtmlSanitizer CreateSanitizer()
         {
-            var sanitizer = new HtmlSanitizer();
+            HtmlSanitizer sanitizer = new();
 
             //Tag consentiti
             sanitizer.AllowedTags.Clear();

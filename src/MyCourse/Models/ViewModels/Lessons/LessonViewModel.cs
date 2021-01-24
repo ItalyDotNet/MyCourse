@@ -12,7 +12,7 @@ namespace MyCourse.Models.ViewModels.Lessons
 
         public static LessonViewModel FromDataRow(DataRow dataRow)
         {
-            var lessonViewModel = new LessonViewModel {
+            LessonViewModel lessonViewModel = new() {
                 Id = Convert.ToInt32(dataRow["Id"]),
                 Title = Convert.ToString(dataRow["Title"]),
                 Duration = TimeSpan.Parse(Convert.ToString(dataRow["Duration"])),

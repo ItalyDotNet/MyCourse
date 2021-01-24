@@ -20,7 +20,7 @@ namespace MyCourse.Controllers
             ViewData["Title"] = "Catalogo dei corsi";
             ListViewModel<CourseViewModel> courses = await courseService.GetCoursesAsync(input);
 
-            CourseListViewModel viewModel = new CourseListViewModel
+            CourseListViewModel viewModel = new()
             {
                 Courses = courses,
                 Input = input
@@ -38,7 +38,7 @@ namespace MyCourse.Controllers
         public IActionResult Create()
         {
             ViewData["Title"] = "Nuovo corso";
-            var inputModel = new CourseCreateInputModel();
+            CourseCreateInputModel inputModel = new();
             return View(inputModel);
         }
         

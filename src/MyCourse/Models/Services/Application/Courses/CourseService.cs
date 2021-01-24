@@ -13,12 +13,12 @@ namespace MyCourse.Models.Services.Application.Courses
     {
         public List<CourseViewModel> GetCourses()
         {
-            var courseList = new List<CourseViewModel>();
-            var rand = new Random();
+            List<CourseViewModel> courseList = new();
+            Random rand = new();
             for (int i = 1; i <= 20; i++)
             {
-                var price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
-                var course = new CourseViewModel
+                decimal price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
+                CourseViewModel course = new()
                 {
                     Id = i,
                     Title = $"Corso {i}",
@@ -35,9 +35,9 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public CourseDetailViewModel GetCourse(int id)
         {
-            var rand = new Random();
-            var price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
-            var course = new CourseDetailViewModel
+            Random rand = new();
+            decimal price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
+            CourseDetailViewModel course = new()
             {
                 Id = id,
                 Title = $"Corso {id}",
@@ -51,7 +51,7 @@ namespace MyCourse.Models.Services.Application.Courses
             };
 
             for (var i = 1; i <= 5; i++) {
-                var lesson = new LessonViewModel {
+                LessonViewModel lesson = new() {
                     Title = $"Lezione {i}",
                     Duration = TimeSpan.FromSeconds(rand.Next(40, 90))
                 };

@@ -15,7 +15,7 @@ namespace MyCourse.Controllers
             List<CourseViewModel> bestRatingCourses = await courseService.GetBestRatingCoursesAsync();
             List<CourseViewModel> mostRecentCourses = await courseService.GetMostRecentCoursesAsync();
 
-            HomeViewModel viewModel = new HomeViewModel
+            HomeViewModel viewModel = new()
             {
                 BestRatingCourses = bestRatingCourses,
                 MostRecentCourses = mostRecentCourses
