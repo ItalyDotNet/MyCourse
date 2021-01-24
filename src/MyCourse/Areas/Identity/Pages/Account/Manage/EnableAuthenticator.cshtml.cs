@@ -130,7 +130,7 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
 
         private string FormatKey(string unformattedKey)
         {
-            var result = new StringBuilder();
+            StringBuilder result = new();
             int currentPosition = 0;
             while (currentPosition + 4 < unformattedKey.Length)
             {

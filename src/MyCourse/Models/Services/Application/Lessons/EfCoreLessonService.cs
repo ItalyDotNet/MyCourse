@@ -59,7 +59,7 @@ namespace MyCourse.Models.Services.Application.Lessons
 
         public async Task<LessonDetailViewModel> CreateLessonAsync(LessonCreateInputModel inputModel)
         {
-            var lesson = new Lesson(inputModel.Title, inputModel.CourseId);
+            Lesson lesson = new(inputModel.Title, inputModel.CourseId);
             dbContext.Add(lesson);
             await dbContext.SaveChangesAsync();
 

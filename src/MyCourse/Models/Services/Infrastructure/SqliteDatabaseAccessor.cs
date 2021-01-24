@@ -66,13 +66,13 @@ namespace MyCourse.Models.Services.Infrastructure
             try
             {
                 using var reader = await cmd.ExecuteReaderAsync(token);
-                var dataSet = new DataSet();
+                DataSet dataSet = new();
 
                 //Creiamo tanti DataTable per quante sono le tabelle
                 //di risultati trovate dal SqliteDataReader
                 do
                 {
-                    var dataTable = new DataTable();
+                    DataTable dataTable = new();
                     dataSet.Tables.Add(dataTable);
                     dataTable.Load(reader);
                 } while (!reader.IsClosed);
@@ -90,20 +90,20 @@ namespace MyCourse.Models.Services.Infrastructure
         {
             //Creiamo dei SqliteParameter a partire dalla FormattableString
             var queryArguments = formattableQuery.GetArguments();
-            var sqliteParameters = new List<SqliteParameter>();
+            List<SqliteParameter> sqliteParameters = new();
             for (var i = 0; i < queryArguments.Length; i++)
             {
                 if (queryArguments[i] is Sql)
                 {
                     continue;
                 }
-                var parameter = new SqliteParameter(name: i.ToString(), value: queryArguments[i] ?? DBNull.Value);
+                SqliteParameter parameter = new(name: i.ToString(), value: queryArguments[i] ?? DBNull.Value);
                 sqliteParameters.Add(parameter);
                 queryArguments[i] = "@" + i;
             }
             string query = formattableQuery.ToString();
 
-            var cmd = new SqliteCommand(query, conn);
+            SqliteCommand cmd = new(query, conn);
             //Aggiungiamo i SqliteParameters al SqliteCommand
             cmd.Parameters.AddRange(sqliteParameters);
             return cmd;
@@ -112,7 +112,7 @@ namespace MyCourse.Models.Services.Infrastructure
         private async Task<SqliteConnection> GetOpenedConnection(CancellationToken token)
         {
             //Colleghiamoci al database Sqlite, inviamo la query e leggiamo i risultati
-            var conn = new SqliteConnection(connectionStringOptions.CurrentValue.Default);
+            SqliteConnection conn = new(connectionStringOptions.CurrentValue.Default);
             await conn.OpenAsync(token);
             return conn;
         }

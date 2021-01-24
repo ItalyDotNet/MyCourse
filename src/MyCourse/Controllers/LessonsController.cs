@@ -26,7 +26,7 @@ namespace MyCourse.Controllers
         public IActionResult Create(int id)
         {
             ViewData["Title"] = "Nuova lezione";
-            var inputModel = new LessonCreateInputModel();
+            LessonCreateInputModel inputModel = new();
             inputModel.CourseId = id;
             return View(inputModel);
         }

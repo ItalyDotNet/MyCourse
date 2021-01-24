@@ -38,7 +38,7 @@ namespace MyCourse
 
             services.AddMvc(options => 
             {
-                var homeProfile = new CacheProfile();
+                CacheProfile homeProfile = new();
                 //homeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
                 //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCache:Home:Location");
                 //homeProfile.VaryByQueryKeys = new string[] { "page" };

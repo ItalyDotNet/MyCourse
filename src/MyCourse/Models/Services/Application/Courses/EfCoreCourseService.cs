@@ -59,7 +59,7 @@ namespace MyCourse.Models.Services.Application.Courses
         }
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
-            CourseListInputModel inputModel = new CourseListInputModel(
+            CourseListInputModel inputModel = new(
                 search: "",
                 page: 1,
                 orderby: "Rating",
@@ -72,7 +72,7 @@ namespace MyCourse.Models.Services.Application.Courses
         }
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
-            CourseListInputModel inputModel = new CourseListInputModel(
+            CourseListInputModel inputModel = new(
                 search: "",
                 page: 1,
                 orderby: "Id",
@@ -112,7 +112,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
             int totalCount = await queryLinq.CountAsync();
 
-            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            ListViewModel<CourseViewModel> result = new()
             {
                 Results = courses,
                 TotalCount = totalCount
@@ -136,7 +136,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new UserUnknownException();
             }
 
-            var course = new Course(title, author, authorId);
+            Course course = new(title, author, authorId);
             dbContext.Add(course);
             try
             {

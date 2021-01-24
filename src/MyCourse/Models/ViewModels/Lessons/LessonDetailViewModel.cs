@@ -14,7 +14,7 @@ namespace MyCourse.Models.ViewModels.Lessons
 
         public static LessonDetailViewModel FromDataRow(DataRow dataRow)
         {
-            var lessonViewModel = new LessonDetailViewModel {
+            LessonDetailViewModel lessonViewModel = new() {
                 Id = Convert.ToInt32(dataRow["Id"]),
                 CourseId = Convert.ToInt32(dataRow["CourseId"]),
                 Title = Convert.ToString(dataRow["Title"]),

@@ -63,7 +63,7 @@ namespace MyCourse.Models.InputModels.Courses
 
         public static CourseEditInputModel FromDataRow(DataRow courseRow)
         {
-            var courseEditInputModel = new CourseEditInputModel
+            CourseEditInputModel courseEditInputModel = new()
             {
                 Title = Convert.ToString(courseRow["Title"]),
                 Description = Convert.ToString(courseRow["Description"]),

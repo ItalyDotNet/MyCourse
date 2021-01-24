@@ -67,15 +67,15 @@ namespace MyCourse.Models.Services.Application.Courses
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)} ORDER BY {(Sql)orderby} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
             SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)}";
             DataSet dataSet = await db.QueryAsync(query);
-            var dataTable = dataSet.Tables[0];
-            var courseList = new List<CourseViewModel>();
+            DataTable dataTable = dataSet.Tables[0];
+            List<CourseViewModel> courseList = new ();
             foreach (DataRow courseRow in dataTable.Rows)
             {
                 CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
                 courseList.Add(courseViewModel);
             }
 
-            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            ListViewModel<CourseViewModel> result = new ()
             {
                 Results = courseList,
                 TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
@@ -89,19 +89,19 @@ namespace MyCourse.Models.Services.Application.Courses
 
             DataSet dataSet = await db.QueryAsync(query);
 
-            var courseTable = dataSet.Tables[0];
+            DataTable courseTable = dataSet.Tables[0];
             if (courseTable.Rows.Count != 1)
             {
                 logger.LogWarning("Course {id} not found", id);
                 throw new CourseNotFoundException(id);
             }
-            var courseRow = courseTable.Rows[0];
-            var courseEditInputModel = CourseEditInputModel.FromDataRow(courseRow);
+            DataRow courseRow = courseTable.Rows[0];
+            CourseEditInputModel courseEditInputModel = CourseEditInputModel.FromDataRow(courseRow);
             return courseEditInputModel;
         }
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
-            CourseListInputModel inputModel = new CourseListInputModel(
+            CourseListInputModel inputModel = new(
                 search: "",
                 page: 1,
                 orderby: "Rating",
@@ -114,7 +114,7 @@ namespace MyCourse.Models.Services.Application.Courses
         }
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
-            CourseListInputModel inputModel = new CourseListInputModel(
+            CourseListInputModel inputModel = new(
                 search: "",
                 page: 1,
                 orderby: "Id",

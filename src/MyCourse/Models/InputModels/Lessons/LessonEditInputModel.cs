@@ -38,7 +38,7 @@ namespace MyCourse.Models.InputModels.Lessons
 
         public static LessonEditInputModel FromDataRow(DataRow courseRow)
         {
-            var lessonEditInputModel = new LessonEditInputModel
+            LessonEditInputModel lessonEditInputModel = new()
             {
                 Id = Convert.ToInt32(courseRow["Id"]),
                 CourseId = Convert.ToInt32(courseRow["CourseId"]),

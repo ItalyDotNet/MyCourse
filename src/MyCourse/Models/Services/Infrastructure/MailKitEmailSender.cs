@@ -23,13 +23,13 @@ namespace MyCourse.Models.Services.Infrastructure
             try
             {
                 var options = this.smtpOptionsMonitor.CurrentValue;
-                using var client = new SmtpClient();
+                using SmtpClient client = new();
                 await client.ConnectAsync(options.Host, options.Port, options.Security);
                 if (!string.IsNullOrEmpty(options.Username))
                 {
                     await client.AuthenticateAsync(options.Username, options.Password);
                 }
-                var message = new MimeMessage();
+                MimeMessage message = new();
                 message.From.Add(MailboxAddress.Parse(options.Sender));
                 message.To.Add(MailboxAddress.Parse(email));
                 message.Subject = subject;
