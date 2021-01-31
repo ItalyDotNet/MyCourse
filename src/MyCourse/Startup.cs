@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -46,6 +48,11 @@ namespace MyCourse
                 options.CacheProfiles.Add("Home", homeProfile);
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+
+                AuthorizationPolicyBuilder policyBuilder = new();
+                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
+                AuthorizeFilter filter = new(policy);
+                options.Filters.Add(filter);
                 
             });
 
@@ -71,7 +78,7 @@ namespace MyCourse
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.AdoNet;
+            var persistence = Persistence.EfCore;
             switch (persistence)
             {
                 case Persistence.AdoNet:

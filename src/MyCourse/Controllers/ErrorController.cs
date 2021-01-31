@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Exceptions.Application;
@@ -7,6 +8,7 @@ namespace MyCourse.Controllers
 {
     public class ErrorController : Controller
     {
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();

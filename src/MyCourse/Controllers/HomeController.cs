@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.ViewModels.Courses;
@@ -9,6 +10,8 @@ namespace MyCourse.Controllers
 {
     public class HomeController : Controller
     {
+
+        [AllowAnonymous]
         public async Task<IActionResult> Index([FromServices] ICachedCourseService courseService)
         {
             ViewData["Title"] = "Benvenuto su MyCourse!";

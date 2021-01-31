@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
@@ -15,6 +16,8 @@ namespace MyCourse.Controllers
         {
             this.courseService = courseService;
         }
+
+        [AllowAnonymous]
         public async Task<IActionResult> Index(CourseListInputModel input)
         {
             ViewData["Title"] = "Catalogo dei corsi";
@@ -28,6 +31,8 @@ namespace MyCourse.Controllers
 
             return View(viewModel);
         }
+
+        [AllowAnonymous]
         public async Task<IActionResult> Detail(int id)
         {
             CourseDetailViewModel viewModel = await courseService.GetCourseAsync(id);
