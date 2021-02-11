@@ -36,7 +36,6 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
-            services.AddRazorPages();
 
             services.AddMvc(options => 
             {
@@ -54,6 +53,10 @@ namespace MyCourse
                 AuthorizeFilter filter = new(policy);
                 options.Filters.Add(filter);
                 
+            });
+
+            services.AddRazorPages(options => {
+                options.Conventions.AllowAnonymousToPage("/Privacy");
             });
 
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
