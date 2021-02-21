@@ -24,6 +24,11 @@ namespace MyCourse.Controllers
                     Response.StatusCode = 400;
                     return View();
 
+                case SendException exc:
+                    ViewData["Title"] = "Non è stato possibile inviare il messaggio, riprova più tardi";
+                    Response.StatusCode = 500;
+                    return View();
+
                 default:
                     ViewData["Title"] = "Errore";
                     return View();

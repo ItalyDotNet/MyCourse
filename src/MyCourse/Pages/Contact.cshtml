@@ -1,8 +1,17 @@
 @page
 @model MyCourse.Pages.ContactModel
-<h1>Fai una domanda al docente</h1>
+<h1>Fai una domanda a @Model.Course.Author, docente di "@Model.Course.Title"</h1>
 <div class="row">
     <div class="col-12">
-        <!-- qui il form -->
+        <form method="POST">
+            <div asp-validation-summary="All"></div>
+            <label asp-for="Question"></label>
+            <textarea asp-for="Question" class="form-control" rows="10"></textarea>
+            <button type="submit" class="btn btn-primary mt-3"><i class="far fa-paper-plane"></i> Invia domanda</button>
+        </form>
     </div>
-</form>
+</div>
+@section Scripts
+{
+<partial name="_Validation"></partial>
+}

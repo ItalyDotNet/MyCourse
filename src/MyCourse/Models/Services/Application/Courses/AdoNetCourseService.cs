@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
@@ -14,6 +16,7 @@ using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 using MyCourse.Models.ViewModels.Lessons;
+using Ganss.XSS;
 
 namespace MyCourse.Models.Services.Application.Courses
 {
@@ -23,13 +26,18 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IDatabaseAccessor db;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
-        public AdoNetCourseService(ILogger<AdoNetCourseService> logger, IDatabaseAccessor db, IImagePersister imagePersister, IOptionsMonitor<CoursesOptions> coursesOptions)
+        private readonly IEmailClient emailClient;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public AdoNetCourseService(ILogger<AdoNetCourseService> logger, IDatabaseAccessor db, IImagePersister imagePersister, IHttpContextAccessor httpContextAccessor, IEmailClient emailClient, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
             this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
             this.logger = logger;
+            this.emailClient = emailClient;
+            this.httpContextAccessor = httpContextAccessor;
             this.db = db;
         }
+
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             logger.LogInformation("Course {id} requested", id);
@@ -59,6 +67,7 @@ namespace MyCourse.Models.Services.Application.Courses
             }
             return courseDetailViewModel;
         }
+
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             string orderby = model.OrderBy == "CurrentPrice" ? "CurrentPrice_Amount" : model.OrderBy;
@@ -83,6 +92,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
             return result;
         }
+
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
             FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}";
@@ -99,6 +109,7 @@ namespace MyCourse.Models.Services.Application.Courses
             CourseEditInputModel courseEditInputModel = CourseEditInputModel.FromDataRow(courseRow);
             return courseEditInputModel;
         }
+
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new(
@@ -112,6 +123,7 @@ namespace MyCourse.Models.Services.Application.Courses
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
+
         public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
             CourseListInputModel inputModel = new(
@@ -125,14 +137,26 @@ namespace MyCourse.Models.Services.Application.Courses
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
+
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
             string title = inputModel.Title;
-            string author = "Mario Rossi";
+            string author;
+            string authorId;
 
             try
             {
-                int courseId = await db.QueryScalarAsync<int>($@"INSERT INTO Courses (Title, Author, ImagePath, Rating, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount, Status) VALUES ({title}, {author}, '/Courses/default.png', 0, 'EUR', 0, 'EUR', 0, {nameof(CourseStatus.Draft)});
+                author = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                authorId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            }
+            catch (NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+
+            try
+            {
+                int courseId = await db.QueryScalarAsync<int>($@"INSERT INTO Courses (Title, Author, AuthorId, ImagePath, Rating, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount, Status) VALUES ({title}, {author}, {authorId}, '/Courses/default.png', 0, 'EUR', 0, 'EUR', 0, {nameof(CourseStatus.Draft)});
                                                  SELECT last_insert_rowid();");
 
                 CourseDetailViewModel course = await GetCourseAsync(courseId);
@@ -143,11 +167,13 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new CourseTitleUnavailableException(inputModel.Title, exc);
             }
         }
+
         public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
             bool titleExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND id<>{id}");
             return !titleExists;
         }
+
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             try
@@ -190,6 +216,55 @@ namespace MyCourse.Models.Services.Application.Courses
             if (affectedRows == 0)
             {
                 throw new CourseNotFoundException(inputModel.Id);
+            }
+        }
+
+        public async Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            // Recupero le informazioni del corso
+            FormattableString query = $@"SELECT Title, Email FROM Courses WHERE Courses.Id={id}";
+            DataSet dataSet = await db.QueryAsync(query);
+
+            if (dataSet.Tables[0].Rows.Count == 0)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
+
+            string courseTitle = Convert.ToString(dataSet.Tables[0].Rows[0]["Title"]);
+            string courseEmail = Convert.ToString(dataSet.Tables[0].Rows[0]["Email"]);
+
+            // Recupero le informazioni dell'utente che vuole inviare la domanda
+            string userFullName;
+            string userEmail;
+
+            try
+            {
+                userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            }
+            catch (NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+
+            // Sanitizzo la domanda dell'utente
+            question = new HtmlSanitizer(allowedTags: new string[0]).Sanitize(question);
+
+            // Compongo il testo della domanda
+            string subject = $@"Domanda per il tuo corso ""{courseTitle}""";
+            string message = $@"<p>L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>)
+                                ti ha inviato la seguente domanda:</p>
+                                <p>{question}</p>";
+
+            // Invio la domanda
+            try
+            {
+                await emailClient.SendEmailAsync(courseEmail, userEmail, subject, message);
+            }
+            catch 
+            {
+                throw new SendException();
             }
         }
     }

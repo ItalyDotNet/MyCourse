@@ -22,6 +22,7 @@
                     <price current-price="@Model.CurrentPrice" full-price="@Model.FullPrice"></price>
                 </div>
                 <img src="@Model.ImagePath" class="img-fluid course-image" alt="@Model.Title" asp-append-version="true">
+                <a asp-page="/Contact" asp-route-id="@Model.Id" class="btn btn-block btn-outline-secondary mt-3">Fai una domanda</a>
             </aside>
         </div>
     </div>
