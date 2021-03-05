@@ -6,7 +6,8 @@
         <form method="POST">
             <div asp-validation-summary="All"></div>
             <label asp-for="Question"></label>
-            <textarea asp-for="Question" class="form-control" rows="10"></textarea>
+            <textarea asp-for="Question" class="form-control mb-3" rows="10"></textarea>
+            <recaptcha />
             <button type="submit" class="btn btn-primary mt-3"><i class="far fa-paper-plane"></i> Invia domanda</button>
         </form>
     </div>
