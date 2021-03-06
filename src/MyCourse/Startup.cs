@@ -4,6 +4,7 @@ using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -83,7 +84,7 @@ namespace MyCourse
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
             //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.AdoNet;
+            var persistence = Persistence.EfCore;
             switch (persistence)
             {
                 case Persistence.AdoNet:
@@ -99,7 +100,7 @@ namespace MyCourse
                 case Persistence.EfCore:
 
                     //Imposta il MyCourseDbContext come servizio di persistenza per Identity
-                    identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
+                    identityBuilder.AddRoles<IdentityRole>().AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
