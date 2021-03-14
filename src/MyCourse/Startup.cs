@@ -78,8 +78,9 @@ namespace MyCourse
                         options.Lockout.AllowedForNewUsers = true;
                         options.Lockout.MaxFailedAccessAttempts = 5;
                         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-
                     })
+                    .AddRoles<IdentityRole>()
+                    .AddRoleManager<RoleManager<IdentityRole>>()
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
@@ -93,14 +94,14 @@ namespace MyCourse
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
                     //Imposta l'AdoNetUserStore come servizio di persistenza per Identity
-                    identityBuilder.AddUserStore<AdoNetUserStore>();
+                    identityBuilder.AddUserStore<AdoNetUserStore>().AddRoleStore<AdoNetRoleStore>();
 
                 break;
 
                 case Persistence.EfCore:
 
                     //Imposta il MyCourseDbContext come servizio di persistenza per Identity
-                    identityBuilder.AddRoles<IdentityRole>().AddEntityFrameworkStores<MyCourseDbContext>();
+                    identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
@@ -123,6 +124,7 @@ namespace MyCourse
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
+            services.Configure<UsersOptions>(Configuration.GetSection("Users"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

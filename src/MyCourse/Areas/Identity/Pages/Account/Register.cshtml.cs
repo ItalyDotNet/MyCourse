@@ -14,7 +14,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
+using MyCourse.Models.Options;
 
 namespace MyCourse.Areas.Identity.Pages.Account
 {
@@ -26,19 +28,22 @@ namespace MyCourse.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IOptionsMonitor<UsersOptions> _usersOptions;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOptionsMonitor<UsersOptions> usersOptions)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _usersOptions = usersOptions;
         }
 
         [BindProperty]
@@ -89,15 +94,34 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-
-                    IdentityRole role = await _roleManager.FindByNameAsync("Administrator");
-                    if (role == null)
+                    var assignRoleNames = _usersOptions.CurrentValue.AssignRolesOnRegistration;
+                    
+                    // Se l'indirizzo e-mail dell'idente si trova in configurazione, nella chiave Users:AssignRolesOnRegistration...
+                    if (assignRoleNames.ContainsKey(Input.Email.ToLower()))
                     {
-                        role = new IdentityRole("Administrator");
-                        await _roleManager.CreateAsync(role);
+                        // ...allora gli aggiungo i ruoli...
+                        foreach (var roleName in assignRoleNames[Input.Email.ToLower()])
+                        {
+                            // ...ma il ruolo in questione esiste nel database?
+                            IdentityRole role = await _roleManager.FindByNameAsync(roleName);
+                            if (role == null)
+                            {
+                                // Il ruolo non esiste, allora lo creo.
+                                role = new IdentityRole(roleName);
+                                await _roleManager.CreateAsync(role);
+                            }
+
+                            // Adesso che mi sono assicurato che il ruolo esiste nel database, lo assegno all'utente
+                            result = await _userManager.AddToRoleAsync(user, roleName);
+                            if (!result.Succeeded)
+                            {
+                                // Se l'assegnazione non è andata a buon fine, traccio l'errore.
+                                _logger.LogError($"Couldn't assign role {roleName} to user {Input.Email}.");
+                                ModelState.AddModelError(string.Empty, $"Non è stato possibile assegnare il ruolo {roleName} all'utente");
+                            }
+                        }
                     }
 
-                    await _userManager.AddToRoleAsync(user, "Administrator");
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

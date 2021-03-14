@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -8,9 +6,9 @@ using MyCourse.Models.Entities;
 
 namespace MyCourse.Customizations.Identity
 {
-    public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
+    public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>
     {
-        public CustomClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, optionsAccessor)
+        public CustomClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
         {
         }
 

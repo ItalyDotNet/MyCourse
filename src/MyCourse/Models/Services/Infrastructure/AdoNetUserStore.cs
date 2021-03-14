@@ -12,6 +12,7 @@ namespace MyCourse.Models.Services.Infrastructure
 {
     public class AdoNetUserStore :
         IUserStore<ApplicationUser>,
+        IUserRoleStore<ApplicationUser>,
         IUserClaimStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
@@ -446,6 +447,43 @@ namespace MyCourse.Models.Services.Infrastructure
         public Task<bool> IsConfirmedAsync(UserManager<ApplicationUser> manager, ApplicationUser user)
         {
             return Task.FromResult(user.EmailConfirmed);
+        }
+        #endregion
+
+        #region Implementation of IUserRoleStore<ApplicationUser>
+        public async Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken token)
+        {
+            int affectedRows = await db.CommandAsync($"INSERT INTO AspNetUserRoles (UserId, RoleId) VALUES ({user.Id}, (SELECT Id FROM AspNetRoles WHERE NormalizedName={roleName}))", token);
+            if (affectedRows == 0)
+            {
+                throw new InvalidOperationException("Couldn't add to role");
+            }
+        }
+
+        public async Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken token)
+        {
+            int affectedRows = await db.CommandAsync($"DELETE FROM AspNetUserRoles WHERE UserId={user.Id} AND RoleId=(SELECT Id FROM AspNetRoles WHERE NormalizedName={roleName})", token);
+            if (affectedRows == 0)
+            {
+                throw new InvalidOperationException("Couldn't remove from role");
+            }
+        }
+
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken token)
+        {
+            DataSet dataSet = await db.QueryAsync($"SELECT AspNetRoles.Name FROM AspNetUsers INNER JOIN AspNetUserRoles ON AspNetUsers.Id=AspNetUserRoles.UserId INNER JOIN AspNetRoles ON AspNetUserRoles.RoleId=AspNetRoles.Id WHERE AspNetUsers.Id={user.Id}", token);
+            return dataSet.Tables[0].AsEnumerable().Select(row => Convert.ToString(row["Name"])).ToList();
+        }
+
+        public async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken token)
+        {
+            DataSet dataSet = await db.QueryAsync($"SELECT AspNetUsers.* FROM AspNetUsers INNER JOIN AspNetUserRoles ON AspNetUsers.Id=AspNetUserRoles.UserId INNER JOIN AspNetRoles ON AspNetUserRoles.RoleId=AspNetRoles.Id WHERE AspNetRoles.NormalizedName={roleName}", token);
+            return dataSet.Tables[0].AsEnumerable().Select(row => ApplicationUser.FromDataRow(row)).ToList();
+        }
+
+        public async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken token)
+        {
+            return await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM AspNetUsers INNER JOIN AspNetUserRoles ON AspNetUsers.Id=AspNetUserRoles.UserId INNER JOIN AspNetRoles ON AspNetUserRoles.RoleId=AspNetRoles.Id WHERE AspNetUsers.Id={user.Id} AND AspNetRoles.NormalizedName={roleName}", token);
         }
         #endregion
     }
