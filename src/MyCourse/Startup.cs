@@ -48,8 +48,9 @@ namespace MyCourse
             //.AddFluentValidation()
             .AddFluentValidation(options => {
                 options.RegisterValidatorsFromAssemblyContaining<CourseCreateValidator>();
-                options.ConfigureClientsideValidation(clientSide => {
-                    clientSide.Add(typeof(RemotePropertyValidator), (context, description, validator) => new RemoteClientValidator(description, validator));
+                options.ConfigureClientsideValidation(clientSide =>
+                {
+                    clientSide.Add(typeof(IRemotePropertyValidator), (context, description, validator) => new RemoteClientValidator(description, validator));
                 });
             })
             #if DEBUG
