@@ -10,26 +10,26 @@ namespace MyCourse.Models.Entities
         public string FullName { get; set; }
         public virtual ICollection<Course> AuthoredCourses { get; set; }
 
-        public static ApplicationUser FromDataRow(DataRow courseRow)
+        public static ApplicationUser FromDataRow(DataRow userRow)
         {
             ApplicationUser applicationUser = new()
             {
-                Id = Convert.ToString(courseRow["Id"]),
-                UserName = Convert.ToString(courseRow["UserName"]),
-                NormalizedUserName = Convert.ToString(courseRow["NormalizedUserName"]),
-                Email = Convert.ToString(courseRow["Email"]),
-                NormalizedEmail = Convert.ToString(courseRow["NormalizedEmail"]),
-                EmailConfirmed = Convert.ToBoolean(courseRow["EmailConfirmed"]),
-                PasswordHash = Convert.ToString(courseRow["PasswordHash"]),
-                SecurityStamp = Convert.ToString(courseRow["SecurityStamp"]),
-                ConcurrencyStamp = Convert.ToString(courseRow["ConcurrencyStamp"]),
-                PhoneNumber = Convert.ToString(courseRow["PhoneNumber"]),
-                PhoneNumberConfirmed = Convert.ToBoolean(courseRow["PhoneNumberConfirmed"]),
-                TwoFactorEnabled = Convert.ToBoolean(courseRow["TwoFactorEnabled"]),
-                LockoutEnd = (courseRow["LockoutEnd"] == DBNull.Value ? (DateTime?) null : Convert.ToDateTime(courseRow["LockoutEnd"])),
-                LockoutEnabled = Convert.ToBoolean(courseRow["LockoutEnabled"]),
-                AccessFailedCount = Convert.ToInt32(courseRow["AccessFailedCount"]),
-                FullName = Convert.ToString(courseRow["FullName"])
+                Id = Convert.ToString(userRow["Id"]),
+                UserName = Convert.ToString(userRow["UserName"]),
+                NormalizedUserName = Convert.ToString(userRow["NormalizedUserName"]),
+                Email = Convert.ToString(userRow["Email"]),
+                NormalizedEmail = Convert.ToString(userRow["NormalizedEmail"]),
+                EmailConfirmed = Convert.ToBoolean(userRow["EmailConfirmed"]),
+                PasswordHash = Convert.ToString(userRow["PasswordHash"]),
+                SecurityStamp = Convert.ToString(userRow["SecurityStamp"]),
+                ConcurrencyStamp = Convert.ToString(userRow["ConcurrencyStamp"]),
+                PhoneNumber = Convert.ToString(userRow["PhoneNumber"]),
+                PhoneNumberConfirmed = Convert.ToBoolean(userRow["PhoneNumberConfirmed"]),
+                TwoFactorEnabled = Convert.ToBoolean(userRow["TwoFactorEnabled"]),
+                LockoutEnd = (userRow["LockoutEnd"] == DBNull.Value ? (DateTime?) null : Convert.ToDateTime(userRow["LockoutEnd"])),
+                LockoutEnabled = Convert.ToBoolean(userRow["LockoutEnabled"]),
+                AccessFailedCount = Convert.ToInt32(userRow["AccessFailedCount"]),
+                FullName = Convert.ToString(userRow["FullName"])
             };
             return applicationUser;
         }

@@ -159,7 +159,7 @@ namespace MyCourse.Models.Services.Infrastructure
 
         public async Task<IList<ApplicationUser>> GetUsersForClaimAsync(Claim claim, CancellationToken token)
         {
-            DataSet dataSet = await db.QueryAsync($"SELECT * FROM AspNetUserClaims WHERE ClaimType={claim.Type} AND ClaimValue={claim.Value}", token);
+            DataSet dataSet = await db.QueryAsync($"SELECT AspNetUsers.* FROM AspNetUserClaims INNER JOIN AspNetUsers ON AspNetUserClaims.UserId = AspNetUsers.Id WHERE AspNetUserClaims.ClaimType={claim.Type} AND AspNetUserClaims.ClaimValue={claim.Value}", token);
             List<ApplicationUser> users = dataSet.Tables[0].AsEnumerable().Select(row => ApplicationUser.FromDataRow(row)).ToList();
             return users;
         }
