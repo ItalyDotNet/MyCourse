@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -6,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 using MyCourse.Models.InputModels.Users;
@@ -24,10 +22,16 @@ namespace MyCourse.Pages.Admin
 
         [BindProperty]
         public UserRoleInputModel Input { get; set; }
+        public IList<ApplicationUser> Users { get; private set; }
 
-        public IActionResult OnGet()
+        [BindProperty(SupportsGet = true)]
+        public Role InRole { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
         {
             ViewData["Title"] = "Gestione utenti";
+            Claim claim = new (ClaimTypes.Role, InRole.ToString());
+            Users = await userManager.GetUsersForClaimAsync(claim);
             return Page();
         }
 
@@ -35,14 +39,14 @@ namespace MyCourse.Pages.Admin
         {
             if (!ModelState.IsValid)
             {
-                return OnGet();
+                return await OnGetAsync();
             }
 
             ApplicationUser user = await userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
                 ModelState.AddModelError(nameof(Input.Email), $"L'indirizzo email {Input.Email} non corrisponde ad alcun utente");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             IList<Claim> claims = await userManager.GetClaimsAsync(user);
@@ -51,32 +55,32 @@ namespace MyCourse.Pages.Admin
             if (claims.Any(claim => claim.Type == roleClaim.Type && claim.Value == roleClaim.Value))
             {
                 ModelState.AddModelError(nameof(Input.Role), $"Il ruolo {Input.Role} è già assegnato all'utente {Input.Email}");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             IdentityResult result = await userManager.AddClaimAsync(user, roleClaim);
             if (!result.Succeeded)
             {
                 ModelState.AddModelError(string.Empty, $"L'operazione è fallita: {result.Errors.FirstOrDefault()?.Description}");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             TempData["ConfirmationMessage"] = $"Il ruolo {Input.Role} è stato assegnato all'utente {Input.Email}";
-            return RedirectToPage();
+            return RedirectToPage(new { inrole = (int) InRole });
         }
 
         public async Task<IActionResult> OnPostRevokeAsync()
         {
             if (!ModelState.IsValid)
             {
-                return OnGet();
+                return await OnGetAsync();
             }
 
             ApplicationUser user = await userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
                 ModelState.AddModelError(nameof(Input.Email), $"L'indirizzo email {Input.Email} non corrisponde ad alcun utente");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             IList<Claim> claims = await userManager.GetClaimsAsync(user);
@@ -85,18 +89,18 @@ namespace MyCourse.Pages.Admin
             if (!claims.Any(claim => claim.Type == roleClaim.Type && claim.Value == roleClaim.Value))
             {
                 ModelState.AddModelError(nameof(Input.Role), $"Il ruolo {Input.Role} non era assegnato all'utente {Input.Email}");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             IdentityResult result = await userManager.RemoveClaimAsync(user, roleClaim);
             if (!result.Succeeded)
             {
                 ModelState.AddModelError(string.Empty, $"L'operazione è fallita: {result.Errors.FirstOrDefault()?.Description}");
-                return OnGet();
+                return await OnGetAsync();
             }
 
             TempData["ConfirmationMessage"] = $"Il ruolo {Input.Role} è stato revocato all'utente {Input.Email}";
-            return RedirectToPage();
+            return RedirectToPage(new { inrole = (int) InRole });
         }
     }
 }
