@@ -7,7 +7,7 @@ namespace MyCourse.Models.Validators
 {
     public class RemotePropertyValidator<T, TProperty> : PropertyValidator<T, TProperty>, IRemotePropertyValidator
     {
-        public RemotePropertyValidator(string url, string additionalFields, string errorText = "") : base()
+        public RemotePropertyValidator(string url, string additionalFields, string errorText = "")
         {
             Url = url;
             AdditionalFields = (additionalFields ?? "").Split(",", StringSplitOptions.RemoveEmptyEntries);
