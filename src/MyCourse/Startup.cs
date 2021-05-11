@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyCourse.Customizations.Identity;
 using MyCourse.Customizations.ModelBinders;
+using MyCourse.Models.Authorization;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
@@ -115,6 +116,16 @@ namespace MyCourse
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
+            services.AddSingleton<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
+
+            // Policies
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CourseAuthor", builder =>
+                {
+                    builder.Requirements.Add(new CourseAuthorRequirement());
+                });
+            });
 
             //Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
@@ -174,7 +185,6 @@ namespace MyCourse
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 routeBuilder.MapRazorPages();
             });
-
         }
     }
 }
