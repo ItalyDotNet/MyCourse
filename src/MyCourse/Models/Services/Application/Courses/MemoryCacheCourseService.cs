@@ -99,5 +99,14 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.SendQuestionToCourseAuthorAsync(id, question);
         }
+
+        public Task<string> GetCourseAuthorIdAsync(int courseId)
+        {
+            return memoryCache.GetOrCreateAsync($"CourseAuthorId{courseId}", cacheEntry => 
+            {
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60)); //Esercizio: provate a recuperare il valore 60 usando il servizio di configurazione
+                return courseService.GetCourseAuthorIdAsync(courseId);
+            });
+        }
     }
 }

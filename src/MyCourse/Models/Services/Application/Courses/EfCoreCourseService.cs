@@ -294,5 +294,13 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new SendException();
             }
         }
+        
+        public Task<string> GetCourseAuthorIdAsync(int courseId)
+        {
+            return dbContext.Courses
+                            .Where(course => course.Id == courseId)
+                            .Select(course => course.AuthorId)
+                            .FirstOrDefaultAsync();
+        }
     }
 }
