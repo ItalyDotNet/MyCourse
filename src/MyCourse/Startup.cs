@@ -51,11 +51,6 @@ namespace MyCourse
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
 
-                AuthorizationPolicyBuilder policyBuilder = new();
-                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
-                AuthorizeFilter filter = new(policy);
-                options.Filters.Add(filter);
-                
             });
 
             services.AddRazorPages(options => {
@@ -121,7 +116,7 @@ namespace MyCourse
             // Policies
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CourseAuthor", builder =>
+                options.AddPolicy(nameof(Policy.CourseAuthor), builder =>
                 {
                     builder.Requirements.Add(new CourseAuthorRequirement());
                 });
@@ -182,8 +177,8 @@ namespace MyCourse
 
             //EndpointMiddleware
             app.UseEndpoints(routeBuilder => {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routeBuilder.MapRazorPages();
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
+                routeBuilder.MapRazorPages().RequireAuthorization();
             });
         }
     }

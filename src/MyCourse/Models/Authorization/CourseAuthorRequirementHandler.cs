@@ -26,6 +26,11 @@ namespace MyCourse.Models.Authorization
 
             // 2. Capire a quale corso sta cercando di accedere
             int courseId = Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
+            if (courseId == 0)
+            {
+                context.Fail();
+                return;
+            }
 
             // 3. Estrarre dal database l'id dell'autore del corso
             string authorId = await courseService.GetCourseAuthorIdAsync(courseId);

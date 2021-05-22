@@ -70,6 +70,7 @@ namespace MyCourse.Controllers
             return View(inputModel);
         }
 
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Edit(int id)
         {
             ViewData["Title"] = "Modifica corso";
@@ -78,6 +79,7 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Edit(CourseEditInputModel inputModel)
         {
             if (ModelState.IsValid)
@@ -107,6 +109,7 @@ namespace MyCourse.Controllers
         }
         
         [HttpPost]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Delete(CourseDeleteInputModel inputModel)
         {
             await courseService.DeleteCourseAsync(inputModel);
