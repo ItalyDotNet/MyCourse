@@ -1,7 +1,18 @@
 @model CourseListViewModel
+@inject IAuthorizationService authService
+@{
+    AuthorizationPolicy policy = new AuthorizationPolicyBuilder().RequireRole(nameof(Role.Teacher)).Build();
+    AuthorizationResult authorizationResult = await authService.AuthorizeAsync(User, policy);
+    bool canCreate = authorizationResult.Succeeded;
+}
 <div class="row">
     <div class="col-md-8">
-        <h1>@ViewData["Title"] <a class="btn btn-outline-primary btn-sm" asp-action="Create"><i class="fa fa-plus"></i> Crea nuovo</a></h1>
+        <h1>@ViewData["Title"]
+            @if (canCreate)
+            {
+            <a class="btn btn-outline-primary btn-sm" asp-action="Create"><i class="fa fa-plus"></i> Crea nuovo</a>
+            }
+        </h1>
     </div>
     <div class="col-md-4 d-flex align-items-center">
         <form asp-controller="Courses" asp-action="Index" method="get">

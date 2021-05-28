@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
+using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 
@@ -50,13 +53,23 @@ namespace MyCourse.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Create(CourseCreateInputModel inputModel)
+        public async Task<IActionResult> Create(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
+
+                    // Per non inserire logica nel controller, potremmo spostare questo blocco all'interno del metodo CreateCourseAsync del servizio applicativo
+                    // ...ma attenzione a non creare riferimenti circolari! Se il course service dipende da IAuthorizationService
+                    // ...e viceversa l'authorization handler dipende dal course service, allora la dependency injection non riuscirà a risolvere nessuno dei due servizi, dandoci un errore
+                    AuthorizationResult result = await authorizationService.AuthorizeAsync(User, nameof(Policy.CourseLimit));
+                    if (!result.Succeeded)
+                    {
+                        await emailClient.SendEmailAsync(usersOptions.CurrentValue.NotificationEmailRecipient, "Avviso superamento soglia", $"Il docente {User.Identity.Name} ha creato molti corsi: verifica che riesca a gestirli tutti.");
+                    }
+
                     TempData["ConfirmationMessage"] = "Ok! Il tuo corso è stato creato, ora perché non inserisci anche gli altri dati?";
                     return RedirectToAction(nameof(Edit), new { id = course.Id });
                 }

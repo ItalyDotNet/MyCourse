@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -62,7 +61,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
             return viewModel;
         }
-        
+
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new(
@@ -244,18 +243,18 @@ namespace MyCourse.Models.Services.Application.Courses
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task SendQuestionToCourseAuthorAsync(int id, string question)
+        public async Task SendQuestionToCourseAuthorAsync(int courseId, string question)
         {
             // Sanitizzo l'input dell'utente
             question = new HtmlSanitizer(allowedTags: new string[0]).Sanitize(question);
 
             // Recupero le informazioni del corso
-            Course course = await dbContext.Courses.FindAsync(id);
+            Course course = await dbContext.Courses.FindAsync(courseId);
 
             if (course == null)
             {
-                logger.LogWarning("Course {id} not found", id);
-                throw new CourseNotFoundException(id);
+                logger.LogWarning("Course {id} not found", courseId);
+                throw new CourseNotFoundException(courseId);
             }
 
             string courseTitle = course.Title;
@@ -294,13 +293,20 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new SendException();
             }
         }
-        
+
         public Task<string> GetCourseAuthorIdAsync(int courseId)
         {
             return dbContext.Courses
                             .Where(course => course.Id == courseId)
                             .Select(course => course.AuthorId)
                             .FirstOrDefaultAsync();
+        }
+
+        public Task<int> GetCourseCountByAuthorIdAsync(string authorId)
+        {
+            return dbContext.Courses
+                            .Where(course => course.AuthorId == authorId)
+                            .CountAsync();
         }
     }
 }

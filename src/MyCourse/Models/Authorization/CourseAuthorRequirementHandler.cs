@@ -25,7 +25,8 @@ namespace MyCourse.Models.Authorization
             string userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // 2. Capire a quale corso sta cercando di accedere
-            int courseId = Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
+            int courseId = context.Resource is int ? (int)context.Resource : // context.Resource è il valore passato come secondo argomento da IAuthorizationService.AuthorizeAsync(User, course.Id, "NomePolicy")
+                           Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
             if (courseId == 0)
             {
                 context.Fail();

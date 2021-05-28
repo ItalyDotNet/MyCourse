@@ -112,6 +112,7 @@ namespace MyCourse
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
+            services.AddSingleton<IAuthorizationHandler, CourseLimitRequirementHandler>();
 
             // Policies
             services.AddAuthorization(options =>
@@ -120,9 +121,14 @@ namespace MyCourse
                 {
                     builder.Requirements.Add(new CourseAuthorRequirement());
                 });
+
+                options.AddPolicy(nameof(Policy.CourseLimit), builder =>
+                {
+                    builder.Requirements.Add(new CourseLimitRequirement(limit: 5));
+                });
             });
 
-            //Options
+            // Options
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));

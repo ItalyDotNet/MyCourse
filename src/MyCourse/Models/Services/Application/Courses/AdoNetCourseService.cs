@@ -272,5 +272,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return db.QueryScalarAsync<string>($"SELECT AuthorId FROM Courses WHERE Id={courseId}");
         }
+
+        public Task<int> GetCourseCountByAuthorIdAsync(string authorId)
+        {
+            return db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Courses WHERE AuthorId={authorId}");
+        }
     }
 }
