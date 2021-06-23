@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Application.Lessons;
 
 namespace MyCourse.Models.Authorization
 {
@@ -11,32 +12,54 @@ namespace MyCourse.Models.Authorization
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ICachedCourseService courseService;
+        private readonly ILessonService lessonService;
 
-        public CourseAuthorRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService)
+        public CourseAuthorRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService, ILessonService lessonService)
         {
             this.courseService = courseService;
+            this.lessonService = lessonService;
             this.httpContextAccessor = httpContextAccessor;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                             CourseAuthorRequirement requirement)
+                                                     CourseAuthorRequirement requirement)
         {
-            // 1. Leggere l'id dell'utente dalla sua identità
             string userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // 2. Capire a quale corso sta cercando di accedere
-            int courseId = context.Resource is int ? (int)context.Resource : // context.Resource è il valore passato come secondo argomento da IAuthorizationService.AuthorizeAsync(User, course.Id, "NomePolicy")
-                           Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
-            if (courseId == 0)
+            int courseId;
+            if (context.Resource is int)
             {
-                context.Fail();
-                return;
+                courseId = (int)context.Resource;
+            }
+            else
+            {
+                int id = Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
+                if (id == 0)
+                {
+                    context.Fail();
+                    return;
+                }
+
+                // A quale controller sto cercando di accedere?
+                switch (httpContextAccessor.HttpContext.Request.RouteValues["controller"].ToString().ToLowerInvariant())
+                {
+                    // Si tratta di una lezione. Otteniamo l'id del corso a cui appartiene
+                    case "lessons":
+                        courseId = (await lessonService.GetLessonAsync(id)).CourseId;
+                        break;
+
+                    // L'id era proprio quello di un corso
+                    case "courses":
+                        courseId = id;
+                        break;
+
+                    default:
+                        // Controller non supportato
+                        context.Fail();
+                        return;
+                }
             }
 
-            // 3. Estrarre dal database l'id dell'autore del corso
             string authorId = await courseService.GetCourseAuthorIdAsync(courseId);
-
-            // 4. Verificare che l'id dell'utente sia uguale all'id dell'autore del corso
             if (userId == authorId)
             {
                 context.Succeed(requirement);
