@@ -111,8 +111,8 @@ namespace MyCourse
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
-            services.AddSingleton<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
-            services.AddSingleton<IAuthorizationHandler, CourseLimitRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
+            services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
 
             // Policies
             services.AddAuthorization(options =>
