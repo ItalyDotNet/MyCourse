@@ -99,6 +99,8 @@ namespace MyCourse
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
+                    
+                    // Usando AddDbContextPool, il DbContext verrà implicitamente registrato con il ciclo di vita Scoped
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                         string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
                         optionsBuilder.UseSqlite(connectionString);
@@ -111,6 +113,9 @@ namespace MyCourse
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
+
+            // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
+            // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
             services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
             services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
 
