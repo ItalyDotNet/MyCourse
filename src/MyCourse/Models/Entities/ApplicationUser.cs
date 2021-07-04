@@ -9,6 +9,7 @@ namespace MyCourse.Models.Entities
     {
         public string FullName { get; set; }
         public virtual ICollection<Course> AuthoredCourses { get; set; }
+        public virtual ICollection<Course> SubscribedCourses { get; set; }
 
         public static ApplicationUser FromDataRow(DataRow userRow)
         {

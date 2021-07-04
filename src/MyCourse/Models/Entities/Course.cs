@@ -30,6 +30,9 @@ namespace MyCourse.Models.Entities
         public CourseStatus Status { get; private set; }
         public string AuthorId { get; set; }
         public virtual ApplicationUser AuthorUser { get; set; }
+        public virtual ICollection<Lesson> Lessons { get; private set; }
+        public virtual ICollection<ApplicationUser> Students { get; private set; }
+
         public void ChangeStatus(CourseStatus status)
         {
             //TODO: logica di validazione
@@ -106,8 +109,5 @@ namespace MyCourse.Models.Entities
         {
             ImagePath = imagePath;
         }
-
-        public virtual ICollection<Lesson> Lessons { get; private set; }
-
     }
 }
