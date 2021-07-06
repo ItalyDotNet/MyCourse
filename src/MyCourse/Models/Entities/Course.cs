@@ -29,9 +29,9 @@ namespace MyCourse.Models.Entities
         public string RowVersion { get; private set; }
         public CourseStatus Status { get; private set; }
         public string AuthorId { get; set; }
-        public virtual ApplicationUser AuthorUser { get; set; }
         public virtual ICollection<Lesson> Lessons { get; private set; }
-        public virtual ICollection<ApplicationUser> Students { get; private set; }
+        public virtual ApplicationUser AuthorUser { get; set; }
+        public virtual ICollection<ApplicationUser> SubscribedUsers { get; private set; }
 
         public void ChangeStatus(CourseStatus status)
         {

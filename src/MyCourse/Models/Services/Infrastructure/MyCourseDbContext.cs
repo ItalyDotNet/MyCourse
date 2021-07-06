@@ -33,7 +33,8 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.Property(course => course.Status).HasConversion<string>();
 
                 //Mapping per gli owned types
-                entity.OwnsOne(course => course.CurrentPrice, builder => {
+                entity.OwnsOne(course => course.CurrentPrice, builder =>
+                {
                     builder.Property(money => money.Currency)
                            .HasConversion<string>()
                            .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
@@ -42,7 +43,8 @@ namespace MyCourse.Models.Services.Infrastructure
                            .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
-                entity.OwnsOne(course => course.FullPrice, builder => {
+                entity.OwnsOne(course => course.FullPrice, builder =>
+                {
                     builder.Property(money => money.Currency)
                            .HasConversion<string>();
                     builder.Property(money => money.Amount)
@@ -53,10 +55,28 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasOne(course => course.AuthorUser)
                       .WithMany(user => user.AuthoredCourses)
                       .HasForeignKey(course => course.AuthorId);
-                      
+
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
+
+                entity.HasMany(course => course.SubscribedUsers)
+                      .WithMany(user => user.SubscribedCourses)
+                      .UsingEntity<Subscription>(
+                            entity => entity.HasOne(subscription => subscription.User).WithMany().HasForeignKey(courseStudent => courseStudent.UserId),
+                            entity => entity.HasOne(subscription => subscription.Course).WithMany().HasForeignKey(courseStudent => courseStudent.CourseId),
+                            entity =>
+                            {
+                                entity.ToTable("Subscriptions");
+                                entity.OwnsOne(subscription => subscription.Paid, builder =>
+                                {
+                                    builder.Property(money => money.Currency)
+                                           .HasConversion<string>();
+                                    builder.Property(money => money.Amount)
+                                           .HasConversion<float>();
+                                });
+                            }
+                );
 
                 //Global Query Filter
                 entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
