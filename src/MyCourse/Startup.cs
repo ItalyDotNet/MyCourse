@@ -113,10 +113,12 @@ namespace MyCourse
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
+            services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
-            services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();           
+            services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
 
             // Policies
@@ -125,6 +127,11 @@ namespace MyCourse
                 options.AddPolicy(nameof(Policy.CourseAuthor), builder =>
                 {
                     builder.Requirements.Add(new CourseAuthorRequirement());
+                });
+
+                options.AddPolicy(nameof(Policy.CourseSubscriber), builder =>
+                {
+                    builder.Requirements.Add(new CourseSubscriberRequirement());
                 });
 
                 options.AddPolicy(nameof(Policy.CourseLimit), builder =>
@@ -188,8 +195,10 @@ namespace MyCourse
 
             //EndpointMiddleware
             app.UseEndpoints(routeBuilder => {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
-                routeBuilder.MapRazorPages().RequireAuthorization();
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
+                            .RequireAuthorization();
+                routeBuilder.MapRazorPages()
+                            .RequireAuthorization();
             });
         }
     }

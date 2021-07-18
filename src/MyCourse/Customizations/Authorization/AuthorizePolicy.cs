@@ -9,11 +9,13 @@ namespace MyCourse.Customizations.Authorization
     {
         // Grazie a questo costruttore possiamo fornire le policy come oggetti Policy anziché come stringhe
         // Esempio di utilizzo: [AuthorizePolicy(Policy.CourseAuthor)]
-        public AuthorizePolicyAttribute(Policy policy)
+        public AuthorizePolicyAttribute(params Policy [] policies)
         {
             // Poi convertiamo il nome della policy in formato stringa,
             // così come richiede la proprietà Policy dell'AuthorizeAttribute
-            Policy = policy.ToString();
+            // ATTENZIONE: ASP.NET Core normalmente non permette di indicare il nome di più di una policy
+            // è possibile solo se scriviamo noi logica personalizzata: vedi la classe MultiAuthorizationPolicyProvider
+            Policy = string.Join(",", policies);
         }
     }
 }

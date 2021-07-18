@@ -3,6 +3,9 @@
 @{
     AuthorizationResult courseAuthorResult = await authService.AuthorizeAsync(User, nameof(Policy.CourseAuthor));
     bool canEdit = courseAuthorResult.Succeeded;
+
+    AuthorizationResult courseSubscriberResult = await authService.AuthorizeAsync(User, nameof(Policy.CourseSubscriber));
+    bool isSubscribed = courseSubscriberResult.Succeeded;
 }
 <section class="course-info">
     <div class="row">
@@ -15,7 +18,18 @@
             </h1>
         </div>
         <div class="col-md-3 d-flex align-items-end">
-            <a href="#" class="btn btn-warning btn-lg btn-block subscribe-course">Iscriviti</a>
+            @if (isSubscribed)
+            {
+            <span class="alert alert-secondary btn-block">Sei iscritto al corso</span>
+            }
+            else if (canEdit)
+            {
+            <span class="alert alert-secondary btn-block">Sei l'autore del corso</span>
+            }
+            else
+            {
+            <a class="btn btn-warning btn-lg btn-block subscribe-course" asp-action="Subscribe" asp-route-id="@Model.Id">Iscriviti</a>
+            }
         </div>
     </div>
     <div class="row">
@@ -50,7 +64,14 @@
 	<hr>
 	<div class="row">
 		<div class="col-md-9 d-flex align-items-center">
+            @if (isSubscribed || canEdit)
+            {
 		    <a asp-controller="Lessons" asp-action="Detail" asp-route-id="@lesson.Id">@lesson.Title</a>
+            }
+            else
+            {
+            <span>@lesson.Title</span>
+            }
 		</div>
 		<div class="col-md-3 d-flex align-items-center justify-content-end lesson-duration">
 			<i class="far fa-clock"></i><time>@lesson.Duration.ToString("m'm 's's'")</time>

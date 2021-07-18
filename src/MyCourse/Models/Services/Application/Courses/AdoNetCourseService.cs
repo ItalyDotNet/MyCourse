@@ -77,14 +77,14 @@ namespace MyCourse.Models.Services.Application.Courses
             SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)}";
             DataSet dataSet = await db.QueryAsync(query);
             DataTable dataTable = dataSet.Tables[0];
-            List<CourseViewModel> courseList = new ();
+            List<CourseViewModel> courseList = new();
             foreach (DataRow courseRow in dataTable.Rows)
             {
                 CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
                 courseList.Add(courseViewModel);
             }
 
-            ListViewModel<CourseViewModel> result = new ()
+            ListViewModel<CourseViewModel> result = new()
             {
                 Results = courseList,
                 TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
@@ -212,7 +212,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
         {
-            int affectedRows = await this.db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
+            int affectedRows = await db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
             if (affectedRows == 0)
             {
                 throw new CourseNotFoundException(inputModel.Id);
@@ -262,7 +262,7 @@ namespace MyCourse.Models.Services.Application.Courses
             {
                 await emailClient.SendEmailAsync(courseEmail, userEmail, subject, message);
             }
-            catch 
+            catch
             {
                 throw new SendException();
             }
@@ -276,6 +276,23 @@ namespace MyCourse.Models.Services.Application.Courses
         public Task<int> GetCourseCountByAuthorIdAsync(string authorId)
         {
             return db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Courses WHERE AuthorId={authorId}");
+        }
+
+        public async Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
+        {
+            try
+            {
+                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Currency, Paid_Amount, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Currency}, {inputModel.Paid.Amount}, {inputModel.TransactionId})");
+            }
+            catch (ConstraintViolationException)
+            {
+                throw new CourseSubscriptionException(inputModel.CourseId);
+            }
+        }
+
+        public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
+        {
+            return db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
         }
     }
 }
