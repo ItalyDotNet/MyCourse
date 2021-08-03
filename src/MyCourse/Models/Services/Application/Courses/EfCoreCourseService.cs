@@ -334,5 +334,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return dbContext.Subscriptions.Where(subscription => subscription.CourseId == courseId && subscription.UserId == userId).AnyAsync();
         }
+
+        public Task<string> GetPaymentUrlAsync(int courseId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

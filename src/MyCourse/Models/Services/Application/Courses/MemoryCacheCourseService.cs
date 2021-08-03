@@ -134,5 +134,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.IsCourseSubscribedAsync(courseId, userId);
         }
+
+        public Task<string> GetPaymentUrlAsync(int courseId)
+        {
+            return courseService.GetPaymentUrlAsync(courseId);
+        }
+
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
+        {
+            return courseService.CapturePaymentAsync(courseId, token);
+        }
     }
 }

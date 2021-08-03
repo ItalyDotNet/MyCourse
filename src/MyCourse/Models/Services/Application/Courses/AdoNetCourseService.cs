@@ -294,5 +294,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
         }
+
+        public Task<string> GetPaymentUrlAsync(int courseId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
