@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions.Application;
+using Microsoft.AspNetCore.Routing;
 using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
@@ -16,6 +17,7 @@ using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 using MyCourse.Models.ViewModels.Lessons;
+using MyCourse.Controllers;
 using Ganss.XSS;
 
 namespace MyCourse.Models.Services.Application.Courses
@@ -24,18 +26,29 @@ namespace MyCourse.Models.Services.Application.Courses
     {
         private readonly ILogger<AdoNetCourseService> logger;
         private readonly IDatabaseAccessor db;
+        private readonly IPaymentGateway paymentGateway;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
+        private readonly LinkGenerator linkGenerator;
         private readonly IImagePersister imagePersister;
         private readonly IEmailClient emailClient;
         private readonly IHttpContextAccessor httpContextAccessor;
-        public AdoNetCourseService(ILogger<AdoNetCourseService> logger, IDatabaseAccessor db, IImagePersister imagePersister, IHttpContextAccessor httpContextAccessor, IEmailClient emailClient, IOptionsMonitor<CoursesOptions> coursesOptions)
+        public AdoNetCourseService(IDatabaseAccessor db,
+                                   IPaymentGateway paymentGateway,
+                                   IImagePersister imagePersister,
+                                   IHttpContextAccessor httpContextAccessor,
+                                   IEmailClient emailClient,
+                                   IOptionsMonitor<CoursesOptions> coursesOptions,
+                                   LinkGenerator linkGenerator,
+                                   ILogger<AdoNetCourseService> logger)
         {
+            this.db = db;
+            this.paymentGateway = paymentGateway;
             this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
+            this.linkGenerator = linkGenerator;
             this.logger = logger;
             this.emailClient = emailClient;
             this.httpContextAccessor = httpContextAccessor;
-            this.db = db;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -295,9 +308,27 @@ namespace MyCourse.Models.Services.Application.Courses
             return db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
         }
 
-        public Task<string> GetPaymentUrlAsync(int courseId)
+        public async Task<string> GetPaymentUrlAsync(int courseId)
         {
-            throw new NotImplementedException();
+            CourseDetailViewModel viewModel = await GetCourseAsync(courseId);
+
+            CoursePayInputModel inputModel = new()
+            {
+                CourseId = courseId,
+                UserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Description = viewModel.Title,
+                Price = viewModel.CurrentPrice,
+                ReturnUrl = linkGenerator.GetUriByAction(httpContextAccessor.HttpContext,
+                                          action: nameof(CoursesController.Subscribe),
+                                          controller: "Courses",
+                                          values: new { id = courseId }),
+                CancelUrl = linkGenerator.GetUriByAction(httpContextAccessor.HttpContext,
+                                          action: nameof(CoursesController.Detail),
+                                          controller: "Courses",
+                                          values: new { id = courseId })
+            };
+
+            return await paymentGateway.GetPaymentUrlAsync(inputModel);
         }
 
         public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
