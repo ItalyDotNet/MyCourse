@@ -295,7 +295,7 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             try
             {
-                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Currency, Paid_Amount, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Currency}, {inputModel.Paid.Amount}, {inputModel.TransactionId})");
+                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Currency, Paid_Amount, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Currency.ToString()}, {inputModel.Paid.Amount}, {inputModel.TransactionId})");
             }
             catch (ConstraintViolationException)
             {
@@ -333,7 +333,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
         {
-            throw new NotImplementedException();
+            return paymentGateway.CapturePaymentAsync(token);
         }
     }
 }

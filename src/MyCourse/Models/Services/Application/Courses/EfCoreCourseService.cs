@@ -373,7 +373,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public Task<CourseSubscribeInputModel> CapturePaymentAsync(int courseId, string token)
         {
-            throw new NotImplementedException();
+            return paymentGateway.CapturePaymentAsync(token);
         }
     }
 }

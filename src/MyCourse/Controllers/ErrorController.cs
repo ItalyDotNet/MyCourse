@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Exceptions.Application;
+using MyCourse.Models.Exceptions.Infrastructure;
 
 namespace MyCourse.Controllers
 {
@@ -21,6 +22,11 @@ namespace MyCourse.Controllers
 
                 case CourseSubscriptionException exc:
                     ViewData["Title"] = "Non è stato possibile iscriverti al corso";
+                    Response.StatusCode = 400;
+                    return View();
+
+                case PaymentGatewayException exc:
+                    ViewData["Title"] = "Si è verificato un errore nel pagamento";
                     Response.StatusCode = 400;
                     return View();
 
