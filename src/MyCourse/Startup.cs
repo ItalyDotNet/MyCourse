@@ -115,7 +115,8 @@ namespace MyCourse
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
 
             // Servizi di pagamento
-            services.AddScoped<IPaymentGateway, PaypalPaymentGateway>();
+            // services.AddScoped<IPaymentGateway, PaypalPaymentGateway>();
+            services.AddScoped<IPaymentGateway, StripePaymentGateway>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
@@ -150,6 +151,7 @@ namespace MyCourse
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
             services.Configure<UsersOptions>(Configuration.GetSection("Users"));
             services.Configure<PaypalOptions>(Configuration.GetSection("Paypal"));
+            services.Configure<StripeOptions>(Configuration.GetSection("Stripe"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

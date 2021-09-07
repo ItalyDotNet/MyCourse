@@ -45,6 +45,7 @@ namespace MyCourse.Controllers
             return Redirect(paymentUrl);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Subscribe(int id, string token)
         {
             CourseSubscribeInputModel inputModel = await courseService.CapturePaymentAsync(id, token);
