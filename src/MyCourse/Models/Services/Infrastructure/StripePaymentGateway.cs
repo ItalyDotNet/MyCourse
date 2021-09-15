@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Enums;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using Stripe;
@@ -58,7 +60,37 @@ namespace MyCourse.Models.Services.Infrastructure
 
         public async Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
         {
-            throw new InvalidOperationException();
+            try
+            {
+                RequestOptions requestOptions = new()
+                {
+                    ApiKey = options.CurrentValue.PrivateKey
+                };
+
+                SessionService sessionService = new();
+                Session session = await sessionService.GetAsync(token, requestOptions: requestOptions);
+
+                PaymentIntentService paymentIntentService = new();
+                PaymentIntent paymentIntent = await paymentIntentService.CaptureAsync(session.PaymentIntentId, requestOptions: requestOptions);
+
+                string[] customIdParts = session.ClientReferenceId.Split('/');
+                int courseId = int.Parse(customIdParts[0]);
+                string userId = customIdParts[1];
+
+                return new CourseSubscribeInputModel
+                {
+                    CourseId = courseId,
+                    UserId = userId,
+                    Paid = new(Enum.Parse<Currency>(paymentIntent.Currency, ignoreCase: true), paymentIntent.Amount / 100m),
+                    TransactionId = paymentIntent.Id,
+                    PaymentDate = paymentIntent.Created,
+                    PaymentType = "Stripe"
+                };
+            }
+            catch (Exception exc)
+            {
+                throw new PaymentGatewayException(exc);
+            }
         }
     }
 }

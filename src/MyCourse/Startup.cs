@@ -32,10 +32,12 @@ namespace MyCourse
         }
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // Servizi di pagamento: Paypal o Stripe?
+            // services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+            services.AddTransient<IPaymentGateway, StripePaymentGateway>();
+
             services.AddReCaptcha(Configuration.GetSection("ReCaptcha"));
             services.AddResponseCaching();
 
@@ -113,10 +115,6 @@ namespace MyCourse
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
-
-            // Servizi di pagamento
-            // services.AddScoped<IPaymentGateway, PaypalPaymentGateway>();
-            services.AddScoped<IPaymentGateway, StripePaymentGateway>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
