@@ -54,7 +54,6 @@ namespace MyCourse.Controllers
             return RedirectToAction(nameof(Detail), new { id = id });
         }
 
-
         [AllowAnonymous]
         public async Task<IActionResult> Detail(int id)
         {

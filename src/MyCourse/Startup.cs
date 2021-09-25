@@ -104,8 +104,13 @@ namespace MyCourse
                     // Usando AddDbContextPool, il DbContext verrà implicitamente registrato con il ciclo di vita Scoped
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                         string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
-                        optionsBuilder.UseSqlite(connectionString);
-                });
+                        optionsBuilder.UseSqlite(connectionString, options =>
+                        {
+                            // Abilito il connection resiliency (tuttavia non è supportato dal provider di Sqlite perché non è soggetto a errori transienti)
+                            // Info su: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
+                            // options.EnableRetryOnFailure(3);
+                        });
+                    });
                 break;
             }
 
@@ -115,6 +120,7 @@ namespace MyCourse
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
+            services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped

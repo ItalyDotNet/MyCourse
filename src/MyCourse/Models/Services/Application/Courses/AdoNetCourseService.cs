@@ -29,6 +29,7 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IPaymentGateway paymentGateway;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly LinkGenerator linkGenerator;
+        private readonly ITransactionLogger transactionLogger;
         private readonly IImagePersister imagePersister;
         private readonly IEmailClient emailClient;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -39,6 +40,7 @@ namespace MyCourse.Models.Services.Application.Courses
                                    IEmailClient emailClient,
                                    IOptionsMonitor<CoursesOptions> coursesOptions,
                                    LinkGenerator linkGenerator,
+                                   ITransactionLogger transactionLogger,
                                    ILogger<AdoNetCourseService> logger)
         {
             this.db = db;
@@ -46,6 +48,7 @@ namespace MyCourse.Models.Services.Application.Courses
             this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
             this.linkGenerator = linkGenerator;
+            this.transactionLogger = transactionLogger;
             this.logger = logger;
             this.emailClient = emailClient;
             this.httpContextAccessor = httpContextAccessor;
@@ -300,6 +303,10 @@ namespace MyCourse.Models.Services.Application.Courses
             catch (ConstraintViolationException)
             {
                 throw new CourseSubscriptionException(inputModel.CourseId);
+            }
+            catch (Exception)
+            {
+                await transactionLogger.LogTransactionAsync(inputModel);
             }
         }
 

@@ -27,6 +27,7 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly ILogger<EfCoreCourseService> logger;
         private readonly MyCourseDbContext dbContext;
         private readonly LinkGenerator linkGenerator;
+        private readonly ITransactionLogger transactionLogger;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
         private readonly IPaymentGateway paymentGateway;
@@ -40,6 +41,7 @@ namespace MyCourse.Models.Services.Application.Courses
                                    IPaymentGateway paymentGateway,
                                    MyCourseDbContext dbContext,
                                    LinkGenerator linkGenerator,
+                                   ITransactionLogger transactionLogger,
                                    IOptionsMonitor<CoursesOptions> coursesOptions)
         {
             this.httpContextAccessor = httpContextAccessor;
@@ -49,6 +51,7 @@ namespace MyCourse.Models.Services.Application.Courses
             this.logger = logger;
             this.dbContext = dbContext;
             this.linkGenerator = linkGenerator;
+            this.transactionLogger = transactionLogger;
             this.emailClient = emailClient;
         }
 
@@ -340,6 +343,10 @@ namespace MyCourse.Models.Services.Application.Courses
             catch (DbUpdateException)
             {
                 throw new CourseSubscriptionException(inputModel.CourseId);
+            }
+            catch (Exception)
+            {
+                await transactionLogger.LogTransactionAsync(inputModel);
             }
         }
 
