@@ -25,6 +25,11 @@ namespace MyCourse.Controllers
                     Response.StatusCode = 400;
                     return View();
 
+                case CourseSubscriptionNotFoundException exc:
+                    ViewData["Title"] = "Non sei iscritto al corso";
+                    Response.StatusCode = 400;
+                    return View();
+
                 case PaymentGatewayException exc:
                     ViewData["Title"] = "Si è verificato un errore nel pagamento";
                     Response.StatusCode = 400;

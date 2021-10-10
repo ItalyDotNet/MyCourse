@@ -47,6 +47,10 @@
                 </div>
                 <img src="@Model.ImagePath" class="img-fluid course-image" alt="@Model.Title" asp-append-version="true">
                 <a asp-page="/Contact" asp-route-id="@Model.Id" class="btn btn-block btn-outline-secondary mt-3">Fai una domanda</a>
+                @if (isSubscribed)
+                {
+                <a asp-action="Vote" asp-route-id="@Model.Id" class="btn btn-block btn-outline-secondary mt-2" data-toggle="modal" data-target="#voteModal">Valuta il corso</a>
+                }
             </aside>
         </div>
     </div>
@@ -92,3 +96,26 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="voteModal" tabindex="-1" aria-labelledby="voteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="voteModalLabel">Il tuo voto</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <iframe width="100%" height="100" frameBorder="0"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts
+{
+<script>
+  $('#voteModal').on('shown.bs.modal', function(event) {
+      $(this).find('iframe').attr('src', event.relatedTarget.href);
+  });
+</script>
+}

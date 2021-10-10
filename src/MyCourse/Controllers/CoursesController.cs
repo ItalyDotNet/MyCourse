@@ -152,6 +152,27 @@ namespace MyCourse.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        public async Task<IActionResult> Vote(int id)
+        {
+            CourseVoteInputModel inputModel = new()
+            {
+                Id = id,
+                Vote = await courseService.GetCourseVoteAsync(id) ?? 0
+            };
+            
+            return View(inputModel);
+        }
+
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        [HttpPost]
+        public async Task<IActionResult> Vote(CourseVoteInputModel inputModel)
+        {
+            await courseService.VoteCourseAsync(inputModel);
+            TempData["ConfirmationMessage"] = "Grazie per aver votato!";
+            return RedirectToAction(nameof(Detail), new { id = inputModel.Id });
+        }
+
         [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> IsTitleAvailable(string title, int id = 0)
         {

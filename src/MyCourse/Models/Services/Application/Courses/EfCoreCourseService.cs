@@ -382,5 +382,35 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return paymentGateway.CapturePaymentAsync(token);
         }
+
+        public async Task<int?> GetCourseVoteAsync(int courseId)
+        {
+            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Subscription subscription = await dbContext.Subscriptions.SingleOrDefaultAsync(subscription => subscription.CourseId == courseId && subscription.UserId == userId);
+            if (subscription == null)
+            {
+                throw new CourseSubscriptionNotFoundException(courseId);
+            }
+
+            return subscription.Vote;
+        }
+
+        public async Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        {
+            if (inputModel.Vote < 1 || inputModel.Vote > 5)
+            {
+                throw new InvalidVoteException(inputModel.Vote);
+            }
+
+            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Subscription subscription = await dbContext.Subscriptions.SingleOrDefaultAsync(subscription => subscription.CourseId == inputModel.Id && subscription.UserId == userId);
+            if (subscription == null)
+            {
+                throw new CourseSubscriptionNotFoundException(inputModel.Id);
+            }
+
+            subscription.Vote = inputModel.Vote;
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

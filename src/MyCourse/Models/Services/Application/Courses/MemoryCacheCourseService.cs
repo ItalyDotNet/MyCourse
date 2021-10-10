@@ -144,5 +144,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.CapturePaymentAsync(courseId, token);
         }
+
+        public Task<int?> GetCourseVoteAsync(int courseId)
+        {
+            return courseService.GetCourseVoteAsync(courseId);
+        }
+
+        public Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        {
+            return courseService.VoteCourseAsync(inputModel);
+        }
     }
 }

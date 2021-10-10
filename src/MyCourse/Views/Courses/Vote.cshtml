@@ -1,0 +1,26 @@
+@model CourseVoteInputModel
+@{
+    Layout = "_LayoutMinimal";
+}
+<form asp-action="Vote" asp-route-id="@Model.Id" method="post" class="text-center" target="_top">
+    @for (int i = 1; i <= 5; i++)
+    {<button name="Vote" type="submit" class="border-0 bg-transparent mx-0 display-4 text-warning" value="@i" onmouseover="highlightVote(@i)" onmouseout="resetVote()">
+        <i class="far fa-star"></i>
+    </button>}
+</form>
+@section Scripts
+{
+<script>
+    function highlightVote(vote) {
+        const buttons = $('button[name="Vote"]');
+        buttons.slice(0, vote).find('i').addClass('fas').removeClass('far');
+        buttons.slice(vote).find('i').addClass('far').removeClass('fas');
+    }
+
+    function resetVote() {
+        highlightVote(@Model.Vote);
+    }
+
+    resetVote();
+</script>
+}

@@ -109,5 +109,15 @@ namespace MyCourse.Models.Entities
         {
             ImagePath = imagePath;
         }
+
+        public void ChangeRating(double? rating)
+        {
+            if (rating == null)
+            {
+                return;
+            }
+
+            Rating = rating ?? 0;
+        }
     }
 }
