@@ -20,7 +20,7 @@
         <div class="col-md-3 d-flex align-items-end">
             @if (isSubscribed)
             {
-            <span class="alert alert-secondary btn-block">Sei iscritto al corso</span>
+            <span class="alert alert-secondary btn-block">Sei iscritto al corso. <a asp-action="Receipt" asp-route-id="@Model.Id" download>Ricevuta</a>.</span>
             }
             else if (canEdit)
             {

@@ -21,6 +21,7 @@ using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
+using Rotativa.AspNetCore;
 
 namespace MyCourse
 {
@@ -161,6 +162,8 @@ namespace MyCourse
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
+            RotativaConfiguration.Setup(env.ContentRootPath);
+
             //if (env.IsDevelopment())
             if (env.IsEnvironment("Development"))
             {

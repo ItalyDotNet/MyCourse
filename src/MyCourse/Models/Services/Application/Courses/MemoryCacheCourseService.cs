@@ -154,5 +154,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.VoteCourseAsync(inputModel);
         }
+
+        public Task<CourseSubscriptionViewModel> GetCourseSubscriptionAsync(int courseId)
+        {
+            return courseService.GetCourseSubscriptionAsync(courseId);
+        }
     }
 }

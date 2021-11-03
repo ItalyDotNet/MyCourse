@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +9,10 @@ using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Infrastructure;
-using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 
 namespace MyCourse.Controllers
 {
@@ -69,7 +69,7 @@ namespace MyCourse.Controllers
             CourseCreateInputModel inputModel = new();
             return View(inputModel);
         }
-        
+
         [HttpPost]
         [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> Create(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions)
@@ -141,7 +141,7 @@ namespace MyCourse.Controllers
             ViewData["Title"] = "Modifica corso";
             return View(inputModel);
         }
-        
+
         [HttpPost]
         [Authorize(Policy = nameof(Policy.CourseAuthor))]
         [Authorize(Roles = nameof(Role.Teacher))]
@@ -160,7 +160,7 @@ namespace MyCourse.Controllers
                 Id = id,
                 Vote = await courseService.GetCourseVoteAsync(id) ?? 0
             };
-            
+
             return View(inputModel);
         }
 
@@ -178,6 +178,29 @@ namespace MyCourse.Controllers
         {
             bool result = await courseService.IsTitleAvailableAsync(title, id);
             return Json(result);
+        }
+
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        public async Task<IActionResult> Receipt(int id)
+        {
+            CourseSubscriptionViewModel viewModel = await courseService.GetCourseSubscriptionAsync(id);
+            // return View(viewModel);
+
+            ViewAsPdf pdf = new ViewAsPdf
+            {
+                Model = viewModel,
+                ViewName = nameof(Receipt),
+                PageMargins = new Margins { Top = 10, Left = 10, Right = 10, Bottom = 20 },
+                PageSize = Size.A4,
+                PageOrientation = Orientation.Portrait,
+                FileName = $"{viewModel.Title} - ricevuta iscrizione.pdf"
+            };
+
+            byte[] fileContents = await pdf.BuildFile(ControllerContext);
+
+            // Salvare fileContents
+
+            return File(fileContents, "application/pdf", pdf.FileName);
         }
     }
 }

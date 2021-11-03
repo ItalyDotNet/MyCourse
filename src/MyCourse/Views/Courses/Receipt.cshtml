@@ -1,0 +1,30 @@
+@model CourseSubscriptionViewModel
+@{
+    Layout = "_LayoutMinimal";
+}
+<a class="navbar-brand" asp-controller="Home" asp-action="Index"><img src="~/logo.svg" height="60" alt="Logo MyCourse"></a>
+
+<h1>Ricevuta di acquisto</h1>
+<p>Ti ringraziamo per esserti iscritto a uno dei nostri corsi! Segue il dettaglio del tuo acquisto.</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nome del corso</th>
+            <th class="text-right">Importo pagato</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Title</td>
+            <td class="text-right">@Model.Paid</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+@* Usa l'attributo style="page-break-before: always" su un elemento HTML se vuoi causare un'interruzione di pagina *@
+@* Esempio: <h2 style="page-break-before: always">Dettagli della transazione</h2> *@
+<h2>Dettagli della transazione</h2>
+<p>Il pagamento è stato effettuato il <strong>@Model.PaymentDate.ToLocalTime()</strong> con <strong>@Model.PaymentType</strong>. ID transazione: <strong>@Model.TransactionId</strong>.</p>
+<br>
+<h2>Supporto clienti</h2>
+<p>Se intendi richiedere un rimborso ti preghiamo di scrivere un'email <a href="mailto:rimborsi@mycourse.ext">rimborsi@mycourse.ext</a>.</p>
