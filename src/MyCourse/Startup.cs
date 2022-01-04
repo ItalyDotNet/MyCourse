@@ -26,7 +26,7 @@ namespace MyCourse
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration) 
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -41,7 +41,7 @@ namespace MyCourse
             services.AddReCaptcha(Configuration.GetSection("ReCaptcha"));
             services.AddResponseCaching();
 
-            services.AddMvc(options => 
+            services.AddMvc(options =>
             {
                 CacheProfile homeProfile = new();
                 //homeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
@@ -54,28 +54,30 @@ namespace MyCourse
 
             });
 
-            services.AddRazorPages(options => {
+            services.AddRazorPages(options =>
+            {
                 options.Conventions.AllowAnonymousToPage("/Privacy");
             });
 
-            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
-                        // Criteri di validazione della password
-                        options.Password.RequireDigit = true;
-                        options.Password.RequiredLength = 8;
-                        options.Password.RequireUppercase = true;
-                        options.Password.RequireLowercase = true;
-                        options.Password.RequireNonAlphanumeric = true;
-                        options.Password.RequiredUniqueChars = 4;
+            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                // Criteri di validazione della password
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredUniqueChars = 4;
 
-                        // Conferma dell'account
-                        options.SignIn.RequireConfirmedAccount = true;
+                // Conferma dell'account
+                options.SignIn.RequireConfirmedAccount = true;
 
-                        // Blocco dell'account
-                        options.Lockout.AllowedForNewUsers = true;
-                        options.Lockout.MaxFailedAccessAttempts = 5;
-                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                // Blocco dell'account
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
-                    })
+            })
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
@@ -91,7 +93,7 @@ namespace MyCourse
                     //Imposta l'AdoNetUserStore come servizio di persistenza per Identity
                     identityBuilder.AddUserStore<AdoNetUserStore>();
 
-                break;
+                    break;
 
                 case Persistence.EfCore:
 
@@ -100,9 +102,10 @@ namespace MyCourse
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
-                    
+
                     // Usando AddDbContextPool, il DbContext verrà implicitamente registrato con il ciclo di vita Scoped
-                    services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
+                    services.AddDbContextPool<MyCourseDbContext>(optionsBuilder =>
+                    {
                         string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
                         optionsBuilder.UseSqlite(connectionString, options =>
                         {
@@ -111,7 +114,7 @@ namespace MyCourse
                             // options.EnableRetryOnFailure(3);
                         });
                     });
-                break;
+                    break;
             }
 
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
@@ -159,12 +162,16 @@ namespace MyCourse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
+        public void Configure(WebApplication app)
         {
+            IWebHostEnvironment env = app.Environment;
+            IHostApplicationLifetime lifetime = app.Lifetime;
+
             //if (env.IsDevelopment())
             if (env.IsEnvironment("Development"))
             {
-                app.UseDeveloperExceptionPage();
+                // Aggiunta automaticamente da .NET 6
+                // app.UseDeveloperExceptionPage();
 
                 //Aggiorniamo un file per notificare al BrowserSync che deve aggiornare la pagina
                 lifetime.ApplicationStarted.Register(() =>
@@ -203,12 +210,10 @@ namespace MyCourse
             app.UseResponseCaching();
 
             //EndpointMiddleware
-            app.UseEndpoints(routeBuilder => {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
-                            .RequireAuthorization();
-                routeBuilder.MapRazorPages()
-                            .RequireAuthorization();
-            });
+            app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
+               .RequireAuthorization();
+            app.MapRazorPages()
+               .RequireAuthorization();
         }
     }
 }
