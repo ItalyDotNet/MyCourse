@@ -1,4 +1,4 @@
-namespace MyCourse.Models.ValueTypes;
+namespace MyCourse.Models.ValueObjects;
 
 public record Money
 {

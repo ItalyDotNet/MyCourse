@@ -89,7 +89,7 @@ partial class LessonVersion
 
         modelBuilder.Entity("MyCourse.Models.Entities.Course", b =>
             {
-                b.OwnsOne("MyCourse.Models.ValueTypes.Money", "CurrentPrice", b1 =>
+                b.OwnsOne("MyCourse.Models.ValueObjects.Money", "CurrentPrice", b1 =>
                     {
                         b1.Property<int>("CourseId")
                             .HasColumnType("INTEGER");
@@ -111,7 +111,7 @@ partial class LessonVersion
                             .HasForeignKey("CourseId");
                     });
 
-                b.OwnsOne("MyCourse.Models.ValueTypes.Money", "FullPrice", b1 =>
+                b.OwnsOne("MyCourse.Models.ValueObjects.Money", "FullPrice", b1 =>
                     {
                         b1.Property<int>("CourseId")
                             .HasColumnType("INTEGER");

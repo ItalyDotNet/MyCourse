@@ -1,4 +1,4 @@
-namespace MyCourse.Models.ValueTypes;
+namespace MyCourse.Models.ValueObjects;
 
 //Questa classe serve unicamente per indicare al servizio infrastrutturale SqliteAccessor
 //che un dato parametro non deve essere convertito in SqliteParameter

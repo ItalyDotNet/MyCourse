@@ -379,7 +379,7 @@ partial class TriggerCourseRating
                     .WithMany("AuthoredCourses")
                     .HasForeignKey("AuthorId");
 
-                b.OwnsOne("MyCourse.Models.ValueTypes.Money", "CurrentPrice", b1 =>
+                b.OwnsOne("MyCourse.Models.ValueObjects.Money", "CurrentPrice", b1 =>
                     {
                         b1.Property<int>("CourseId")
                             .HasColumnType("INTEGER");
@@ -401,7 +401,7 @@ partial class TriggerCourseRating
                             .HasForeignKey("CourseId");
                     });
 
-                b.OwnsOne("MyCourse.Models.ValueTypes.Money", "FullPrice", b1 =>
+                b.OwnsOne("MyCourse.Models.ValueObjects.Money", "FullPrice", b1 =>
                     {
                         b1.Property<int>("CourseId")
                             .HasColumnType("INTEGER");
@@ -453,7 +453,7 @@ partial class TriggerCourseRating
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
 
-                b.OwnsOne("MyCourse.Models.ValueTypes.Money", "Paid", b1 =>
+                b.OwnsOne("MyCourse.Models.ValueObjects.Money", "Paid", b1 =>
                     {
                         b1.Property<int>("SubscriptionCourseId")
                             .HasColumnType("INTEGER");
