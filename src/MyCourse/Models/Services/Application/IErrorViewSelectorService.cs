@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Services.Application
 {

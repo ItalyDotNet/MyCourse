@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace MyCourse.Models.ValueTypes
+namespace MyCourse.Models.ValueObjects
 {
     public class ErrorViewData
     {
