@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 using MyCourse.Models.ViewModels.Lessons;
 
 namespace MyCourse.Models.ViewModels.Courses
