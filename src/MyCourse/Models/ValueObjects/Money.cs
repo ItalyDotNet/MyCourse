@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using MyCourse.Models.Enums;
 
-namespace MyCourse.Models.ValueTypes
+namespace MyCourse.Models.ValueObjects
 {
     [Owned]
     public class Money

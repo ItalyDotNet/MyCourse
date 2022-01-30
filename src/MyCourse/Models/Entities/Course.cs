@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Entities
 {
