@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Entities
 {
