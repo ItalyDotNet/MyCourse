@@ -82,7 +82,7 @@ namespace MyCourse.Migrations
 
             modelBuilder.Entity("MyCourse.Models.Entities.Course", b =>
                 {
-                    b.OwnsOne("MyCourse.Models.ValueTypes.Money", "CurrentPrice", b1 =>
+                    b.OwnsOne("MyCourse.Models.ValueObjects.Money", "CurrentPrice", b1 =>
                         {
                             b1.Property<int>("CourseId")
                                 .HasColumnType("INTEGER");
@@ -104,7 +104,7 @@ namespace MyCourse.Migrations
                                 .HasForeignKey("CourseId");
                         });
 
-                    b.OwnsOne("MyCourse.Models.ValueTypes.Money", "FullPrice", b1 =>
+                    b.OwnsOne("MyCourse.Models.ValueObjects.Money", "FullPrice", b1 =>
                         {
                             b1.Property<int>("CourseId")
                                 .HasColumnType("INTEGER");
