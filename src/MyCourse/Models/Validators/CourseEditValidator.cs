@@ -4,7 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Services.Infrastructure;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Validators
 {
