@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
-using MyCourse.Models.Options;
 using PayPalCheckoutSdk.Core;
 using PayPalCheckoutSdk.Orders;
-using PayPalHttp;
+using HttpResponse = PayPalHttp.HttpResponse;
 
 namespace MyCourse.Models.Services.Infrastructure
 {

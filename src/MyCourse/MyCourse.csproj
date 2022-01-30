@@ -2,7 +2,16 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>MyCourse</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <!-- Possiamo rimuovere dei namespace aggiunti automaticamente dagli ImplicitUsings -->
+  <ItemGroup>
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Net.Http.Json" />
+    <!-- Inoltre, qui potremmo usare <Using Add="..." per aggiungerne degli altri,
+    oppure usare un file come il GlogalUsings.cs che si trova nella directory principale del progetto -->
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
