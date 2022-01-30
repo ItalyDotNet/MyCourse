@@ -13,7 +13,7 @@ using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 using MyCourse.Models.ViewModels.Lessons;
