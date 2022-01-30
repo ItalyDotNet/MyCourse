@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.InputModels.Courses
 {

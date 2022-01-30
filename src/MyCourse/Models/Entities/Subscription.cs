@@ -1,5 +1,5 @@
 using System;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Entities
 {
