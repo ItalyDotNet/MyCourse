@@ -9,7 +9,7 @@ using MyCourse.Models.Exceptions;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
