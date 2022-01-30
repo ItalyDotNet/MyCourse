@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Extensions

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.ViewModels
 {
