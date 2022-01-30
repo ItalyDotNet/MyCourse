@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using AutoMapper;
 using MyCourse.Models.Enums;
-using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ValueObjects;
 
 namespace MyCourse.Models.Mapping.Resolvers
 {
