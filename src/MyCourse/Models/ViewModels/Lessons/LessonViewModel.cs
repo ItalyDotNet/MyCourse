@@ -1,33 +1,31 @@
-using System;
 using System.Data;
-using MyCourse.Models.Entities;
 
-namespace MyCourse.Models.ViewModels.Lessons
+namespace MyCourse.Models.ViewModels.Lessons;
+
+public class LessonViewModel
 {
-    public class LessonViewModel
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public TimeSpan Duration { get; set; }
+
+    public static LessonViewModel FromDataRow(DataRow dataRow)
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public TimeSpan Duration { get; set; }
-
-        public static LessonViewModel FromDataRow(DataRow dataRow)
+        LessonViewModel lessonViewModel = new()
         {
-            LessonViewModel lessonViewModel = new() {
-                Id = Convert.ToInt32(dataRow["Id"]),
-                Title = Convert.ToString(dataRow["Title"]),
-                Duration = TimeSpan.Parse(Convert.ToString(dataRow["Duration"])),
-            };
-            return lessonViewModel;
-        }
+            Id = Convert.ToInt32(dataRow["Id"]),
+            Title = Convert.ToString(dataRow["Title"]),
+            Duration = TimeSpan.Parse(Convert.ToString(dataRow["Duration"])),
+        };
+        return lessonViewModel;
+    }
 
-        public static LessonViewModel FromEntity(Lesson lesson)
+    public static LessonViewModel FromEntity(Lesson lesson)
+    {
+        return new LessonViewModel
         {
-            return new LessonViewModel
-            {
-                Id = lesson.Id,
-                Title = lesson.Title,
-                Duration = lesson.Duration
-            };
-        }
+            Id = lesson.Id,
+            Title = lesson.Title,
+            Duration = lesson.Duration
+        };
     }
 }

@@ -1,13 +1,12 @@
-namespace MyCourse.Models.ViewModels
+namespace MyCourse.Models.ViewModels;
+
+public interface IPaginationInfo
 {
-    public interface IPaginationInfo
-    {
-        int CurrentPage { get; }
-        int TotalResults { get; }
-        int ResultsPerPage { get; }
-        
-        string Search { get; }
-        string OrderBy { get; }
-        bool Ascending { get; }
-    }
+    int CurrentPage { get; }
+    int TotalResults { get; }
+    int ResultsPerPage { get; }
+
+    string Search { get; }
+    string OrderBy { get; }
+    bool Ascending { get; }
 }

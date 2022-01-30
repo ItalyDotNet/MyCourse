@@ -1,6 +1,6 @@
 @inject IAuthorizationService authService
 @{
-  AuthorizationPolicy policy = new AuthorizationPolicyBuilder().RequireRole(nameof(Role.Administrator)).Build();
+  AuthorizationPolicy policy = new AuthorizationPolicyBuilder().RequireRole(nameof(Role.Administrator)).Build();
   AuthorizationResult authorizationResult = await authService.AuthorizeAsync(User, policy);
   bool isAdmin = authorizationResult.Succeeded;
 }

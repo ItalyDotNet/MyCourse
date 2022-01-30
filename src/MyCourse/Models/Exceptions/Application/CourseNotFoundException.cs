@@ -1,11 +1,8 @@
-using System;
+namespace MyCourse.Models.Exceptions.Application;
 
-namespace MyCourse.Models.Exceptions.Application
+public class CourseNotFoundException : Exception
 {
-    public class CourseNotFoundException : Exception
+    public CourseNotFoundException(int courseId) : base($"Course {courseId} not found")
     {
-        public CourseNotFoundException(int courseId) : base($"Course {courseId} not found")
-        {
-        }
     }
 }

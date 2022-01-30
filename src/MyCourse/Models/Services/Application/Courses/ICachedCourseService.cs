@@ -1,6 +1,5 @@
-namespace MyCourse.Models.Services.Application.Courses
+namespace MyCourse.Models.Services.Application.Courses;
+
+public interface ICachedCourseService : ICourseService
 {
-    public interface ICachedCourseService : ICourseService
-    {
-    }
 }

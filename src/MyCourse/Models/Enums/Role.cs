@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyCourse.Models.Enums
+namespace MyCourse.Models.Enums;
+
+public enum Role
 {
-    public enum Role
-    {
-        [Display(Name = "Amministratore")]
-        Administrator,
-        [Display(Name = "Docente")]
-        Teacher
-    }
+    [Display(Name = "Amministratore")]
+    Administrator,
+    [Display(Name = "Docente")]
+    Teacher
 }

@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace MyCourse.Models.Authorization
-{
-    public class CourseLimitRequirement : IAuthorizationRequirement
-    {
-        public CourseLimitRequirement(int limit)
-        {
-            Limit = limit;
-        }
+namespace MyCourse.Models.Authorization;
 
-        public int Limit { get; }
+public class CourseLimitRequirement : IAuthorizationRequirement
+{
+    public CourseLimitRequirement(int limit)
+    {
+        Limit = limit;
     }
+
+    public int Limit { get; }
 }

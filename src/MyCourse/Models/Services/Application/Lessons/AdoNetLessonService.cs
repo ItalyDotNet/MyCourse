@@ -1,7 +1,4 @@
-using System;
 using System.Data;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Lessons;
 using MyCourse.Models.Services.Infrastructure;
