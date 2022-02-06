@@ -31,14 +31,13 @@ public class Startup
         services.AddMvc(options =>
         {
             CacheProfile homeProfile = new();
-                //homeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
-                //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCache:Home:Location");
-                //homeProfile.VaryByQueryKeys = new string[] { "page" };
-                Configuration.Bind("ResponseCache:Home", homeProfile);
+            //homeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
+            //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCache:Home:Location");
+            //homeProfile.VaryByQueryKeys = new string[] { "page" };
+            Configuration.Bind("ResponseCache:Home", homeProfile);
             options.CacheProfiles.Add("Home", homeProfile);
 
             options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-
         });
 
         services.AddRazorPages(options =>
@@ -48,25 +47,24 @@ public class Startup
 
         var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options =>
         {
-                // Criteri di validazione della password
-                options.Password.RequireDigit = true;
+            // Criteri di validazione della password
+            options.Password.RequireDigit = true;
             options.Password.RequiredLength = 8;
             options.Password.RequireUppercase = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequiredUniqueChars = 4;
 
-                // Conferma dell'account
-                options.SignIn.RequireConfirmedAccount = true;
+            // Conferma dell'account
+            options.SignIn.RequireConfirmedAccount = true;
 
-                // Blocco dell'account
-                options.Lockout.AllowedForNewUsers = true;
+            // Blocco dell'account
+            options.Lockout.AllowedForNewUsers = true;
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-
         })
-                .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
-                .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
+        .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+        .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
         //Usiamo ADO.NET o Entity Framework Core per l'accesso ai dati?
         var persistence = Persistence.AdoNet;
@@ -96,10 +94,10 @@ public class Startup
                     string connectionString = Configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
                     optionsBuilder.UseSqlite(connectionString, options =>
                     {
-                            // Abilito il connection resiliency (tuttavia non è supportato dal provider di Sqlite perché non è soggetto a errori transienti)
-                            // Info su: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
-                            // options.EnableRetryOnFailure(3);
-                        });
+                        // Abilito il connection resiliency (tuttavia non è supportato dal provider di Sqlite perché non è soggetto a errori transienti)
+                        // Info su: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
+                        // options.EnableRetryOnFailure(3);
+                    });
                 });
                 break;
         }

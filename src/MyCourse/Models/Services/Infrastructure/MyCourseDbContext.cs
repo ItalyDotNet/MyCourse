@@ -22,21 +22,21 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Course>(entity =>
         {
             entity.ToTable("Courses"); //Superfluo se la tabella si chiama come la proprietà che espone il DbSet
-                entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CourseId
-                                                    //entity.HasKey(course => new { course.Id, course.Author }); //Per chiavi primarie composite (è importante rispettare l'ordine dei campi)
+            entity.HasKey(course => course.Id); //Superfluo se la proprietà si chiama Id oppure CourseId
+                                                //entity.HasKey(course => new { course.Id, course.Author }); //Per chiavi primarie composite (è importante rispettare l'ordine dei campi)
 
-                entity.HasIndex(course => course.Title).IsUnique();
+            entity.HasIndex(course => course.Title).IsUnique();
             entity.Property(course => course.RowVersion).IsRowVersion();
             entity.Property(course => course.Status).HasConversion<string>();
 
-                //Mapping per gli owned types
-                entity.OwnsOne(course => course.CurrentPrice, builder =>
+            //Mapping per gli owned types
+            entity.OwnsOne(course => course.CurrentPrice, builder =>
             {
                 builder.Property(money => money.Currency)
                        .HasConversion<string>()
                        .HasColumnName("CurrentPrice_Currency"); //Superfluo perché le nostre colonne seguono già la convenzione di nomi
-                    builder.Property(money => money.Amount)
-                       .HasColumnName("CurrentPrice_Amount")//Superfluo perché le nostre colonne seguono già la convenzione di nomi
+                builder.Property(money => money.Amount)
+                       .HasColumnName("CurrentPrice_Amount") //Superfluo perché le nostre colonne seguono già la convenzione di nomi
                        .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
@@ -49,7 +49,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                 });
 
                 //Mapping per le relazioni
-                entity.HasOne(course => course.AuthorUser)
+            entity.HasOne(course => course.AuthorUser)
                   .WithMany(user => user.AuthoredCourses)
                   .HasForeignKey(course => course.AuthorId);
 
@@ -57,7 +57,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                   .WithOne(lesson => lesson.Course)
                   .HasForeignKey(lesson => lesson.CourseId); //Superflua se la proprietà si chiama CourseId
 
-                entity.HasMany(course => course.SubscribedUsers)
+            entity.HasMany(course => course.SubscribedUsers)
                   .WithMany(user => user.SubscribedCourses)
                   .UsingEntity<Subscription>(
                         entity => entity.HasOne(subscription => subscription.User).WithMany().HasForeignKey(courseStudent => courseStudent.UserId),
@@ -75,10 +75,10 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                         }
             );
 
-                //Global Query Filter
-                entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
+            //Global Query Filter
+            entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
 
-                #region Mapping generato automaticamente dal tool di reverse engineering
+            #region Mapping generato automaticamente dal tool di reverse engineering
                 /*
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -120,7 +120,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                     .IsRequired()
                     .HasColumnType("TEXT (100)");
                     */
-                #endregion
+            #endregion
             });
 
         modelBuilder.Entity<Lesson>(entity =>
@@ -128,7 +128,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(lesson => lesson.RowVersion).IsRowVersion();
             entity.Property(lesson => lesson.Order).HasDefaultValue(1000).ValueGeneratedNever();
 
-                #region Mapping generato automaticamente dal tool di reverse engineering
+            #region Mapping generato automaticamente dal tool di reverse engineering
                 /*
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -147,7 +147,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                     .WithMany(p => p.Lessons)
                     .HasForeignKey(d => d.CourseId);
                 */
-                #endregion
+            #endregion
             });
     }
 }
