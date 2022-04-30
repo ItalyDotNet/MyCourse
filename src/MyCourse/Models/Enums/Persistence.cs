@@ -1,8 +1,7 @@
-namespace MyCourse.Models.Enums
+namespace MyCourse.Models.Enums;
+
+public enum Persistence
 {
-    public enum Persistence
-    {
-        AdoNet,
-        EfCore
-    }
+    AdoNet,
+    EfCore
 }

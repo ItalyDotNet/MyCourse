@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MyCourse.Models.InputModels.Courses;
-using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 
 namespace MyCourse.Models.Services.Application.Courses

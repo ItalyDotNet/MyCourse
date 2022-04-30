@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyCourse.Models.InputModels.Courses
+namespace MyCourse.Models.InputModels.Courses;
+
+public class CourseDeleteInputModel
 {
-    public class CourseDeleteInputModel
-    {
-        [Required]
-        public int Id { get; set; }
-    }
+    [Required]
+    public int Id { get; set; }
 }

@@ -1,9 +1,8 @@
-namespace MyCourse.Models.Enums
+namespace MyCourse.Models.Enums;
+
+public enum Currency
 {
-    public enum Currency
-    {
-        EUR,
-        USD,
-        GBP
-    }
+    EUR,
+    USD,
+    GBP
 }

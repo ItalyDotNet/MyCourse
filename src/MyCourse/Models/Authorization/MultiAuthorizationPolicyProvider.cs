@@ -1,49 +1,44 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 
-namespace MyCourse.Models.Authorization
+namespace MyCourse.Models.Authorization;
+
+public class MultiAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
 {
-    public class MultiAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
-    {
-        private readonly IOptions<AuthorizationOptions> options;
-        private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IOptions<AuthorizationOptions> options;
+    private readonly IHttpContextAccessor httpContextAccessor;
 
-        public MultiAuthorizationPolicyProvider(IHttpContextAccessor httpContextAccessor, IOptions<AuthorizationOptions> options) : base(options)
+    public MultiAuthorizationPolicyProvider(IHttpContextAccessor httpContextAccessor, IOptions<AuthorizationOptions> options) : base(options)
+    {
+        this.httpContextAccessor = httpContextAccessor;
+        this.options = options;
+    }
+
+    public override async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
+    {
+        var policy = await base.GetPolicyAsync(policyName);
+        if (policy != null)
         {
-            this.httpContextAccessor = httpContextAccessor;
-            this.options = options;
+            return policy;
         }
 
-        public override async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
+        var policyNames = policyName.Split(',', System.StringSplitOptions.RemoveEmptyEntries).Select(name => name.Trim()).ToArray();
+        var builder = new AuthorizationPolicyBuilder();
+        builder.RequireAssertion(async (context) =>
         {
-            var policy = await base.GetPolicyAsync(policyName);
-            if (policy != null)
+            var authService = httpContextAccessor.HttpContext.RequestServices.GetService<IAuthorizationService>();
+            foreach (var policyName in policyNames)
             {
-                return policy;
+                var result = await authService.AuthorizeAsync(context.User, context.Resource, policyName);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
             }
 
-            var policyNames = policyName.Split(',', System.StringSplitOptions.RemoveEmptyEntries).Select(name => name.Trim()).ToArray();
-            var builder = new AuthorizationPolicyBuilder();
-            builder.RequireAssertion(async (context) =>
-            {
-                var authService = httpContextAccessor.HttpContext.RequestServices.GetService<IAuthorizationService>();
-                foreach (var policyName in policyNames)
-                {
-                    var result = await authService.AuthorizeAsync(context.User, context.Resource, policyName);
-                    if (result.Succeeded)
-                    {
-                        return true;
-                    }
-                }
+            return false;
+        });
 
-                return false;
-            });
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

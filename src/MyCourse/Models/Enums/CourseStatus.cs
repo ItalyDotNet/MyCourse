@@ -1,9 +1,8 @@
-namespace MyCourse.Models.Enums
+namespace MyCourse.Models.Enums;
+
+public enum CourseStatus
 {
-    public enum CourseStatus
-    {
-        Draft,
-        Published,
-        Deleted
-    }
+    Draft,
+    Published,
+    Deleted
 }

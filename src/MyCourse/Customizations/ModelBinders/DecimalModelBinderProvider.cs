@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace MyCourse.Customizations.ModelBinders
+namespace MyCourse.Customizations.ModelBinders;
+
+public class DecimalModelBinderProvider : IModelBinderProvider
 {
-    public class DecimalModelBinderProvider : IModelBinderProvider
+    public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
-        public IModelBinder GetBinder(ModelBinderProviderContext context)
+        if (context.Metadata.ModelType == typeof(decimal))
         {
-            if (context.Metadata.ModelType == typeof(decimal)) {
-                return new DecimalModelBinder();
-            }
-            return null;
+            return new DecimalModelBinder();
         }
+        return null;
     }
 }

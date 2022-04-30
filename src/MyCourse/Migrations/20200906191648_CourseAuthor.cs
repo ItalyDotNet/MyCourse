@@ -1,20 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace MyCourse.Migrations
-{
-    public partial class CourseAuthor : Migration
-    {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            // Il comando sql PRAGMA foreign_keys = 0; serve a sospendere temporaneamente il controllo sui vincoli di foreign key
-            // in modo che possiamo manipolare la tabella Courses senza causare effetti collaterali sulle tabelle dipendenti da essa,
-            // come ad esempio la tabella Lessons.
-            // Il controllo sui vincoli verrà poi riabilitato con PRAGMA foreign_keys = 1; dopo aver eseguito tutti gli altri comandi sql.
+namespace MyCourse.Migrations;
 
-            // IMPORTANTISSIMO: il comando sql PRAGMA non funziona nel contesto di una transazione, perciò bisogna
-            // fornire true come secondo parametro al metodo migrationBuilder.Sql per sopprimere la transazione. Ad esempio:
-            // migrationBuilder.Sql("QUI COMANDI SQL", suppressTransaction: true);
-            migrationBuilder.Sql(@"PRAGMA foreign_keys = 0;
+public partial class CourseAuthor : Migration
+{
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        // Il comando sql PRAGMA foreign_keys = 0; serve a sospendere temporaneamente il controllo sui vincoli di foreign key
+        // in modo che possiamo manipolare la tabella Courses senza causare effetti collaterali sulle tabelle dipendenti da essa,
+        // come ad esempio la tabella Lessons.
+        // Il controllo sui vincoli verrà poi riabilitato con PRAGMA foreign_keys = 1; dopo aver eseguito tutti gli altri comandi sql.
+
+        // IMPORTANTISSIMO: il comando sql PRAGMA non funziona nel contesto di una transazione, perciò bisogna
+        // fornire true come secondo parametro al metodo migrationBuilder.Sql per sopprimere la transazione. Ad esempio:
+        // migrationBuilder.Sql("QUI COMANDI SQL", suppressTransaction: true);
+        migrationBuilder.Sql(@"PRAGMA foreign_keys = 0;
 
 CREATE TABLE sqlitestudio_temp_table AS SELECT *
                                           FROM Courses;
@@ -97,11 +97,11 @@ END;
 
 PRAGMA foreign_keys = 1;
 ", suppressTransaction: true);
-        }
+    }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql(@"PRAGMA foreign_keys = 0;
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.Sql(@"PRAGMA foreign_keys = 0;
 
 CREATE TABLE sqlitestudio_temp_table AS SELECT *
                                           FROM Courses;
@@ -183,6 +183,5 @@ END;
 
 PRAGMA foreign_keys = 1;
 ", suppressTransaction: true);
-        }
     }
 }

@@ -1,4 +1,4 @@
-@inject SignInManager<ApplicationUser> signInManager
+@inject SignInManager<ApplicationUser> signInManager
 @inject UserManager<ApplicationUser> userManager
 
 @if (signInManager.IsSignedIn(User))
@@ -11,8 +11,8 @@
         <a class="nav-link" asp-page="/Account/Manage/Index" asp-area="Identity">Ciao @User.FindFirst("FullName").Value!</a>
     </li>
     <li class="nav-item active">
-        <form class="form-inline" method="post" asp-page="/Account/Logout" asp-area="Identity">
-            <button type="submit" class="btn btn-link text-white">Esci</button>
+        <form class="form-inline" method="post" asp-page="/Account/Logout" asp-area="Identity">
+            <button type="submit" class="btn btn-link text-white">Esci</button>
         </form>
     </li>
 </ul>

@@ -1,9 +1,8 @@
-namespace MyCourse.Models.Enums
+namespace MyCourse.Models.Enums;
+
+public enum Policy
 {
-    public enum Policy
-    {
-        CourseAuthor,
-        CourseSubscriber,
-        CourseLimit
-    }
+    CourseAuthor,
+    CourseSubscriber,
+    CourseLimit
 }
