@@ -53,6 +53,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
                   .UsingEntity<Subscription>(
                         entity =>
                         {
+                            entity.HasQueryFilter(subscription => subscription.Course.Status != CourseStatus.Deleted);
                             entity.ToTable("Subscriptions");
                         }
             );
@@ -109,6 +110,7 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
         {
             entity.Property(lesson => lesson.RowVersion).IsRowVersion();
             entity.Property(lesson => lesson.Order).HasDefaultValue(1000).ValueGeneratedNever();
+            entity.HasQueryFilter(lesson => lesson.Course.Status != CourseStatus.Deleted);
 
             #region Mapping generato automaticamente dal tool di reverse engineering
                 /*

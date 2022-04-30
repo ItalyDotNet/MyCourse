@@ -6,6 +6,8 @@ namespace MyCourse.Models.Entities;
 public class ApplicationUser : IdentityUser
 {
     public string FullName { get; set; }
+    public DateTimeOffset EcommerceConsent { get; set; }
+    public DateTimeOffset? NewsletterConsent { get; set; }
     public virtual ICollection<Course> AuthoredCourses { get; set; }
     public virtual ICollection<Course> SubscribedCourses { get; set; }
 
