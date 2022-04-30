@@ -30,7 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
+    <PackageReference Include="HtmlSanitizer" Version="5.0.372" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="7.15.4" />
     <PackageReference Include="MailKit" Version="2.9.0" />
     <PackageReference Include="PayPalCheckoutSdk" Version="1.0.3" />
