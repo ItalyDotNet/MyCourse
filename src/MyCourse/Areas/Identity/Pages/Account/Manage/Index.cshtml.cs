@@ -26,11 +26,22 @@ public partial class IndexModel : PageModel
     [BindProperty]
     public InputModel Input { get; set; }
 
+    public DateTimeOffset EcommerceConsent { get; set; }
+    public DateTimeOffset? NewsletterConsent { get; set; }
+
     public class InputModel
     {
+        [Required(ErrorMessage = "Il nome completo è obbligatorio")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Il nome completo deve essere di almeno {2} e di al massimo {1} caratteri.")]
+        [Display(Name = "Nome completo")]
+        public string FullName { get; set; }
+
         [Phone(ErrorMessage = "Deve essere un numero di telefono valido")]
         [Display(Name = "Numero di telefono")]
         public string PhoneNumber { get; set; }
+
+        [Display(Name = "Iscrizione alla newsletter")]
+        public bool NewsletterConsent { get; set; }
     }
 
     private async Task LoadAsync(ApplicationUser user)
@@ -40,9 +51,14 @@ public partial class IndexModel : PageModel
 
         Username = userName;
 
+        EcommerceConsent = user.EcommerceConsent;
+        NewsletterConsent = user.NewsletterConsent;
+
         Input = new InputModel
         {
-            PhoneNumber = phoneNumber
+            PhoneNumber = phoneNumber,
+            NewsletterConsent = NewsletterConsent is not null,
+            FullName = user.FullName
         };
     }
 
@@ -72,11 +88,25 @@ public partial class IndexModel : PageModel
             return Page();
         }
 
-        //TODO: PERSISTERE IL FULLNAME
-        //Passo1: Recuperare l'istanza di ApplicationUser (in realtà è stato fatto alla riga 65)
-        //Passo2: Modificare la sua proprietà FullName ottenendo il valore dall'input model
-        //Passo3: Persistere l'ApplicationUser invocando il metodo UpdateAsync dello user manager
-        //Passo4: Consultare la proprietà Success dell'IdentityResult perché se è false, visualizza un errore
+        user.FullName = Input.FullName;
+        if (Input.NewsletterConsent)
+        {
+            if (user.NewsletterConsent is null)
+            {
+                user.NewsletterConsent = DateTimeOffset.Now;
+            }
+        }
+        else
+        {
+            user.NewsletterConsent = null;
+        }
+
+        IdentityResult result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            StatusMessage = "Si è verificato un errore imprevisto nel salvere il profilo dell'utente.";
+            return Page();
+        }
 
         var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
         if (Input.PhoneNumber != phoneNumber)

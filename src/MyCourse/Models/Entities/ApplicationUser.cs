@@ -5,8 +5,11 @@ namespace MyCourse.Models.Entities;
 
 public class ApplicationUser : IdentityUser
 {
+    [PersonalData]
     public string FullName { get; set; }
+    [PersonalData]
     public DateTimeOffset EcommerceConsent { get; set; }
+    [PersonalData]
     public DateTimeOffset? NewsletterConsent { get; set; }
     public virtual ICollection<Course> AuthoredCourses { get; set; }
     public virtual ICollection<Course> SubscribedCourses { get; set; }
