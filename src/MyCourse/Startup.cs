@@ -8,6 +8,7 @@ using AspNetCore.ReCaptcha;
 using MyCourse.Customizations.Identity;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.Services.Worker;
 
 namespace MyCourse;
 
@@ -134,6 +135,10 @@ public class Startup
                 builder.Requirements.Add(new CourseLimitRequirement(limit: 5));
             });
         });
+
+        // Hosted services
+        services.AddHostedService<UserDataHostedService>();
+        services.AddHostedService<ClearDataHostedService>();
 
         // Options
         services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
