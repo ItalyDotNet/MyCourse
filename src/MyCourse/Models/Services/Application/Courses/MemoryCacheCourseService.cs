@@ -67,6 +67,11 @@ public class MemoryCacheCourseService : ICachedCourseService
         return courseService.GetCoursesAsync(model);
     }
 
+    public Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    {
+        return courseService.GetCoursesByAuthorAsync(authorId);
+    }
+
     public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
     {
         string authorId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);

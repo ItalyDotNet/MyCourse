@@ -1,0 +1,14 @@
+﻿@page
+@model DownloadUserDataModel
+@{
+    ViewData["Title"] = "Scarica i tuoi contenuti";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+<h4>@ViewData["Title"]</h4>
+<div class="alert alert-success" role="alert">
+  La tua richiesta è stata presa in carico!<br>
+  Potrebbe volerci un po' di tempo ma presto ti invieremo un'email che includerà il link per scaricare il file ZIP dei tuoi contenuti.
+</div>
+
+<a asp-page="PersonalData">Torna al profilo</a>

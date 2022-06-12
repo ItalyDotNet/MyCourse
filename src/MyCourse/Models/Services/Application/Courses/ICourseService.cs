@@ -6,6 +6,7 @@ namespace MyCourse.Models.Services.Application.Courses
     public interface ICourseService
     {
         Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model);
+        Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId);
         Task<CourseDetailViewModel> GetCourseAsync(int id);
         Task<List<CourseViewModel>> GetMostRecentCoursesAsync();
         Task<List<CourseViewModel>> GetBestRatingCoursesAsync();

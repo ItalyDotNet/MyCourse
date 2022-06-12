@@ -99,6 +99,21 @@ public class AdoNetCourseService : ICourseService
         return result;
     }
 
+    public async Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    {
+        FormattableString query = $@"SELECT Id FROM Courses WHERE AuthorId={authorId} AND Status<>{nameof(CourseStatus.Deleted)}";
+        DataSet dataSet = await db.QueryAsync(query);
+        DataTable dataTable = dataSet.Tables[0];
+        List<CourseDetailViewModel> courseList = new();
+        foreach (DataRow courseRow in dataTable.Rows)
+        {
+            CourseDetailViewModel course = await GetCourseAsync(courseRow.Field<int>("Id"));
+            courseList.Add(course);
+        }
+
+        return courseList;
+    }
+
     public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
     {
         FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}";

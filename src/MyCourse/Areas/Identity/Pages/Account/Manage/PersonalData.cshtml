@@ -1,8 +1,10 @@
 ﻿@page
+@using System.Security.Claims
 @model PersonalDataModel
 @{
     ViewData["Title"] = "Informazioni personali";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    bool canDownloadUserData = User.HasClaim(claim => claim.Type == ClaimTypes.Role && claim.Value == nameof(Role.Teacher));
 }
 
 <h4>@ViewData["Title"]</h4>
@@ -13,8 +15,12 @@
         <p>
             <strong>Eliminare queste informazioni causerà la chiusura del tuo profilo utente e non potrai più accedervi.</strong>
         </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post" class="form-group">
-            <button class="btn btn-primary" type="submit">Scarica</button>
+        <form id="download-data" method="post" class="form-group">
+            <button class="btn btn-primary" type="submit" asp-page="DownloadPersonalData">Scarica dati personali</button>
+            @if (canDownloadUserData)
+            {
+            <button class="btn btn-primary" type="submit" asp-page="DownloadUserData">Scarica i contenuti</button>
+            }
         </form>
         <p>
             <a id="delete" asp-page="DeletePersonalData" class="btn btn-primary">Elimina</a>

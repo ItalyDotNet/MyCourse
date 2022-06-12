@@ -136,8 +136,10 @@ public class Startup
             });
         });
 
-        // Hosted services
-        services.AddHostedService<UserDataHostedService>();
+        // Hosted services (workers)
+        services.AddSingleton<UserDataHostedService>();
+        services.AddSingleton<IUserDataService>(provider => provider.GetRequiredService<UserDataHostedService>());
+        services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<UserDataHostedService>());
         services.AddHostedService<ClearDataHostedService>();
 
         // Options

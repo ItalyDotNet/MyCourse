@@ -133,6 +133,16 @@ public class EfCoreCourseService : ICourseService
         return result;
     }
 
+    public Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    {
+        return dbContext.Courses
+                        .AsNoTracking()
+                        .Include(course => course.Lessons)
+                        .Where(course => course.AuthorId == authorId)
+                        .Select(course => CourseDetailViewModel.FromEntity(course))
+                        .ToListAsync();
+    }
+
     public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
     {
         string title = inputModel.Title;
