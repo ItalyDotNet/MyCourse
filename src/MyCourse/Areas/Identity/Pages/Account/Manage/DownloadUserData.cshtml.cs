@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyCourse.Models.Services.Worker;
@@ -19,7 +18,7 @@ public class DownloadUserDataModel : PageModel
         _userDataService = userDataService;
     }
 
-    public IActionResult OnPostAsync()
+    public IActionResult OnPost()
     {
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         _userDataService.EnqueueUserDataDownload(userId);
