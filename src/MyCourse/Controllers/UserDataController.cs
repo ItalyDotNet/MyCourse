@@ -17,14 +17,15 @@ public class UserDataController : Controller
     [Authorize]
     public IActionResult Download(Guid id)
     {
-        string zipFilePath = userDataService.GetUserDataZipFileLocation(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
-        FileInfo zipFileInfo = new(zipFilePath);
-        if (zipFileInfo.Exists)
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        string zipFilePath = userDataService.GetUserDataZipFileLocation(userId, id);
+        if (System.IO.File.Exists(zipFilePath))
         {
-            FileStream zipFileStream = zipFileInfo.OpenRead();
-            return File(zipFileStream, "application/zip", "Corsi.zip");
+            return PhysicalFile(zipFilePath, "application/zip", "Corsi.zip");
         }
-        
-        return NotFound();
+        else
+        {
+            return NotFound();
+        }
     }
 }

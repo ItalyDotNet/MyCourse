@@ -12,29 +12,32 @@ namespace MyCourse.Models.Services.Worker;
 
 public class UserDataHostedService : BackgroundService, IUserDataService
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly IEmailClient emailClient;
-    private readonly LinkGenerator linkGenerator;
-    private readonly IHostEnvironment env;
+    private readonly IServiceScopeFactory serviceScopeFactory;
     private readonly ILogger<UserDataHostedService> logger;
+    private readonly IHostEnvironment env;
+    private readonly IEmailClient emailClient;
+    private readonly IServer server;
+    private readonly LinkGenerator linkGenerator;
     private readonly BufferBlock<string> queue = new();
-    public UserDataHostedService(IServiceProvider serviceProvider,
-                                 IEmailClient emailClient,
-                                 LinkGenerator linkGenerator,
-                                 IHostEnvironment env,
-                                 ILogger<UserDataHostedService> logger)
+    public UserDataHostedService(
+        IServiceScopeFactory serviceScopeFactory,
+        IHostEnvironment env,
+        IEmailClient emailClient,
+        IServer server,
+        LinkGenerator linkGenerator,
+        ILogger<UserDataHostedService> logger)
     {
-        this.serviceProvider = serviceProvider;
-        this.emailClient = emailClient;
-        this.linkGenerator = linkGenerator;
-        this.env = env;
+        this.serviceScopeFactory = serviceScopeFactory;
         this.logger = logger;
+        this.env = env;
+        this.emailClient = emailClient;
+        this.server = server;
+        this.linkGenerator = linkGenerator;
     }
 
     public void EnqueueUserDataDownload(string userId)
     {
         queue.Post(userId);
-        int i = queue.GetHashCode();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,18 +47,19 @@ public class UserDataHostedService : BackgroundService, IUserDataService
             string userId = null;
             try
             {
-                int a = queue.GetHashCode();
                 userId = await queue.ReceiveAsync(stoppingToken);
-                
-                using IServiceScope scope = serviceProvider.CreateScope();
 
-                // Otteniamo l'ApplicationUser
-                // Recuperare i dati dell'utente e creare il file zip
-                // Inviare il link all'utente via email
+                using (IServiceScope serviceScope = serviceScopeFactory.CreateScope())
+                {
+                    IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+                    ICourseService courseService = serviceProvider.GetRequiredService<ICourseService>();
+                    ILessonService lessonService = serviceProvider.GetRequiredService<ILessonService>();
+                    UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    ApplicationUser user = await userManager.FindByIdAsync(userId);
 
-                ApplicationUser user = await GetUserAsync(scope.ServiceProvider, userId);
-                string zipFileUrl = await CreateZipFile(user, scope.ServiceProvider, stoppingToken);
-                await EmailZipFileLinkToUser(user, zipFileUrl, stoppingToken);
+                    string zipFileUrl = await CreateZipFileAsync(userId, courseService, lessonService, stoppingToken);
+                    await SendZipFileLinkToUserAsync(user.Email, zipFileUrl, stoppingToken);
+                }
             }
             catch(Exception exc)
             {
@@ -67,48 +71,32 @@ public class UserDataHostedService : BackgroundService, IUserDataService
         }
     }
 
-    private async Task<ApplicationUser> GetUserAsync(IServiceProvider serviceProvider, string userId)
-    {
-        UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        ApplicationUser user = await userManager.FindByIdAsync(userId);
-        return user;
-    }
-
-    private async Task EmailZipFileLinkToUser(ApplicationUser user, string zipFileUrl, CancellationToken stoppingToken)
-    {
-        stoppingToken.ThrowIfCancellationRequested();
-        await emailClient.SendEmailAsync(user.Email, "I tuoi corsi", $"Il file zip contenente i dati dei corsi video è pronto. Lo puoi scaricare da <a href=\"{zipFileUrl}\">{zipFileUrl}</a>");
-    }
-
-    private async Task<string> CreateZipFile(ApplicationUser user, IServiceProvider serviceProvider, CancellationToken stoppingToken)
+    private async Task<string> CreateZipFileAsync(string userId, ICourseService courseService, ILessonService lessonService, CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
 
         Guid zipFileId = Guid.NewGuid();
-        string zipFilePath = GetUserDataZipFileLocation(user.Id, zipFileId);
-        
-        ICourseService courseService = serviceProvider.GetRequiredService<ICourseService>();      
-        ILessonService lessonService = serviceProvider.GetRequiredService<ILessonService>();
-        List<CourseDetailViewModel> courses = await courseService.GetCoursesByAuthorAsync(user.Id);
+        string zipFilePath = GetUserDataZipFileLocation(userId, zipFileId);
 
-        using Stream file = File.OpenWrite(zipFilePath);
+        using FileStream file = File.OpenWrite(zipFilePath);
         using ZipArchive zip = new(file, ZipArchiveMode.Create);
+        
+        List<CourseDetailViewModel> courses = await courseService.GetCoursesByAuthorAsync(userId);
+
         foreach (CourseDetailViewModel courseDetail in courses)
         {
-            stoppingToken.ThrowIfCancellationRequested();
-
-            await AddZipEntry(zip, "Corso.txt", $"{courseDetail.Title}\r\n{courseDetail.Description}");
+            await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Descrizione.txt", $"{courseDetail.Title}\r\n{courseDetail.Description}", stoppingToken);
+            
+            using FileStream imageStream = File.OpenRead(Path.Combine(env.ContentRootPath, "wwwroot", "Courses", $"{courseDetail.Id}.jpg"));
+            await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Image.jpg", imageStream, stoppingToken);
 
             foreach (LessonViewModel lesson in courseDetail.Lessons)
             {
-                stoppingToken.ThrowIfCancellationRequested();
-
                 LessonDetailViewModel lessonDetail = await lessonService.GetLessonAsync(lesson.Id);
-                await AddZipEntry(zip, $"Lezioni/{lessonDetail.Id}.txt", $"{lessonDetail.Title}\r\n{lessonDetail.Description}");
+                await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Lezioni/{lessonDetail.Id}.txt", $"{lessonDetail.Title}\r\n{lessonDetail.Description}", stoppingToken);
             }
         }
 
-        IServer server = serviceProvider.GetRequiredService<IServer>();
         IServerAddressesFeature feature = server.Features.Get<IServerAddressesFeature>();
         Uri serverUri = new Uri(feature.Addresses.First());
 
@@ -116,11 +104,19 @@ public class UserDataHostedService : BackgroundService, IUserDataService
         return zipDownloadUrl;
     }
 
-    private async Task AddZipEntry(ZipArchive zip, string entryName, string entryContent)
+    private async Task AddZipEntry(ZipArchive zip, string entryName, string entryContent, CancellationToken stoppingToken)
     {
         ZipArchiveEntry entry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
-        using StreamWriter streamWriter = new(entry.Open());
-        await streamWriter.WriteAsync(entryContent);
+        using Stream entryStream = entry.Open();
+        using StreamWriter streamWriter = new(entryStream);
+        await streamWriter.WriteAsync(entryContent.AsMemory(), stoppingToken);
+    }
+
+    private async Task AddZipEntry(ZipArchive zip, string entryName, Stream entryContent, CancellationToken stoppingToken)
+    {
+        ZipArchiveEntry entry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
+        using Stream entryStream = entry.Open();
+        await entryContent.CopyToAsync(entryStream);
     }
 
     public string GetUserDataZipFileLocation(string userId, Guid zipFileId)
@@ -140,5 +136,11 @@ public class UserDataHostedService : BackgroundService, IUserDataService
     private string GetZipRootDirectoryPath()
     {
         return Path.Combine(env.ContentRootPath, "Downloads");
+    }
+
+    private async Task SendZipFileLinkToUserAsync(string userEmail, string zipFileUrl, CancellationToken stoppingToken)
+    {
+        stoppingToken.ThrowIfCancellationRequested();
+        await emailClient.SendEmailAsync(userEmail, null, "I tuoi corsi", $"Il file zip contenente i dati dei corsi video è pronto. Lo puoi scaricare da <a href=\"{zipFileUrl}\">{zipFileUrl}</a>", stoppingToken);
     }
 }

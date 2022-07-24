@@ -17,11 +17,11 @@ public class ClearDataHostedService : BackgroundService
         {
             try
             {
-                DateTime expirationDate = DateTime.Now.AddDays(-7);
+                DateTime oldDate = DateTime.Now.AddDays(-7);
                 foreach (string zipFile in userDataService.EnumerateAllUserDataZipFileLocations())
                 {
                     FileInfo fileInfo = new(zipFile);
-                    if (fileInfo.CreationTime < expirationDate)
+                    if (fileInfo.CreationTime < oldDate)
                     {
                         fileInfo.Delete();
                     }
