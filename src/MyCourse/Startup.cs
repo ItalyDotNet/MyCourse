@@ -116,6 +116,7 @@ public class Startup
         services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
         services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
         services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
+        services.AddScoped<IAuthorizationHandler, CourseViewerRequirementHandler>();
 
         // Policies
         services.AddAuthorization(options =>
@@ -133,6 +134,11 @@ public class Startup
             options.AddPolicy(nameof(Policy.CourseLimit), builder =>
             {
                 builder.Requirements.Add(new CourseLimitRequirement(limit: 5));
+            });
+
+            options.AddPolicy(nameof(Policy.CourseViewer), builder =>
+            {
+                builder.Requirements.Add(new CourseViewerRequirement());
             });
         });
 

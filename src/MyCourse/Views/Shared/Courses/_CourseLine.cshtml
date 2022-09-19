@@ -15,6 +15,13 @@
         <price current-price="@Model.CurrentPrice" full-price="@Model.FullPrice"></price>
     </div>
     <div class="col-md-2 d-flex align-items-center">
+      @if (Model.AuthorId == (ViewData["AuthorId"] as string))
+      {
+      <a class="btn btn-outline-primary" asp-controller="Courses" asp-action="Edit" asp-route-id="@Model.Id">Modifica</a>
+      }
+      else
+      {
       <a class="btn btn-outline-primary" asp-controller="Courses" asp-action="Detail" asp-route-id="@Model.Id">Dettaglio</a>
+      }
     </div>
 </div>

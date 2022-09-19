@@ -114,6 +114,7 @@ public class EfCoreCourseService : ICourseService
 
         IQueryable<Course> queryLinq = baseQuery
             .Where(course => course.Title.Contains(model.Search))
+            .Where(course => course.Status == CourseStatus.Published)
             .AsNoTracking();
 
         List<CourseViewModel> courses = await queryLinq
@@ -133,13 +134,23 @@ public class EfCoreCourseService : ICourseService
         return result;
     }
 
-    public Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    public Task<List<CourseViewModel>> GetCoursesByAuthorAsync(string authorId)
     {
         return dbContext.Courses
                         .AsNoTracking()
                         .Include(course => course.Lessons)
                         .Where(course => course.AuthorId == authorId)
-                        .Select(course => CourseDetailViewModel.FromEntity(course))
+                        .Select(course => CourseViewModel.FromEntity(course))
+                        .ToListAsync();
+    }
+
+    public Task<List<CourseViewModel>> GetCoursesBySubscriberAsync(string subscriberId)
+    {
+        return dbContext.Courses
+                        .AsNoTracking()
+                        .Include(course => course.SubscribedUsers)
+                        .Where(course => course.SubscribedUsers.Any(u => u.Id == subscriberId))
+                        .Select(course => CourseViewModel.FromEntity(course))
                         .ToListAsync();
     }
 
@@ -186,6 +197,14 @@ public class EfCoreCourseService : ICourseService
         course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
         course.ChangeDescription(inputModel.Description);
         course.ChangeEmail(inputModel.Email);
+        if (inputModel.IsPublished)
+        {
+            course.Puslish();
+        }
+        else
+        {
+            course.Unpublish();
+        }
 
         dbContext.Entry(course).Property(course => course.RowVersion).OriginalValue = inputModel.RowVersion;
 
@@ -247,14 +266,17 @@ public class EfCoreCourseService : ICourseService
 
     public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
     {
-        Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+        Course course = await dbContext.Courses
+                                       .Include(course => course.SubscribedUsers.Take(1))
+                                       .Where(course => course.Id == inputModel.Id)
+                                       .SingleOrDefaultAsync();
 
         if (course == null)
         {
             throw new CourseNotFoundException(inputModel.Id);
         }
 
-        course.ChangeStatus(CourseStatus.Deleted);
+        course.Delete();
         await dbContext.SaveChangesAsync();
     }
 
@@ -326,6 +348,12 @@ public class EfCoreCourseService : ICourseService
 
     public async Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
     {
+        CourseDetailViewModel course = await GetCourseAsync(inputModel.CourseId);
+        if (course.Status != CourseStatus.Published)
+        {
+            throw new CourseSubscriptionException(inputModel.CourseId);
+        }
+
         Subscription subscription = new(inputModel.UserId, inputModel.CourseId)
         {
             PaymentDate = inputModel.PaymentDate,

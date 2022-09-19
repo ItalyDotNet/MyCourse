@@ -9,15 +9,17 @@ public class CourseDetailViewModel
     public string Title { get; set; }
     public string ImagePath { get; set; }
     public string Author { get; set; }
+    public string AuthorId { get; set; }
     public double Rating { get; set; }
     public Money FullPrice { get; set; }
     public Money CurrentPrice { get; set; }
     public string Description { get; set; }
+    public CourseStatus Status { get; set; }
     public List<LessonViewModel> Lessons { get; set; } = new List<LessonViewModel>();
     public TimeSpan TotalCourseDuration
     {
         get => TimeSpan.FromSeconds(Lessons?.Sum(l => l.Duration.TotalSeconds) ?? 0);
-    }
+    } 
 
     public static CourseDetailViewModel FromDataRow(DataRow courseRow)
     {
@@ -27,6 +29,7 @@ public class CourseDetailViewModel
             Description = Convert.ToString(courseRow["Description"]),
             ImagePath = Convert.ToString(courseRow["ImagePath"]),
             Author = Convert.ToString(courseRow["Author"]),
+            AuthorId = Convert.ToString(courseRow["AuthorId"]),
             Rating = Convert.ToDouble(courseRow["Rating"]),
             FullPrice = new Money(
                 Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
@@ -36,6 +39,7 @@ public class CourseDetailViewModel
                 Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                 Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
             ),
+            Status = Enum.Parse<CourseStatus>(Convert.ToString(courseRow["Status"])),
             Id = Convert.ToInt32(courseRow["Id"]),
             Lessons = new List<LessonViewModel>()
         };
@@ -50,10 +54,12 @@ public class CourseDetailViewModel
             Title = course.Title,
             Description = course.Description,
             Author = course.Author,
+            AuthorId = course.AuthorId,
             ImagePath = course.ImagePath,
             Rating = course.Rating,
             CurrentPrice = course.CurrentPrice,
             FullPrice = course.FullPrice,
+            Status = course.Status,
             Lessons = course.Lessons
                                 .OrderBy(lesson => lesson.Order)
                                 .ThenBy(lesson => lesson.Id)

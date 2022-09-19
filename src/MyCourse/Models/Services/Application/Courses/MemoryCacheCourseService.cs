@@ -67,9 +67,14 @@ public class MemoryCacheCourseService : ICachedCourseService
         return courseService.GetCoursesAsync(model);
     }
 
-    public Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    public Task<List<CourseViewModel>> GetCoursesByAuthorAsync(string authorId)
     {
         return courseService.GetCoursesByAuthorAsync(authorId);
+    }
+
+    public Task<List<CourseViewModel>> GetCoursesBySubscriberAsync(string subscriberId)
+    {
+        return courseService.GetCoursesBySubscriberAsync(subscriberId);
     }
 
     public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)

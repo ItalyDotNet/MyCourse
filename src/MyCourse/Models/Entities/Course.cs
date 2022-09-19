@@ -1,4 +1,6 @@
-﻿namespace MyCourse.Models.Entities;
+﻿using MyCourse.Models.Exceptions.Application;
+
+namespace MyCourse.Models.Entities;
 
 public partial class Course
 {
@@ -28,37 +30,60 @@ public partial class Course
     public virtual ApplicationUser AuthorUser { get; set; }
     public virtual ICollection<ApplicationUser> SubscribedUsers { get; private set; }
 
-    public void ChangeStatus(CourseStatus status)
+    public void Puslish()
     {
-        //TODO: logica di validazione
-        Status = status;
+        ChangeStatus(CourseStatus.Published);
+    }
+
+    public void Unpublish()
+    {
+        ChangeStatus(CourseStatus.Draft);
+    }
+
+    public void Delete()
+    {
+        if (SubscribedUsers.Any())
+        {
+            throw new CourseDeletionException(Id);
+        }
+
+        ChangeStatus(CourseStatus.Deleted);
     }
 
     public void ChangeAuthor(string newAuthor, string newAuthorId)
     {
+        EnsureNotDeleted();
+
         if (string.IsNullOrWhiteSpace(newAuthor))
         {
             throw new ArgumentException("The author must have a name");
         }
+
         if (string.IsNullOrWhiteSpace(newAuthorId))
         {
             throw new ArgumentException("The author must have a id");
         }
+
         Author = newAuthor;
         AuthorId = newAuthorId;
     }
 
     public void ChangeTitle(string newTitle)
     {
+        EnsureNotDeleted();
+
         if (string.IsNullOrWhiteSpace(newTitle))
         {
             throw new ArgumentException("The course must have a title");
         }
+
         Title = newTitle;
     }
 
     public void ChangePrices(Money newFullPrice, Money newCurrentPrice)
     {
+        EnsureNotDeleted();
+
         if (newFullPrice == null || newCurrentPrice == null)
         {
             throw new ArgumentException("Prices can't be null");
@@ -77,6 +102,8 @@ public partial class Course
 
     public void ChangeEmail(string newEmail)
     {
+        EnsureNotDeleted();
+
         if (string.IsNullOrEmpty(newEmail))
         {
             throw new ArgumentException("Email can't be empty");
@@ -86,6 +113,8 @@ public partial class Course
 
     public void ChangeDescription(string newDescription)
     {
+        EnsureNotDeleted();
+
         if (newDescription != null)
         {
             if (newDescription.Length < 20)
@@ -102,16 +131,34 @@ public partial class Course
 
     public void ChangeImagePath(string imagePath)
     {
+        EnsureNotDeleted();
+
         ImagePath = imagePath;
     }
 
     public void ChangeRating(double? rating)
     {
+        EnsureNotDeleted();
+
         if (rating == null)
         {
             return;
         }
 
         Rating = rating ?? 0;
+    }
+
+    private void EnsureNotDeleted()
+    {
+        if (Status == CourseStatus.Deleted)
+        {
+            throw new InvalidOperationException("Course is deleted and cannot be modified");
+        }
+    }
+
+    private void ChangeStatus(CourseStatus status)
+    {
+        EnsureNotDeleted();
+        Status = status;
     }
 }

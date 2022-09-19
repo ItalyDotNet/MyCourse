@@ -39,6 +39,9 @@ public class CourseEditInputModel : IValidatableObject
     Display(Name = "Prezzo corrente")]
     public Money CurrentPrice { get; set; }
 
+    [Display(Name = "Pubblicato")]
+    public bool IsPublished { get; set; }
+
     [Display(Name = "Nuova immagine...")]
     public IFormFile Image { get; set; }
     public string RowVersion { get; set; }
@@ -72,6 +75,7 @@ public class CourseEditInputModel : IValidatableObject
                 Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
             ),
             Id = Convert.ToInt32(courseRow["Id"]),
+            IsPublished = Enum.Parse<CourseStatus>(Convert.ToString(courseRow["Status"])) == CourseStatus.Published,
             RowVersion = Convert.ToString(courseRow["RowVersion"])
         };
         return courseEditInputModel;
@@ -88,6 +92,7 @@ public class CourseEditInputModel : IValidatableObject
             ImagePath = course.ImagePath,
             CurrentPrice = course.CurrentPrice,
             FullPrice = course.FullPrice,
+            IsPublished = course.Status == CourseStatus.Published,
             RowVersion = course.RowVersion
         };
     }

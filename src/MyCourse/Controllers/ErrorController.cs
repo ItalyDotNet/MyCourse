@@ -18,6 +18,11 @@ public class ErrorController : Controller
                 ViewData["Title"] = "Corso non trovato";
                 Response.StatusCode = 404;
                 return View("CourseNotFound");
+            
+            case CourseDeletionException exc:
+                ViewData["Title"] = "Impossibile eliminare il corso dato che ha già degli iscritti";
+                Response.StatusCode = 400;
+                return View("CourseDeletionError");
 
             case CourseSubscriptionException exc:
                 ViewData["Title"] = "Non è stato possibile iscriverti al corso";

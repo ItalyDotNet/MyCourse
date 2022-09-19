@@ -48,7 +48,7 @@ public class AdoNetCourseService : ICourseService
     {
         logger.LogInformation("Course {id} requested", id);
 
-        FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}
+        FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Author, AuthorId, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, Status FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}
             ; SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id} ORDER BY [Order], Id";
 
         DataSet dataSet = await db.QueryAsync(query);
@@ -79,8 +79,8 @@ public class AdoNetCourseService : ICourseService
         string orderby = model.OrderBy == "CurrentPrice" ? "CurrentPrice_Amount" : model.OrderBy;
         string direction = model.Ascending ? "ASC" : "DESC";
 
-        FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)} ORDER BY {(Sql)orderby} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
-            SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)}";
+        FormattableString query = $@"SELECT Id, Title, ImagePath, Author, AuthorId, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, Status FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status={nameof(CourseStatus.Published)} ORDER BY {(Sql)orderby} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
+            SELECT COUNT(*) FROM Courses WHERE Title LIKE {"%" + model.Search + "%"} AND Status={nameof(CourseStatus.Published)}";
         DataSet dataSet = await db.QueryAsync(query);
         DataTable dataTable = dataSet.Tables[0];
         List<CourseViewModel> courseList = new();
@@ -99,16 +99,31 @@ public class AdoNetCourseService : ICourseService
         return result;
     }
 
-    public async Task<List<CourseDetailViewModel>> GetCoursesByAuthorAsync(string authorId)
+    public async Task<List<CourseViewModel>> GetCoursesByAuthorAsync(string authorId)
     {
-        FormattableString query = $@"SELECT Id FROM Courses WHERE AuthorId={authorId} AND Status<>{nameof(CourseStatus.Deleted)}";
+        FormattableString query = $"SELECT Id, Title, ImagePath, Author, AuthorId, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, Status FROM Courses WHERE AuthorId={authorId} AND Status<>{nameof(CourseStatus.Deleted)};";
         DataSet dataSet = await db.QueryAsync(query);
         DataTable dataTable = dataSet.Tables[0];
-        List<CourseDetailViewModel> courseList = new();
+        List<CourseViewModel> courseList = new();
         foreach (DataRow courseRow in dataTable.Rows)
         {
-            CourseDetailViewModel course = await GetCourseAsync(courseRow.Field<int>("Id"));
-            courseList.Add(course);
+            CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
+            courseList.Add(courseViewModel);
+        }
+
+        return courseList;
+    }
+
+    public async Task<List<CourseViewModel>> GetCoursesBySubscriberAsync(string subscriberId)
+    {
+        FormattableString query = $@"SELECT Id, Title, ImagePath, Author, AuthorId, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, Status FROM Courses INNER JOIN Subscriptions ON Courses.Id=Subscriptions.CourseId WHERE Status<>{nameof(CourseStatus.Deleted)} AND Subscriptions.UserId={subscriberId}";
+        DataSet dataSet = await db.QueryAsync(query);
+        DataTable dataTable = dataSet.Tables[0];
+        List<CourseViewModel> courseList = new();
+        foreach (DataRow courseRow in dataTable.Rows)
+        {
+            CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);
+            courseList.Add(courseViewModel);
         }
 
         return courseList;
@@ -116,7 +131,7 @@ public class AdoNetCourseService : ICourseService
 
     public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
     {
-        FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}";
+        FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, Status, RowVersion FROM Courses WHERE Id={id} AND Status<>{nameof(CourseStatus.Deleted)}";
 
         DataSet dataSet = await db.QueryAsync(query);
 
@@ -204,7 +219,8 @@ public class AdoNetCourseService : ICourseService
             {
                 imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
             }
-            int affectedRows = await db.CommandAsync($"UPDATE Courses SET ImagePath=COALESCE({imagePath}, ImagePath), Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency.ToString()}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency.ToString()}, FullPrice_Amount={inputModel.FullPrice.Amount} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)} AND RowVersion={inputModel.RowVersion}");
+
+            int affectedRows = await db.CommandAsync($"UPDATE Courses SET ImagePath=COALESCE({imagePath}, ImagePath), Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency.ToString()}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency.ToString()}, FullPrice_Amount={inputModel.FullPrice.Amount}, Status=({(inputModel.IsPublished ? CourseStatus.Published : CourseStatus.Draft)}, Status) WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)} AND RowVersion={inputModel.RowVersion}");
             if (affectedRows == 0)
             {
                 bool courseExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
@@ -233,6 +249,12 @@ public class AdoNetCourseService : ICourseService
 
     public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
     {
+        int subscribersCount = await db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={inputModel.Id}");
+        if (subscribersCount > 0)
+        {
+            throw new CourseDeletionException(inputModel.Id);
+        }
+
         int affectedRows = await db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
         if (affectedRows == 0)
         {
@@ -301,6 +323,12 @@ public class AdoNetCourseService : ICourseService
 
     public async Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
     {
+        CourseDetailViewModel course = await GetCourseAsync(inputModel.CourseId);
+        if (course.Status != CourseStatus.Published)
+        {
+            throw new CourseSubscriptionException(inputModel.CourseId);
+        }
+        
         try
         {
             await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Currency, Paid_Amount, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Currency.ToString()}, {inputModel.Paid.Amount}, {inputModel.TransactionId})");

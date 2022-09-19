@@ -81,19 +81,20 @@ public class UserDataHostedService : BackgroundService, IUserDataService
         using FileStream file = File.OpenWrite(zipFilePath);
         using ZipArchive zip = new(file, ZipArchiveMode.Create);
         
-        List<CourseDetailViewModel> courses = await courseService.GetCoursesByAuthorAsync(userId);
+        List<CourseViewModel> courses = await courseService.GetCoursesByAuthorAsync(userId);
 
-        foreach (CourseDetailViewModel courseDetail in courses)
+        foreach (CourseViewModel course in courses)
         {
-            await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Descrizione.txt", $"{courseDetail.Title}\r\n{courseDetail.Description}", stoppingToken);
+            CourseDetailViewModel courseDetail = await courseService.GetCourseAsync(course.Id);
+            await AddZipEntry(zip, $"Corsi/{course.Id}/Descrizione.txt", $"{course.Title}\r\n{courseDetail.Description}", stoppingToken);
             
             using FileStream imageStream = File.OpenRead(Path.Combine(env.ContentRootPath, "wwwroot", "Courses", $"{courseDetail.Id}.jpg"));
-            await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Image.jpg", imageStream, stoppingToken);
+            await AddZipEntry(zip, $"Corsi/{course.Id}/Image.jpg", imageStream, stoppingToken);
 
             foreach (LessonViewModel lesson in courseDetail.Lessons)
             {
                 LessonDetailViewModel lessonDetail = await lessonService.GetLessonAsync(lesson.Id);
-                await AddZipEntry(zip, $"Corsi/{courseDetail.Id}/Lezioni/{lessonDetail.Id}.txt", $"{lessonDetail.Title}\r\n{lessonDetail.Description}", stoppingToken);
+                await AddZipEntry(zip, $"Corsi/{course.Id}/Lezioni/{lessonDetail.Id}.txt", $"{lessonDetail.Title}\r\n{lessonDetail.Description}", stoppingToken);
             }
         }
 

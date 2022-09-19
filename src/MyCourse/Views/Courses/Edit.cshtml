@@ -32,6 +32,18 @@
             <div class="col-md-3">
                 <aside>
                     <div class="form-group">
+                        <label>Visibilità</label>
+                        <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
+                            <div class="btn btn-outline-dark flex-fill">
+                                <input type="radio" asp-for="IsPublished" value="false" autocomplete="off"> Bozza
+                            </div>
+                            <div class="btn btn-outline-dark flex-fill">
+                                <input type="radio" asp-for="IsPublished" value="true" autocomplete="off"> Pubblico
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
                         <label asp-for="Email"></label>
                         <input type="email" asp-for="Email" class="form-control">
                         <span asp-validation-for="Email"></span>

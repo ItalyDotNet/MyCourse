@@ -8,9 +8,11 @@ public class CourseViewModel
     public string Title { get; set; }
     public string ImagePath { get; set; }
     public string Author { get; set; }
+    public string AuthorId { get; set; }
     public double Rating { get; set; }
     public Money FullPrice { get; set; }
     public Money CurrentPrice { get; set; }
+    public CourseStatus Status { get; set; }
 
     public static CourseViewModel FromDataRow(DataRow courseRow)
     {
@@ -19,6 +21,7 @@ public class CourseViewModel
             Title = Convert.ToString(courseRow["Title"]),
             ImagePath = Convert.ToString(courseRow["ImagePath"]),
             Author = Convert.ToString(courseRow["Author"]),
+            AuthorId = Convert.ToString(courseRow["AuthorId"]),
             Rating = Convert.ToDouble(courseRow["Rating"]),
             FullPrice = new Money(
                 Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
@@ -28,6 +31,7 @@ public class CourseViewModel
                 Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                 Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
             ),
+            Status = Enum.Parse<CourseStatus>(Convert.ToString(courseRow["Status"])),
             Id = Convert.ToInt32(courseRow["Id"])
         };
         return courseViewModel;
@@ -41,9 +45,11 @@ public class CourseViewModel
             Title = course.Title,
             ImagePath = course.ImagePath,
             Author = course.Author,
+            AuthorId = course.AuthorId,
             Rating = course.Rating,
             CurrentPrice = course.CurrentPrice,
-            FullPrice = course.FullPrice
+            FullPrice = course.FullPrice,
+            Status = course.Status
         };
     }
 }

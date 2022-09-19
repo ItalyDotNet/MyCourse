@@ -11,6 +11,9 @@
         <a class="nav-link" asp-page="/Account/Manage/Index" asp-area="Identity">Ciao @User.FindFirst("FullName").Value!</a>
     </li>
     <li class="nav-item active">
+        <a class="nav-link" asp-action="Personal" asp-controller="Courses">I miei corsi</a>
+    </li>
+    <li class="nav-item active">
         <form class="form-inline" method="post" asp-page="/Account/Logout" asp-area="Identity">
             <button type="submit" class="btn btn-link text-white">Esci</button>
         </form>

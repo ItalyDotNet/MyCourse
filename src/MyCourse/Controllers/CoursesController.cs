@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,21 @@ public class CoursesController : Controller
         return View(viewModel);
     }
 
+    [Authorize]
+    public async Task<IActionResult> Personal()
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        PersonalCoursesViewModel viewModel = new PersonalCoursesViewModel
+        {
+            AuthoredCourses = await courseService.GetCoursesByAuthorAsync(userId),
+            SubscribedCourses = await courseService.GetCoursesBySubscriberAsync(userId)
+        };
+
+        ViewData["Title"] = "I miei corsi";
+        return View(viewModel);
+    }
+
     public async Task<IActionResult> Pay(int id)
     {
         string paymentUrl = await courseService.GetPaymentUrlAsync(id);
@@ -46,7 +62,7 @@ public class CoursesController : Controller
         return RedirectToAction(nameof(Detail), new { id = id });
     }
 
-    [AllowAnonymous]
+    [Authorize(Policy = nameof(Policy.CourseViewer))]
     public async Task<IActionResult> Detail(int id)
     {
         CourseDetailViewModel viewModel = await courseService.GetCourseAsync(id);
