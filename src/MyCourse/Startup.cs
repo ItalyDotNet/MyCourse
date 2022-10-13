@@ -9,6 +9,7 @@ using MyCourse.Customizations.Identity;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Services.Worker;
+using MyCourse.Customizations.Middlewares;
 
 namespace MyCourse;
 
@@ -190,6 +191,7 @@ public class Startup
         }
 
         app.UseStaticFiles();
+        app.UseMiddleware<TrackingMiddleware>();
 
         //Nel caso volessi impostare una Culture specifica...
         /*var appCulture = CultureInfo.InvariantCulture;
